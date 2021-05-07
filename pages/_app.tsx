@@ -1,7 +1,8 @@
 // import App from "next/app";
 import type { AppProps /*, AppContext */ } from 'next/app';
+import React from 'react';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return <Component {...pageProps} />;
 }
 
