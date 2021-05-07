@@ -1,21 +1,31 @@
 // import App from "next/app";
 import type { AppProps /*, AppContext */ } from 'next/app';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { NextPage } from 'next';
+import Head from 'next/head';
+import initTwitterScriptInner from 'zenn-embed-elements/lib/init-twitter-script-inner';
 
-function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-  return <Component {...pageProps} />;
-}
-
-// Only uncomment this method if you have blocking data requirements for
-// every single page in your application. This disables the ability to
-// perform automatic static optimization, causing every page in your app to
-// be server-side rendered.
-//
-// MyApp.getInitialProps = async (appContext: AppContext) => {
-//   // calls page's `getInitialProps` and fills `appProps.pageProps`
-//   const appProps = await App.getInitialProps(appContext);
-
-//   return { ...appProps }
-// }
+const MyApp: NextPage<AppProps> = ({ Component, pageProps }: AppProps) => {
+  useEffect(() => {
+    import('zenn-embed-elements');
+  }, []);
+  return (
+    <>
+      <Head>
+        <link rel="icon shortcut" href="/favicon.png" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: initTwitterScriptInner,
+          }}
+        />
+      </Head>
+      <Component {...pageProps} />
+    </>
+  );
+};
 
 export default MyApp;
