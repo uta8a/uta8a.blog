@@ -1,4 +1,4 @@
-## web-template
+## blog
 ```
 eslint
 prettier
