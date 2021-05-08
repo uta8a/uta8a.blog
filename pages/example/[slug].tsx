@@ -46,7 +46,6 @@ const Page: NextPage<Props> = (props: Props) => {
           {article.title || '無題'} - {'diaryです'}
         </title>
       </Head>
-      <Image src="/uta8a.png" width="100" height="100" />
       <MainContainer>
         <article>
           <div>
