@@ -24,3 +24,6 @@ const unionArray = Object.keys(_dummy) as Union[]; // ["a", "b", "c"]
 
 ## rustcraft
 [dskart/rustcraft](https://github.com/dskart/rustcraft) を知った。Rustのwgpuクレート(icedでも内部的に使われている低レイヤなクレート)を用いてminecraftっぽい見た目のゲームを実装。動けたりブロックを破壊できるらしい。アイテムとか細かいところはなくてほんとに基本のみ。
+
+## [WIP] web24
+- togetter追いかける
