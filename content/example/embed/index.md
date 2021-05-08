@@ -1,6 +1,6 @@
 ---
 title: 'embed'
-type: 'idea' # or "idea"
+type: 'example' # or "idea"
 topics:
   - React
   - Rust
@@ -23,3 +23,7 @@ https://gist.github.com/mattpodwysocki/218388
 @[gist](https://gist.github.com/hofmannsven/9164408?file=my.cnf)
 
 ssfafafaffafa
+
+![uta8a](uta8a.png)
+
+![uta8a2](/uta8a.png)

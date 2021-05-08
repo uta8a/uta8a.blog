@@ -1,6 +1,6 @@
 ---
 title: "example"
-type: "idea" # or "idea"
+type: "example" # or "idea"
 topics: 
   - React
   - Rust
@@ -50,7 +50,7 @@ console.log(foo(5));
 console.log(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa);
 ```
 
-```js diff :fooBar.js
+```js diff :foideaoBar.js
 @@ -4,6 +4,5 @@
 -    let foo = bar.baz([1, 2, 3]);
 -    foo = foo + 1;
@@ -91,6 +91,9 @@ here be dragons
 here be dragons
 :::
 
+::: message notice
+here be dragons
+:::
 
 ↓ escaped
 

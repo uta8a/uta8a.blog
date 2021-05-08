@@ -4,6 +4,8 @@ import React, { useEffect } from 'react';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import initTwitterScriptInner from 'zenn-embed-elements/lib/init-twitter-script-inner';
+import '@styles/znc/index.scss';
+import '@styles/main/index.scss';
 
 const MyApp: NextPage<AppProps> = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
