@@ -99,7 +99,7 @@ let path = path.as_str();
 ```
 
 ## 文字列の扱いが難しい
-上のjoinのところで、以下のようにするとだめになりました。やりたいこととしては、Stringだと使い回せないので&strにして使いまわそうというモチベーションです。
+上のjoinのところで、以下のようにするとだめになりました。やりたいことは、Stringだと使い回せないので&strにして使いまわそうということです。
 エラーメッセージもまだ借用きちんと理解できてなくて分からない感じなので、いい方法があれば知りたいです。
 
 ```rust
@@ -109,7 +109,7 @@ let path = opt.dirs.join("/").as_str();
 最小の再現コードです
 https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=9b7aa9be5339c8c3b1c8373fefa8700f
 
-```shell
+```text
 error[E0716]: temporary value dropped while borrowed
  --> src/main.rs:4:14
   |
@@ -128,7 +128,7 @@ error[E0716]: temporary value dropped while borrowed
 anyhowのResultを返す関数で、thiserrorを使ったenumでエラーを返そうとしたら、それはanyhowのエラー型ではありませんよと言われた。結局 `Err(anyhow!("message"))` としたが、thiserrorでエラーメッセージとエラー型を一括管理できる恩恵を受けたいときに微妙になってしまう。ドキュメントを見てもよく分からなかったので、使われている例を探したい。
 
 ## Commandが便利
-下のように、コマンドオプションがオンになっていたら、ディレクトリを `cargo` を流して作成し、workspaceのところは直接ファイルを生成するようにした。個人的にわかりやすいコマンド体系で、変数を入れるなどは危険などで避けるが、こういう固定のコマンド発行のときは使っていくつもり。
+下のように、コマンドオプションがオンになっていたら、ディレクトリを `cargo` を流して作成し、workspaceのところは直接ファイルを生成するようにした。個人的にわかりやすいコマンド体系で、変数を直接入れることは危険なため避けるが、こういう固定のコマンド発行のときは使っていくつもり。
 
 ```rust:main.rs
 use std::process::Command;
