@@ -8,5 +8,5 @@ export type Article = {
   // tags?: string[];
   // published?: boolean;
   draft?: boolean;
-  date?: Date;
+  date: Date;
 };
