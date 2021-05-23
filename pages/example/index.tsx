@@ -13,26 +13,42 @@ type ArticleInfo = {
   title: string | undefined;
   path: string;
 };
-export default function Home(props: Props): JSX.Element {
+export default function Index(props: Props): JSX.Element {
   return (
-    <div>
-      {props.path.map((e) => {
-        return (
-          <h1
-            key={e.path}
-            style={{
-              fontSize: '2.25rem',
-              lineHeight: '2.5rem',
-              textAlign: 'center',
-            }}
-          >
-            <Link href={`example/${e.path}`} passHref>
-              <a>{e.title}</a>
-            </Link>
-          </h1>
-        );
-      })}
-    </div>
+    <>
+      <h1
+        style={{
+          paddingTop: '2rem',
+          paddingLeft: '5rem',
+        }}
+      >
+        /example
+      </h1>
+      <div
+        style={{
+          paddingTop: '1rem',
+          paddingLeft: '5rem',
+        }}
+      >
+        {props.path.map((e) => {
+          return (
+            <h1
+              key={e.path}
+              style={{
+                fontSize: '2.25rem',
+                lineHeight: '2.5rem',
+                // textAlign: 'center',
+                paddingTop: '1.2rem',
+              }}
+            >
+              <Link href={`example/${e.path}`} passHref>
+                <a>&gt; {e.title}</a>
+              </Link>
+            </h1>
+          );
+        })}
+      </div>
+    </>
   );
 }
 export const getStaticProps: GetStaticProps<Props> = async () => {
