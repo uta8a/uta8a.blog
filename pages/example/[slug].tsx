@@ -4,6 +4,7 @@ import { NextPage, GetStaticProps, GetStaticPaths } from 'next';
 import Image from 'next/image';
 import path from 'path';
 import fs from 'fs-extra';
+import { DOMParser, parseHTML } from 'linkedom';
 
 // import escapeHtml from 'escape-html';
 import markdownToHtml from 'zenn-markdown-html';
@@ -71,11 +72,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const slug = params !== undefined ? (params.slug as string) : '';
   const article = getArticleBySlug(slug);
-  const content = markdownToHtml(
+  let content = markdownToHtml(
     article.content === undefined ? 'error' : article.content,
   );
-  // const allContentsNavCollections = getAllContentsNavCollections();
-
+  const dp = new DOMParser();
+  const document = dp.parseFromString(content, 'text/html');
+  document.querySelectorAll('img').forEach((e) => {
+    e.src = filterImage(slug, e.src);
+  });
+  content = document.toString();
   return {
     props: {
       article: {
@@ -110,8 +115,6 @@ const getArticleBySlug = (slug: string): Article => {
   };
   type Ty = keyof Article;
   const fields = Object.keys(initArticle) as Ty[];
-  // const C = Object.keys(B);
-  // console.log('key!', B);
   const item: Article = {
     slug,
   };
@@ -124,6 +127,16 @@ const getArticleBySlug = (slug: string): Article => {
     }
   });
   return item as Article;
+};
+
+const filterImage = (slug: string, src: string) => {
+  if (/^http/.test(src)) {
+    return src;
+  } else if (/\.\//.test(src)) {
+    return `/content/example/${slug}/${src.substring(2)}`;
+  } else {
+    return `/content/example/${slug}/${src}`;
+  }
 };
 
 export default Page;
