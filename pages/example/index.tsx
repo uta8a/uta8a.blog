@@ -90,7 +90,8 @@ const getArticleBySlug = (slug: string): Article => {
   // const C = Object.keys(B);
   // console.log('key!', B);
   const item: Article = {
-    slug,
+    slug: slug,
+    date: new Date(),
   };
   fields.forEach((field) => {
     if (field === 'content') {
