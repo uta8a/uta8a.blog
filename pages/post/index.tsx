@@ -12,6 +12,7 @@ type Props = {
 type ArticleInfo = {
   title: string | undefined;
   path: string;
+  date: Date;
 };
 export default function Index(props: Props): JSX.Element {
   return (
@@ -59,8 +60,11 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const paths = [];
   for (const slug of dirs) {
     const article = getArticleBySlug(slug);
-    paths.push({ title: article.title, path: slug });
+    paths.push({ title: article.title, path: slug, date: article.date });
   }
+  paths.sort((a, b) => {
+    return new Date(a.date) < new Date(b.date) ? 1 : -1;
+  });
   return { props: { path: paths } };
 };
 
@@ -90,7 +94,8 @@ const getArticleBySlug = (slug: string): Article => {
   // const C = Object.keys(B);
   // console.log('key!', B);
   const item: Article = {
-    slug,
+    slug: slug,
+    date: new Date(),
   };
   fields.forEach((field) => {
     if (field === 'content') {
