@@ -11,7 +11,12 @@ export const ContentBody: React.FC<Props> = (props: Props) => {
   return (
     <ContentWrapper>
       <div style={{ margin: '40px 0' }}>
-        <header>
+        <header
+          style={{
+            paddingTop: '2rem',
+            paddingBottom: '3rem',
+          }}
+        >
           <h1
             style={{
               fontSize: '2.25rem',
