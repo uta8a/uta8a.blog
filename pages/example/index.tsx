@@ -18,6 +18,7 @@ export default function Index(props: Props): JSX.Element {
     <>
       <h1
         style={{
+          fontSize: '2.25rem',
           paddingTop: '2rem',
           paddingLeft: '5rem',
         }}
@@ -32,19 +33,19 @@ export default function Index(props: Props): JSX.Element {
       >
         {props.path.map((e) => {
           return (
-            <h1
+            <div
               key={e.path}
               style={{
-                fontSize: '2.25rem',
+                fontSize: '2rem',
                 lineHeight: '2.5rem',
                 // textAlign: 'center',
-                paddingTop: '1.2rem',
+                paddingTop: '0.5rem',
               }}
             >
               <Link href={`example/${e.path}`} passHref>
                 <a>&gt; {e.title}</a>
               </Link>
-            </h1>
+            </div>
           );
         })}
       </div>
