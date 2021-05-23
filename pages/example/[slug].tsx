@@ -116,7 +116,8 @@ const getArticleBySlug = (slug: string): Article => {
   type Ty = keyof Article;
   const fields = Object.keys(initArticle) as Ty[];
   const item: Article = {
-    slug,
+    slug: slug,
+    date: new Date(),
   };
   fields.forEach((field) => {
     if (field === 'content') {
