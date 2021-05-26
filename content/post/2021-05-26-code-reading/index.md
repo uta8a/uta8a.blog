@@ -59,7 +59,10 @@ https://docs.github.com/ja/actions/reference/workflow-commands-for-github-action
 - golangci-lintでデフォルトでOFFになっているもの: gofmt
 
 このあたりは開発者の好みもありそう。
-その他眺めてたら、[misspell](https://github.com/client9/misspell): 変数名英語のスペルミスチェック。最終リリースが2018年, [wastedassign](https://github.com/sanposhiho/wastedassign): 意味のない代入を報告、が面白そうだと感じた。
+その他眺めてたら、以下2つが面白そうだと感じた。
+
+- [misspell](https://github.com/client9/misspell): 変数名英語のスペルミスチェック(ただし最終リリースが2018年)
+- [wastedassign](https://github.com/sanposhiho/wastedassign): 意味のない代入を報告
 
 ## `release.yml`
 (draft)
