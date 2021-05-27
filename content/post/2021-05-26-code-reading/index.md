@@ -65,13 +65,65 @@ https://docs.github.com/ja/actions/reference/workflow-commands-for-github-action
 - [wastedassign](https://github.com/sanposhiho/wastedassign): 意味のない代入を報告
 
 ## `release.yml`
-(draft)
+### git tagとGitHub Actions発火
+このリポジトリでは、`on.push.tags`と`on.push.branches-ignore`を用いてtagを打った時のみそこに対してActionsを実行するようになっている。
+ここでGitHub Docsを見てみると、
+
+> \# Push events to v1.0, v1.1, and v1.9 tags
+> **ref:** https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-including-branches-and-tags
+
+とあったので、もしかして1桁のv9までで、2桁のv12とかって打てないのか...？と思って挙動を調べた。
+以下のようにして調べた。
+
+```shell
+git tags -a 'v1' -m 'ok'
+git push --tags
+git push
+```
+
+- tagはremoteに明示的にpushする必要がある
+
+`git push --tags` ですべてのlocalのタグをremoteにpushできる。
+remoteのtagはGitHubのrelease項目から確認できる
+
+- `v*` は `v100` や `vABC` にもマッチする
+
+2桁以上や文字でも大丈夫。
+
+- `v*.*.*` は `v4` にマッチしない。`v1.0.0` や `vX.Y.Z` にはマッチする。
+- `v..` を試そうとすると、localで `fatal: 'v..' is not a valid tag name.` となって打てない
+- 先に `git push --tags` すると、releaseに反映されるがmainブランチにはコミットが存在せず、該当コミットをreleaseから見に行くと以下のようにどこのブランチにも属してないですと言われる。でもCIは回る。
+
+![p-1](p-1.png)
+
+- relaseでのtagの表示の順番はtag名でソートされる。以下は1分前の最新のコミットのv4が表示上は下に行っている様子
+
+![p-2](p-2.png)
+
+結論としては、制限しないなら `v*` でよくて、制限かけたいなら `tags-ignore` も用いて制限かけていくのがよさそう。
+バージョン付け手動Onlyは大変そうで、Actionsに載せて手動と自動まぜるみたいなことできたらいいのかな。
+
+### Build Kit
+https://matsuand.github.io/docs.docker.jp.onthefly/develop/develop-images/build_enhancements/
+https://www.slideshare.net/AkihiroSuda/buildkit
+これらの記事を読んだ。Dockerfileの各ステージを並列実行することで高速化できたり、root権限なしで実行できたりするらしい。
+
+### ghcrとgithub packages
+個人的にDocker Imageを保存したいとき、privateなら課金が必要になる可能性があるがGCR(Google Container Registry)など、publicならDocker Hubを検討していたが、2020年11月からDocker Hubの無料プランはpull制限がかかるようになり使いづらくなって移行先としてGitHub Packagesやghcr(GitHub Container Registry)の利用を検討するようになった。
+Docker Imageはsave/loadでtar.gzに固めてVPSに直接送って展開することもできるが、継続的にCI/CDをしていくと面倒になってくるので、Registryを使う方がよいケースも多い。
+
+https://www.kaizenprogrammer.com/entry/2020/09/03/060236
+ghcrはpublic beta。この記事が詳しい。現在はPersonal Access Tokenが必要らしくて、`secrets.GITHUB_TOKEN`でできるPackagesに比べると少し手間がかかる。
 
 ## ## 使っているライブラリ
 (draft)
 
 ## ## コード本体
 (draft)
+
+# # まとめ
+https://docs.github.com/ja/actions
+これすべて目を通しておいたほうがよさそう。
 
 # # 最後に
 やっぱり強い人の手頃な大きさのリポジトリを読んで公式ドキュメントと照らし合わせて勉強していくの参考になる〜
