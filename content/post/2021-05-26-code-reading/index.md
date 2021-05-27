@@ -112,8 +112,8 @@ https://www.slideshare.net/AkihiroSuda/buildkit
 個人的にDocker Imageを保存したいとき、privateなら課金が必要になる可能性があるがGCR(Google Container Registry)など、publicならDocker Hubを検討していたが、2020年11月からDocker Hubの無料プランはpull制限がかかるようになり使いづらくなって移行先としてGitHub Packagesやghcr(GitHub Container Registry)の利用を検討するようになった。
 Docker Imageはsave/loadでtar.gzに固めてVPSに直接送って展開することもできるが、継続的にCI/CDをしていくと面倒になってくるので、Registryを使う方がよいケースも多い。
 
+ghcrはpublic beta。以下の記事が詳しい。現在はPersonal Access Tokenが必要で、`secrets.GITHUB_TOKEN`でできるPackagesに比べると少し手間がかかる。
 https://www.kaizenprogrammer.com/entry/2020/09/03/060236
-ghcrはpublic beta。この記事が詳しい。現在はPersonal Access Tokenが必要らしくて、`secrets.GITHUB_TOKEN`でできるPackagesに比べると少し手間がかかる。
 
 ## ## 使っているライブラリ
 (draft)
