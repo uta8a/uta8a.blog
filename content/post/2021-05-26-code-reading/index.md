@@ -116,10 +116,10 @@ ghcrはpublic beta。以下の記事が詳しい。現在はPersonal Access Toke
 https://www.kaizenprogrammer.com/entry/2020/09/03/060236
 
 ## ## 使っているライブラリ
-(draft)
+(draft: コード本体を読まないと使い方わからないものも多いので、後回し)
 
 ## ## コード本体
-(draft)
+(draft: DIやクリーンアーキへの理解が必要そうなので、かなり時間かかりそう)
 
 # # まとめ
 https://docs.github.com/ja/actions
