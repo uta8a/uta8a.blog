@@ -1,9 +1,13 @@
 ---
-title: "[draft] 僕が分からない技術的な事柄をまとめた"
+title: "僕が分からない技術的な事柄をまとめた"
 type: "post"
 draft: false
 date: "2021-05-29T03:01:09+09:00"
 ---
+
+::: message notice
+**まとめ**: [わからないことをnotionにまとめた](https://www.notion.so/4abe82f4ac284f70bab64c77e366fbbe?v=ca4280d1fecd4445bfeeded51c696211)ら、思ったより分かっていないことが発覚した。
+:::
 
 ### きっかけ
 [ぶんぶんさん(@adoring_onion)](https://twitter.com/adoring_onion)が分からないことをnotionにまとめていたからです。
@@ -23,12 +27,31 @@ https://twitter.com/adoring_onion/status/1393251325211602947
 そのため、今回は記事や大学のシラバスを読む・自分がやりたいことを整理する過程で、これ分かってないなと思う事柄を探すことで認識しようと試みました。
 
 # # 分野別分からないこと
-(draft)
+詳しくは以下の記事にトピックごとに書いた。これから雑談のネタにしたり自習するときの指針にしていきたい。
+[僕が知らないこと - https://twitter.com/kaito_tateyama が知らないこと一覧。分かっていることが間違っている場合があります。](https://www.notion.so/4abe82f4ac284f70bab64c77e366fbbe?v=ca4280d1fecd4445bfeeded51c696211)
+
+## ## 言語
+そもそも扱ったことのある言語が少ない。伝聞で言語を評価してしまっている。
+
+## ## アルゴリズム
+分かっているつもりで、ソートアルゴリズムすら、そらで書けないことが分かった。
+
+## ## Web
+セキュリティや仕組みが分かってない。ただ、やり方や手順はやったことあるので知っているものが多いし、何が分からないか分からないレベルではない。
+
+## ## CS
+圧縮技術、Git、暗号、データベース、Linux...と分からないことは多い。
+
+## ## ネットワーク
+TCP/IPすら分からない。何も分からないので何がわからないかも分かっていない。
+
 
 ### 参考記事
 
 https://blog.p1ass.com/posts/i-do-not-understand-cs/
 https://overreacted.io/things-i-dont-know-as-of-2018/
+
+以下は眺めたけどこれからnotionに反映させる予定
 https://ytsmiling.tech/2020/02/16/memoir.html
 https://www.is.s.u-tokyo.ac.jp/appli/curriculum.html
 https://blog.knshnb.com/posts/graduation-is/
