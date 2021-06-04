@@ -12,6 +12,7 @@ export default function Home(props: Props): JSX.Element {
       style={{
         paddingTop: '4rem',
         paddingLeft: '4rem',
+        height: '100%',
       }}
     >
       <h1
@@ -22,7 +23,7 @@ export default function Home(props: Props): JSX.Element {
       >
         diaryです
       </h1>
-      <Link href={'post/'} passHref>
+      <Link href={'/post'} passHref>
         <h1
           style={{
             paddingBottom: '2rem',
@@ -31,7 +32,7 @@ export default function Home(props: Props): JSX.Element {
           /post - 技術的な内容
         </h1>
       </Link>
-      <Link href={'diary/'} passHref>
+      <Link href={'/diary'} passHref>
         <h1
           style={{
             paddingBottom: '2rem',
@@ -40,6 +41,28 @@ export default function Home(props: Props): JSX.Element {
           /diary - 個人的な日記
         </h1>
       </Link>
+      <details
+        style={{
+          bottom: '1rem',
+        }}
+      >
+        <summary>License表示</summary>
+        <div>
+          <div>
+            <a href="https://github.com/zenn-dev/zenn-editor">
+              zenn-dev/zenn-editor
+            </a>{' '}
+            以下のzenn-markdown-html、zenn-content-cssを使用しています。
+          </div>
+          <div>Copyright (c) 2021 CatNose</div>
+          <div>Released under the MIT license</div>
+          それ以外の私が書いた部分についてはソースコードはMITライセンス、文章はCC
+          BY-NC-ND 4.0です。
+          <div>Copyright (c) 2021 uta8a</div>
+          <div>Released under the MIT license</div>
+          <div>Released under CC BY-NC-ND 4.0</div>
+        </div>
+      </details>
     </div>
   );
 }
