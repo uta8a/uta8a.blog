@@ -1,6 +1,6 @@
 ---
 title: "Rustでmkdir -pみたいな簡単なCLIツールを作って学んだこと"
-type: "example"
+type: "post"
 draft: false
 date: "2021-05-16T09:23:37+09:00"
 ---

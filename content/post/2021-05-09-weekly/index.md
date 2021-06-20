@@ -1,6 +1,6 @@
 ---
-title: "2021/05/09 - 2021/05/13 Weekly"
-type: "example"
+title: "週間ブックマーク 2021/05/09 - 2021/05/13"
+type: "post"
 draft: false
 date: "2021-05-09T07:01:45+09:00"
 ---
