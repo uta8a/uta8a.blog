@@ -1,5 +1,5 @@
 ---
-title: "[draft] 誰かのコードを読んで学ぶ / mazrean/separated-webshell"
+title: "[draft] 誰かのコードを読んで学ぶ"
 type: "post"
 draft: false
 date: "2021-05-26T19:49:01+09:00"
