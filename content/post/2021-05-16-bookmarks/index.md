@@ -1,5 +1,5 @@
 ---
-title: "週間ブックマーク 5/14 - 6/28"
+title: "週刊ブックマーク 5/14 - 6/28"
 type: "post"
 draft: false
 date: "2021-05-16T09:23:46+09:00"
@@ -24,4 +24,3 @@ locate -r "docker-compose*" # match docker-compose.dev.yml, ...
 - [より安全にご利用いただけるようになったClassiのご報告と今後の取り組みについて](https://corp.classi.jp/news/2416/) インシデントの検知からその後の対策までが書かれている。メルカリなど見ていると、GitHubには侵入されるという前提で考えた方がよい。
 - [「何か質問や意見ありますか」の後の無言対策](https://konifar-zatsu.hatenadiary.jp/entry/2021/05/12/232722) 出席をとります、と背景の変更、とテキストチャットを使え、が参考になる
 - [Googleの新しい分散型SDNコントローラー「Orion」（パート1）](https://www.school.ctc-g.co.jp/columns/nakai2/nakai2104.html) googleのデータセンターに導入された分散型SDNコントローラーOrionの紹介。JupyterとB4というネットワークシステムと、Orionのアーキテクチャの仕組みが説明されている。
-- []()

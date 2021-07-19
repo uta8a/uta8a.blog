@@ -1,5 +1,5 @@
 ---
-title: "(draft) 週刊ブックマーク 7/12 - 7/18"
+title: "週刊ブックマーク 7/12 - 7/18"
 type: "post"
 draft: false
 date: "2021-07-14T07:44:37+09:00"
@@ -18,6 +18,7 @@ date: "2021-07-14T07:44:37+09:00"
 - [pokemium/Worldwide](https://github.com/pokemium/Worldwide) GameBoy Color Emulator. Go製でebitenを使っているみたい。
 - [containers/youki](https://github.com/containers/youki) Rust製のコンテナランタイム。
 - [TFHE](https://tfhe.github.io/tfhe/) Fast Fully Homomorphic Encryption over the Torus 完全準同型暗号
+- [セキュリティキャンプ2020資料置き場](https://nindanaoto.github.io/) nindanaotoさんの資料が置いてある。
 
 ## todo!
 記事を読んで、これやりたいなと思ったアイデア集。実際に手を動かしてできるのはごく一部だけど面白そうという気持ちをメモっておくのが大事。
