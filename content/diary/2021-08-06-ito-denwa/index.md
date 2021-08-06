@@ -1,5 +1,5 @@
 ---
-title: "[感想] HappyEND 2曲目 「糸電話 / HoneyComeBear」"
+title: "[感想] HappyEND 5曲目 「糸電話 / HoneyComeBear」"
 type: "diary"
 draft: false
 date: "2021-08-06T22:26:50+09:00"
