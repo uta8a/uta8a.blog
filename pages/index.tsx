@@ -3,10 +3,8 @@ import React from 'react';
 import path from 'path';
 import fs from 'fs-extra';
 import Link from 'next/link';
-type Props = {
-  path: string[];
-};
-export default function Home(props: Props): JSX.Element {
+
+export default function Home(): JSX.Element {
   return (
     <div
       style={{
@@ -24,22 +22,26 @@ export default function Home(props: Props): JSX.Element {
         diaryです
       </h1>
       <Link href={'/post'} passHref>
-        <h1
-          style={{
-            paddingBottom: '2rem',
-          }}
-        >
-          /post - 技術的な内容
-        </h1>
+        <a>
+          <h1
+            style={{
+              paddingBottom: '2rem',
+            }}
+          >
+            /post - 技術的な内容
+          </h1>
+        </a>
       </Link>
       <Link href={'/diary'} passHref>
-        <h1
-          style={{
-            paddingBottom: '2rem',
-          }}
-        >
-          /diary - 個人的な日記
-        </h1>
+        <a>
+          <h1
+            style={{
+              paddingBottom: '2rem',
+            }}
+          >
+            /diary - 個人的な日記
+          </h1>
+        </a>
       </Link>
       <details
         style={{
@@ -52,7 +54,7 @@ export default function Home(props: Props): JSX.Element {
             <a href="https://github.com/zenn-dev/zenn-editor">
               zenn-dev/zenn-editor
             </a>{' '}
-            以下のzenn-markdown-html、zenn-content-cssを使用しています。
+            以下のzenn-markdown-html、zenn-content-css、zenn-embed-elementsを使用しています。
           </div>
           <div>Copyright (c) 2021 CatNose</div>
           <div>Released under the MIT license</div>
