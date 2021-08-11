@@ -1,12 +1,6 @@
-import { GetStaticProps } from 'next';
 import React from 'react';
-import path from 'path';
-import fs from 'fs-extra';
 import Link from 'next/link';
-type Props = {
-  path: string[];
-};
-export default function Home(props: Props): JSX.Element {
+export default function Home(): JSX.Element {
   return (
     <div
       style={{

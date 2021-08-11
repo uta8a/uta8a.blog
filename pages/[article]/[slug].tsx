@@ -47,7 +47,6 @@ const Page: NextPage<Props> = (props: Props) => {
       <MainContainer>
         <article>
           <div>
-            {/* <ArticleHeader article={article} /> */}
             <ContentBody content={article.content} title={article.title} />
           </div>
         </article>
