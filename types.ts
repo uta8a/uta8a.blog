@@ -10,3 +10,6 @@ export type Article = {
   draft?: boolean;
   date: Date;
 };
+export type Props = {
+  article: Article;
+};

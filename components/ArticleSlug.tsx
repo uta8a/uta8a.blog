@@ -1,23 +1,17 @@
 import Head from 'next/head';
 import React from 'react';
-import { NextPage, GetStaticProps, GetStaticPaths } from 'next';
-import Image from 'next/image';
+import { NextPage } from 'next';
 import path from 'path';
 import fs from 'fs-extra';
-import { DOMParser, parseHTML } from 'linkedom';
+import { DOMParser } from 'linkedom';
 
-// import escapeHtml from 'escape-html';
 import markdownToHtml from 'zenn-markdown-html';
 import { MainContainer } from '@components/MainContainer';
 import { ContentBody } from '@components/ContentBody';
-// import { getArticleBySlug } from '@utils/api/articles';
-import { Article } from '@types';
+import { Article, Props } from '@types';
 import matter from 'gray-matter';
-type Props = {
-  article: Article;
-};
 
-const Page: NextPage<Props> = (props: Props) => {
+const SlugPage: NextPage<Props> = (props: Props) => {
   const { article } = props;
 
   return (
@@ -31,7 +25,7 @@ const Page: NextPage<Props> = (props: Props) => {
         <meta property="og:type" content="image/png" />
         <meta
           property="og:url"
-          content={`https://blog.uta8a.net/example/${article.slug}`}
+          content={`https://blog.uta8a.net/${article.type}/${article.slug}`}
         />
         <meta name="og:description" content={article.content?.slice(0, 20)} />
         <meta property="og:image" content="/uta8a.png" />
@@ -59,42 +53,9 @@ const Page: NextPage<Props> = (props: Props) => {
   );
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const type = 'example';
-  const targetDir = path.join(process.cwd(), 'content', type);
-  const dirs = await fs.readdir(targetDir);
-  const paths = dirs.map((dir) => ({
-    params: { slug: dir },
-  }));
-  return { paths, fallback: false };
-};
-
-export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  const slug = params !== undefined ? (params.slug as string) : '';
-  const article = getArticleBySlug(slug);
-  let content = markdownToHtml(
-    article.content === undefined ? 'error' : article.content,
-  );
-  const dp = new DOMParser();
-  const document = dp.parseFromString(content, 'text/html');
-  document.querySelectorAll('img').forEach((e) => {
-    e.src = filterImage(slug, e.src);
-  });
-  content = document.toString();
-  return {
-    props: {
-      article: {
-        ...article,
-        content,
-        slug,
-      },
-    },
-  };
-};
-
-const getArticleBySlug = (slug: string): Article => {
+const getArticleBySlug = (article_type: string, slug: string): Article => {
   // content/:type/slug/index.md
-  const type = 'example';
+  const type = article_type;
   const fullPath = path.join(process.cwd(), 'content', type, slug, 'index.md');
   let fileRaw;
   try {
@@ -109,7 +70,7 @@ const getArticleBySlug = (slug: string): Article => {
     slug: '',
     content: '',
     title: '',
-    type: 'example',
+    type: undefined,
     draft: false,
     date: new Date(),
   };
@@ -130,14 +91,14 @@ const getArticleBySlug = (slug: string): Article => {
   return item as Article;
 };
 
-const filterImage = (slug: string, src: string) => {
+const filterImage = (article_type: string) => (slug: string, src: string) => {
   if (/^http/.test(src)) {
     return src;
   } else if (/\.\//.test(src)) {
-    return `/content/example/${slug}/${src.substring(2)}`;
+    return `/content/${article_type}/${slug}/${src.substring(2)}`;
   } else {
-    return `/content/example/${slug}/${src}`;
+    return `/content/${article_type}/${slug}/${src}`;
   }
 };
 
-export default Page;
+export { SlugPage, getArticleBySlug, filterImage };
