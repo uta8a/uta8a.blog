@@ -1,7 +1,4 @@
-import { GetStaticProps } from 'next';
 import React from 'react';
-import path from 'path';
-import fs from 'fs-extra';
 import Link from 'next/link';
 
 export default function Home(): JSX.Element {

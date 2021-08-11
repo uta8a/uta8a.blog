@@ -1,18 +1,15 @@
 import Head from 'next/head';
 import React from 'react';
 import { NextPage, GetStaticProps, GetStaticPaths } from 'next';
-import Image from 'next/image';
 import path from 'path';
 import fs from 'fs-extra';
-import { DOMParser, parseHTML } from 'linkedom';
-
-// import escapeHtml from 'escape-html';
+import { DOMParser } from 'linkedom';
 import markdownToHtml from 'zenn-markdown-html';
 import { MainContainer } from '@components/MainContainer';
 import { ContentBody } from '@components/ContentBody';
-// import { getArticleBySlug } from '@utils/api/articles';
 import { Article } from '@types';
 import matter from 'gray-matter';
+
 type Props = {
   article: Article;
 };
@@ -31,7 +28,7 @@ const Page: NextPage<Props> = (props: Props) => {
         <meta property="og:type" content="image/png" />
         <meta
           property="og:url"
-          content={`https://blog.uta8a.net/example/${article.slug}`}
+          content={`https://blog.uta8a.net/${article.type}/${article.slug}`}
         />
         <meta name="og:description" content={article.content?.slice(0, 20)} />
         <meta property="og:image" content="/uta8a.png" />
@@ -50,7 +47,6 @@ const Page: NextPage<Props> = (props: Props) => {
       <MainContainer>
         <article>
           <div>
-            {/* <ArticleHeader article={article} /> */}
             <ContentBody content={article.content} title={article.title} />
           </div>
         </article>
@@ -60,25 +56,45 @@ const Page: NextPage<Props> = (props: Props) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const type = 'example';
-  const targetDir = path.join(process.cwd(), 'content', type);
-  const dirs = await fs.readdir(targetDir);
-  const paths = dirs.map((dir) => ({
-    params: { slug: dir },
-  }));
+  const targetDir = path.join(process.cwd(), 'content');
+  const pdirs = await fs
+    .readdirSync(targetDir, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+  const paths: string[] = [];
+  for (const pdir of pdirs) {
+    const ds = await fs
+      .readdirSync(path.join(targetDir, pdir), { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+    ds.map((d) => {
+      paths.push(`/${pdir}/${d}`);
+    });
+  }
   return { paths, fallback: false };
 };
 
-export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
-  const slug = params !== undefined ? (params.slug as string) : '';
-  const article = getArticleBySlug(slug);
+export const getStaticProps: GetStaticProps<Props> = async (params) => {
+  const a =
+    params.params !== undefined
+      ? typeof params.params.article === 'string'
+        ? params.params.article
+        : ''
+      : '';
+  const b =
+    params.params !== undefined
+      ? typeof params.params.slug === 'string'
+        ? params.params.slug
+        : ''
+      : '';
+  const article = getArticleBySlug(a, b);
   let content = markdownToHtml(
     article.content === undefined ? 'error' : article.content,
   );
   const dp = new DOMParser();
   const document = dp.parseFromString(content, 'text/html');
   document.querySelectorAll('img').forEach((e) => {
-    e.src = filterImage(slug, e.src);
+    e.src = filterImage(a, b, e.src);
   });
   content = document.toString();
   return {
@@ -86,16 +102,20 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
       article: {
         ...article,
         content,
-        slug,
+        b,
       },
     },
   };
 };
 
-const getArticleBySlug = (slug: string): Article => {
-  // content/:type/slug/index.md
-  const type = 'example';
-  const fullPath = path.join(process.cwd(), 'content', type, slug, 'index.md');
+const getArticleBySlug = (article: string, slug: string): Article => {
+  const fullPath = path.join(
+    process.cwd(),
+    'content',
+    article,
+    slug,
+    'index.md',
+  );
   let fileRaw;
   try {
     fileRaw = fs.readFileSync(fullPath, 'utf8');
@@ -109,7 +129,7 @@ const getArticleBySlug = (slug: string): Article => {
     slug: '',
     content: '',
     title: '',
-    type: 'example',
+    type: undefined,
     draft: false,
     date: new Date(),
   };
@@ -130,13 +150,13 @@ const getArticleBySlug = (slug: string): Article => {
   return item as Article;
 };
 
-const filterImage = (slug: string, src: string) => {
+const filterImage = (article: string, slug: string, src: string) => {
   if (/^http/.test(src)) {
     return src;
   } else if (/\.\//.test(src)) {
-    return `/content/example/${slug}/${src.substring(2)}`;
+    return `/content/${article}/${slug}/${src.substring(2)}`;
   } else {
-    return `/content/example/${slug}/${src}`;
+    return `/content/${article}/${slug}/${src}`;
   }
 };
 

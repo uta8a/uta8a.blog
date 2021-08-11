@@ -1,5 +1,4 @@
-// import App from "next/app";
-import type { AppProps /*, AppContext */ } from 'next/app';
+import type { AppProps } from 'next/app';
 import React, { useEffect } from 'react';
 import { NextPage } from 'next';
 import Head from 'next/head';

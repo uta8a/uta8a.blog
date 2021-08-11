@@ -1,10 +1,11 @@
-import { GetStaticProps } from 'next';
+import { GetStaticProps, GetStaticPaths } from 'next';
 import React from 'react';
 import path from 'path';
 import fs from 'fs-extra';
 import Link from 'next/link';
 import { Article } from '@types';
 import matter from 'gray-matter';
+import { useRouter } from 'next/router';
 
 type Props = {
   path: ArticleInfo[];
@@ -15,6 +16,8 @@ type ArticleInfo = {
   date: Date;
 };
 export default function Index(props: Props): JSX.Element {
+  const router = useRouter();
+  const { article } = router.query;
   return (
     <>
       <h1
@@ -24,7 +27,7 @@ export default function Index(props: Props): JSX.Element {
           paddingLeft: '5rem',
         }}
       >
-        /post
+        {`/${article}`}
       </h1>
       <div
         style={{
@@ -39,11 +42,10 @@ export default function Index(props: Props): JSX.Element {
               style={{
                 fontSize: '2rem',
                 lineHeight: '2.5rem',
-                // textAlign: 'center',
                 paddingTop: '0.5rem',
               }}
             >
-              <Link href={`post/${e.path}`} passHref>
+              <Link href={`${article}/${e.path}`} passHref>
                 <a>&gt; {e.title}</a>
               </Link>
             </div>
@@ -53,13 +55,40 @@ export default function Index(props: Props): JSX.Element {
     </>
   );
 }
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  const type = 'post';
-  const targetDir = path.join(process.cwd(), 'content', type);
-  const dirs = await fs.readdir(targetDir);
+export const getStaticPaths: GetStaticPaths = async () => {
+  const targetDir = path.join(process.cwd(), 'content');
+  const pdirs = await fs
+    .readdirSync(targetDir, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+  const paths: string[] = [];
+  for (const pdir of pdirs) {
+    const ds = await fs
+      .readdirSync(path.join(targetDir, pdir), { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+    ds.map((d) => {
+      paths.push(`/${pdir}`);
+    });
+  }
+  return { paths, fallback: false };
+};
+
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const a =
+    params !== undefined
+      ? typeof params.article === 'string'
+        ? params.article
+        : ''
+      : '';
+  const targetDir = path.join(process.cwd(), 'content', a);
+  const dirs = await fs
+    .readdirSync(targetDir, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
   const paths = [];
   for (const slug of dirs) {
-    const article = getArticleBySlug(slug);
+    const article = getArticleBySlug(a, slug);
     paths.push({ title: article.title, path: slug, date: article.date });
   }
   paths.sort((a, b) => {
@@ -68,10 +97,15 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   return { props: { path: paths } };
 };
 
-const getArticleBySlug = (slug: string): Article => {
+const getArticleBySlug = (article: string, slug: string): Article => {
   // content/:type/slug/index.md
-  const type = 'post';
-  const fullPath = path.join(process.cwd(), 'content', type, slug, 'index.md');
+  const fullPath = path.join(
+    process.cwd(),
+    'content',
+    article,
+    slug,
+    'index.md',
+  );
   let fileRaw;
   try {
     fileRaw = fs.readFileSync(fullPath, 'utf8');
@@ -85,14 +119,12 @@ const getArticleBySlug = (slug: string): Article => {
     slug: '',
     content: '',
     title: '',
-    type: 'post',
+    type: 'diary',
     draft: false,
     date: new Date(),
   };
   type Ty = keyof Article;
   const fields = Object.keys(initArticle) as Ty[];
-  // const C = Object.keys(B);
-  // console.log('key!', B);
   const item: Article = {
     slug: slug,
     date: new Date(),
