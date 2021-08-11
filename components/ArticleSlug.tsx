@@ -3,9 +3,6 @@ import React from 'react';
 import { NextPage } from 'next';
 import path from 'path';
 import fs from 'fs-extra';
-import { DOMParser } from 'linkedom';
-
-import markdownToHtml from 'zenn-markdown-html';
 import { MainContainer } from '@components/MainContainer';
 import { ContentBody } from '@components/ContentBody';
 import { Article, Props } from '@types';
