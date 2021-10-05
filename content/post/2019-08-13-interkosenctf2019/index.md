@@ -25,6 +25,18 @@ safermとE-Sequel-Injectionが通せたのは嬉しかったです
 
 ## Writeup
 
+- [Welcome](#welcome)
+- [Kurukuru Shuffle](#kurukuru-shuffle)
+- [uploader](#uploader)
+- [Temple of Time](#temple-of-time)
+- [lost world](#lost-world)
+- [fastbin tutorial](#fastbin-tutorial)
+- [pascal homomorphicity](#pascal-homomorphicity)
+- [saferm](#saferm)
+- [Survey](#survey)
+- [E-Sequel-Injection](#e-sequel-injection)
+- [basic_crackme](#basic_crackme)
+
 ### Welcome
 
 [200pts, 77solved, warmup, welcome]
