@@ -309,7 +309,7 @@ void saferm(EVP_PKEY_CTX *pEParm1)
 }
 ```
 本質的には
-```
+```c
 while( true ) {
       local_18 = fread(&local_30,1,8,local_28);
       if (local_18 != 8) break;
