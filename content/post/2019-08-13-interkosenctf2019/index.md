@@ -395,3 +395,58 @@ OR, ||
 
 もっともっと精進して、一つでも多くのflagを速く通せるようにがんばりたいです。悔しいです。
 作問者はすごい人々だなあと思いました。ツールゲーではなく、頭をひねるものが多くてとても楽しかったです。ありがとうございました。
+
+::: message notice 
+以降は、2021/10/05に追記しました。
+:::
+
+# 復習
+
+　復習をします。
+
+## basic_crackme
+
+ghidraでデコンパイルして `main` 関数を見る。
+
+```c
+while (sVar1 = strlen((char *)param_2[1]), (ulong)(long)local_cc < sVar1) {
+local_d0 = local_d0 |
+            ((((int)*(char *)((long)local_cc + param_2[1]) & 0xfU) << 4 |
+            (int)(*(char *)((long)local_cc + param_2[1]) >> 4)) + local_cc) -
+            local_c8[local_cc];
+local_cc = local_cc + 1;
+}
+```
+
+`param_2[1]` は `argv[1]` なので、入力値の長さ分だけwhileループを回して正当性チェックをしている。実際、prefixの `Kosen` を入れると以下のように正解とみなされる。
+
+```shell
+$ ./crackme Kosen
+Yes. This is the your flag :)
+```
+
+よって、前から文字を確定させていけばOK。 $len\times 256(utf8)$ だけループを回せばよい。
+
+```python
+import subprocess
+flag = b""
+for j in range(39):
+    for i in range(20, 256):
+        tmpflag = flag + i.to_bytes(1, 'big')
+        print("tmpflag", tmpflag.decode())
+        out = subprocess.run(['./crackme', tmpflag.decode()], check=True, stdout=subprocess.PIPE).stdout
+        print("out", out)
+        if b'Yes' in out:
+            print(flag, "char at ", j)
+            flag = tmpflag
+            break
+# KosenCTF{w3lc0m3_t0_y0-k0-s0_r3v3rs1ng}
+```
+
+`KosenCTF{w3lc0m3_t0_y0-k0-s0_r3v3rs1ng}`
+
+## 
+
+## ref
+- 問題link [theoremoon/InterKosenCTF2019-challenges-public](https://github.com/theoremoon/InterKosenCTF2019-challenges-public)
+- 
