@@ -2,7 +2,7 @@
 layout: undefined
 title: Home
 description: 
-draft: false
+draft: true
 changelog:
   - summary: 記事作成
     date: Tue Aug 13 2019 06:48:42 GMT+0900 (日本標準時)

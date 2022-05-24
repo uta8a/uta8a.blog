@@ -1,6 +1,6 @@
 ---
 layout: diary
-title: [感想] HappyEND 10曲目 「十夏の花 / HoneyComeBear」
+title: '[感想] HappyEND 10曲目 「十夏の花 / HoneyComeBear」'
 description: HoneyComeBear - 十夏の花 の感想を書きます。
 draft: false
 changelog:

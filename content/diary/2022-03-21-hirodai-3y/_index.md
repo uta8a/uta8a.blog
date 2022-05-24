@@ -1,6 +1,6 @@
 ---
 layout: diary
-title: [2019年度入学] 広島大学情報科学部で私が受けたすべての講義の感想
+title: '[2019年度入学] 広島大学情報科学部で私が受けたすべての講義の感想'
 description: 広島大学情報科学部で受けた講義を振り返ります。
 draft: false
 changelog:

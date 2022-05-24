@@ -1,6 +1,6 @@
 ---
 layout: diary
-title: [読書感想文] 束の間の一花 1巻 - タダノなつ
+title: '[読書感想文] 束の間の一花 1巻 - タダノなつ'
 description: 以下ネタバレを含む個人の感想文です。
 draft: false
 changelog:

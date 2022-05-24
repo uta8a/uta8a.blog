@@ -1,6 +1,6 @@
 ---
 layout: diary
-title: [感想] HappyEND 4曲目 「打ち上げ星 / HoneyComeBear」
+title: '[感想] HappyEND 4曲目 「打ち上げ星 / HoneyComeBear」'
 description: HoneyComeBear - 打上げ星 の感想を書きます。
 draft: false
 changelog:

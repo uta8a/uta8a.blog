@@ -1,6 +1,6 @@
 ---
 layout: diary
-title: [感想] LA GARDENIA / uynet
+title: '[感想] LA GARDENIA / uynet'
 description: uynet さんの新作がリリースされたので、わー M3 行きてえ〜(田舎民定期)をしていたら、なんと booth で現物 CD が売られるそうで、即購入を完了...
 draft: false
 changelog:

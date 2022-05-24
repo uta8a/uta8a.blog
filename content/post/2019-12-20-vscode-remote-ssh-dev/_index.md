@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 開発環境メモ: VSCodeでローカルの仮想環境にRemote SSH
+title: '開発環境メモ: VSCodeでローカルの仮想環境にRemote SSH'
 description: 広島大学 IT エンジニアアドベントカレンダーの 9 日目です。 
 draft: false
 changelog:

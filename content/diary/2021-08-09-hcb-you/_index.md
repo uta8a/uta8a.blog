@@ -1,6 +1,6 @@
 ---
 layout: diary
-title: [感想] HappyEND 8曲目 「きみと君 / HoneyComeBear」
+title: '[感想] HappyEND 8曲目 「きみと君 / HoneyComeBear」'
 description: HoneyComeBear - きみと君 の感想を書きます。
 draft: false
 changelog:

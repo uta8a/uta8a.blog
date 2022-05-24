@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 世界一やさしい圏論勉強会 #0 (Open β) を受けた
+title: '世界一やさしい圏論勉強会 #0 (Open β) を受けた'
 description: 世界一やさしい圏論勉強会 に行ってきました
 draft: false
 changelog:

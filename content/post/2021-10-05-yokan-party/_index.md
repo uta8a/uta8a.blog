@@ -1,6 +1,6 @@
 ---
 layout: post
-title: [writeup::procon] Yokan Party
+title: '[writeup::procon] Yokan Party'
 description: Yokan Partyを解いた記録
 draft: false
 changelog:

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Rustでmkdir -pみたいな簡単なCLIツールを作って学んだこと
-description: `mkdir -p` のような CLI ツールを作ったときに学んだメモです。
+description: mkdir -p のような CLI ツールを作ったときに学んだメモです。
 draft: false
 changelog:
   - summary: 記事作成

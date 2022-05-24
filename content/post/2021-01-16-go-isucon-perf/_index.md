@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 読書: やってみようGoでISUCONパフォーマンスチューニングーISUCON7の予想問題を試してみる本ー
+title: '読書: やってみようGoでISUCONパフォーマンスチューニングーISUCON7の予想問題を試してみる本ー'
 description: 本を読んで進捗を報告し合う会をしました
 draft: false
 changelog:

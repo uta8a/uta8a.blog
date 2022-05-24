@@ -1,6 +1,6 @@
 ---
 layout: diary
-title: [感想] HappyEND 7曲目 「悪天 / HoneyComeBear」
+title: '[感想] HappyEND 7曲目 「悪天 / HoneyComeBear」'
 description: HoneyComeBear - 悪天 の感想を書きます。
 draft: false
 changelog:
