@@ -5,12 +5,13 @@ type: "post"
 draft: false
 ---
 
-- この記事は [広島大学ITエンジニア Advent Calendar 2020](https://adventar.org/calendars/5209) の15日目です。
-- 今回は、12/6に行われた taskctf の writeupを書いていきます。
+- この記事は [広島大学 IT エンジニア Advent Calendar 2020](https://adventar.org/calendars/5209) の 15 日目です。
+- 今回は、12/6 に行われた taskctf の writeup を書いていきます。
 
 ## # taskctf 概要
-- [Taskerさん](https://twitter.com/task4233) が誕生日に開いたCTFです。誕生日は12月5日のようですが、諸用により一日遅れでの開催となったようです。去年も開催されていて、Amazon Wish Listにflagをひそませるなど面白い工夫が見られる、クイズ寄りのCTFです。
-- 僕は ``KasumiSensei`` として出て終了20分前にようやく全完しました。CTFで全部解けるのはどんなCTFでも楽しいですし、僕は初めてなのかな？とにかくこの成功した感覚を忘れないようにしよう！と思ってwriteupを書きます。
+
+- [Tasker さん](https://twitter.com/task4233) が誕生日に開いた CTF です。誕生日は 12 月 5 日のようですが、諸用により一日遅れでの開催となったようです。去年も開催されていて、Amazon Wish List に flag をひそませるなど面白い工夫が見られる、クイズ寄りの CTF です。
+- 僕は `KasumiSensei` として出て終了 20 分前にようやく全完しました。CTF で全部解けるのはどんな CTF でも楽しいですし、僕は初めてなのかな？とにかくこの成功した感覚を忘れないようにしよう！と思って writeup を書きます。
 - 以下、問題をそれぞれ解説します。
 
 ![p-1.png](./p-1.png)
@@ -18,28 +19,34 @@ draft: false
 ![p-2](./p-2.png)
 
 ## # Welcome
+
 - `taskctf{g00d_luck_h4ve_fun}`
 
 ## # アンケート
+
 - `taskctf{Th4nk_u_f0r_pl4ying!}`
 
 ## # guess `` `?v=` ``
+
 ```
 ?v=t1zPpBwRbAw
 
 何やら見覚えのあるパラメータな気がするな
 ```
-- vをqueryに含むやつが思い浮かびそうで思い浮かばなかった。こんなときはgoogle
-- ``inurl: v=`` でyoutubeがヒットした。
-- 限定公開の動画にたどり着き、その概要欄にFlagがあった。
+
+- v を query に含むやつが思い浮かびそうで思い浮かばなかった。こんなときは google
+- `inurl: v=` で youtube がヒットした。
+- 限定公開の動画にたどり着き、その概要欄に Flag があった。
 - `taskctf{h0w_w4s_it?}`
 
 ## # social hacking
-- `` guess `?v=` ``の動画でパスワードがむにゃむにゃと言っていて、最初聞こえなかったがその後言い直している。onigirtに誕生日をつける。
-- お誕生日CTFだけど1日遅れているので、``onigiri1205`` をパスワードとしてzipが開けた。
+
+- `` guess `?v=` ``の動画でパスワードがむにゃむにゃと言っていて、最初聞こえなかったがその後言い直している。onigirt に誕生日をつける。
+- お誕生日 CTF だけど 1 日遅れているので、`onigiri1205` をパスワードとして zip が開けた。
 - `taskctf{n0t1ce_soci4l_h4ck1ng}`
 
 ## # OSINT 3
+
 ```
 友人が奇抜なTシャツを着てきた。
 そもそもこれってどこで売られてるんだ......?
@@ -58,6 +65,7 @@ draft: false
 - これは追加された写真
 - むずかしくて最初は誰も解けていなかった。ヒントが追加されて答えにたどり着けた。
 - 試したやつ
+
 ```
 - taskctf{SUZURI} だめ
 - taskctf{ヤマニ} だめ
@@ -66,8 +74,9 @@ draft: false
 - taskctf{スクリーン印刷} だめ
 - taskctf{SHALEMON} だめ
 ```
-- いやこういう手作り感あふれるTシャツはSUZURIやろ！(SUZURIはショップではなくプラットフォームだと思うぞ
-- ヒントが追加されて、``Tシャツ 広場``で検索すると https://harajukust-parisien.com/?page_id=123 にたどりついた。
+
+- いやこういう手作り感あふれる T シャツは SUZURI やろ！(SUZURI はショップではなくプラットフォームだと思うぞ
+- ヒントが追加されて、`Tシャツ 広場`で検索すると https://harajukust-parisien.com/?page_id=123 にたどりついた。
 - `taskctf{原宿パリジャン}` 正解
 
 ## OSINT 2
@@ -87,12 +96,14 @@ draft: false
 - `taskctf{大船駅}`
 
 ## # grass flag
+
 ```
 interesting contributions
 checksum(sha256): 72c84c2a356c321b76718fca311995b51d3c8155fd2c743172911222a366ec9a
 ```
-- これめっちゃ悩んだ。空コミットがめっちゃ(135こ)あって、``git cat-file -p XXX``しても無、特に修正コミットみたいなものもないし...と悩んでhashに意味があるのか？とか思っていた。残るは日付。2002年？これは...
-- ここで``grass git``で検索してそういやGitHubのコミットの草ってあったなと思いだした。一旦日付のみを ``git log --pretty=format:"%ad"`` で書き出して、以下のコードで可視化した。
+
+- これめっちゃ悩んだ。空コミットがめっちゃ(135 こ)あって、`git cat-file -p XXX`しても無、特に修正コミットみたいなものもないし...と悩んで hash に意味があるのか？とか思っていた。残るは日付。2002 年？これは...
+- ここで`grass git`で検索してそういや GitHub のコミットの草ってあったなと思いだした。一旦日付のみを `git log --pretty=format:"%ad"` で書き出して、以下のコードで可視化した。
 
 ```python
 """Date
@@ -143,7 +154,7 @@ def vert(s):
         d += sum(days)
         print(sum(days))
         return d
-    
+
 with open("./Date", "r") as f:
     s = f.read()
     ss = s.split("\n")
@@ -172,22 +183,25 @@ with open("./Date", "r") as f:
 - 結果
 
 ```
- #             #          #    #    #    #                   #                                          
-####  ##   ### #  #  ##  #### ###   #    # ####   ##   ##    #                                          
- #      # #    # #  #  #  #    #   #     # # # #    # #  #    #                                         
- #    ###  ##  ##   #     #    #    #    # # # #  ### #  #   #                                          
- #   #  #    # # #  #  #  #    #    #    # # # # #  # #  #   #                                          
-  ##  ### ###  #  #  ##    ##  #     ##  # # # #  ###  ##  ##                                           
-              #                ##   ## ##                 ## 
+ #             #          #    #    #    #                   #
+####  ##   ### #  #  ##  #### ###   #    # ####   ##   ##    #
+ #      # #    # #  #  #  #    #   #     # # # #    # #  #    #
+ #    ###  ##  ##   #     #    #    #    # # # #  ### #  #   #
+ #   #  #    # # #  #  #  #    #    #    # # # # #  # #  #   #
+  ##  ### ###  #  #  ##    ##  #     ##  # # # #  ###  ##  ##
+              #                ##   ## ##                 ##
 ```
-- なんかコードバグらせている気もするが、`taskctf{lmao}`でOK
+
+- なんかコードバグらせている気もするが、`taskctf{lmao}`で OK
 
 ## # Caesar Cipher Translator
-- 難読化jsをじっと眺めると、``alert``でなにかできそうだと分かる。その後で``old_alert``が発火している。
-- ``alert()``をconsoleに貼って、アラートが出るのを確認して、consoleにもう一度`alert("injected")`を貼ると、Flagが出てきた。
+
+- 難読化 js をじっと眺めると、`alert`でなにかできそうだと分かる。その後で`old_alert`が発火している。
+- `alert()`を console に貼って、アラートが出るのを確認して、console にもう一度`alert("injected")`を貼ると、Flag が出てきた。
 - `taskctf{n1ce_inject10n!}`
 
 ## # Gacha
+
 ```go
 package main
 
@@ -269,21 +283,26 @@ func gachaHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 ```
-- 1secごとに増えていくので、適当な数値を入れてリロードを繰り返す。
+
+- 1sec ごとに増えていくので、適当な数値を入れてリロードを繰り返す。
 - `http://34.82.49.144:3334/?seed=80205`
+
 ```
 {"flag":"taskctf{Y0u_h4ve_4_gre4t_luck}"}
 ```
 
 ## # Evil Eval
+
 ```
 シーザー暗号の次は, base64をデコードするページを実装したらしい。
 とはいえ, この実装ってあまり良くないんじゃ......
 
 flag.txtが同じディレクトリにあるらしいから, それを読みだしてこの実装の危険性を教えてあげて。
 ```
-- ``exec("cat ./flag.txt")``がしたいなあと思ってうまくいかない。よく考えるとresultに値を入れる必要がある。
-- ``file_get_contents(\"./flag.txt\")``これをbase64 encodeしたものを入れるとflagが出てきた。
+
+- `exec("cat ./flag.txt")`がしたいなあと思ってうまくいかない。よく考えると result に値を入れる必要がある。
+- `file_get_contents(\"./flag.txt\")`これを base64 encode したものを入れると flag が出てきた。
 
 ## # 終わりに
-- お誕生日おめでとうございます。僕もCTF開きたいな(作問...)
+
+- お誕生日おめでとうございます。僕も CTF 開きたいな(作問...)

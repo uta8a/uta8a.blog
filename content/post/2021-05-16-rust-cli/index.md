@@ -5,11 +5,12 @@ draft: false
 date: "2021-05-16T09:23:37+09:00"
 ---
 
-競技プログラミングを再開しようとして、Rustでディレクトリをつくるのがめんどくさいことに気づきました。 `mkdir -p` のようなCLIツールを作ったときに学んだメモです。
+競技プログラミングを再開しようとして、Rust でディレクトリをつくるのがめんどくさいことに気づきました。 `mkdir -p` のような CLI ツールを作ったときに学んだメモです。
 
 ## [StructOpt](https://github.com/TeXitoi/structopt) で引数パース
-Rustのコマンドライン引数パーサというと、[clap](https://github.com/clap-rs/clap)が有名だが、最近はStructOptもよく見かけるのでこちらを使った。今調べたところ、StructOptはclap v2.33に依存しているらしい。
-以下のように、コマンドライン引数をstructへ変換する。引数からstructのメンバへの変換時のvalidationは、parseする関数を指定できて、今回は `parse_mydir_rule` という関数を作ってそれを指定している。
+
+Rust のコマンドライン引数パーサというと、[clap](https://github.com/clap-rs/clap)が有名だが、最近は StructOpt もよく見かけるのでこちらを使った。今調べたところ、StructOpt は clap v2.33 に依存しているらしい。
+以下のように、コマンドライン引数を struct へ変換する。引数から struct のメンバへの変換時の validation は、parse する関数を指定できて、今回は `parse_mydir_rule` という関数を作ってそれを指定している。
 
 ```rust:main.rs
 #[derive(StructOpt, Debug)]
@@ -28,8 +29,9 @@ fn main() {
 ```
 
 ## [OnceCell](https://github.com/matklad/once_cell) で初期化処理
-初期化処理を行いstaticなglobal変数を作る方法として、 [lazy_static](https://github.com/rust-lang-nursery/lazy-static.rs) が有名だが、最近はOnceCellも使われている。
-今回は、ファイル名を数字アルファベット大文字小文字、ハイフン、アンダーバー、ドットのみに制限したかったのでregexクレートを使ったが、このとき毎回Regexを生成しているのかよく分からず、初期化したとき一度だけ計算するようにしたくて使った。
+
+初期化処理を行い static な global 変数を作る方法として、 [lazy_static](https://github.com/rust-lang-nursery/lazy-static.rs) が有名だが、最近は OnceCell も使われている。
+今回は、ファイル名を数字アルファベット大文字小文字、ハイフン、アンダーバー、ドットのみに制限したかったので regex クレートを使ったが、このとき毎回 Regex を生成しているのかよく分からず、初期化したとき一度だけ計算するようにしたくて使った。
 
 ```rust:main.rs
 use regex::Regex;
@@ -39,11 +41,12 @@ static DIR_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new("[a-zA-Z0-9-_\\.]+").unw
 ```
 
 ## [cargo workspaces](https://doc.rust-jp.rs/book-ja/ch14-03-cargo-workspaces.html) で管理する
-競技プログラミングではrustcコマンドで直接やっていたが、VSCodeとの相性やcargoに乗っかりたい気持ちから各A~F問題をそれぞれ `main.rs` で書きたいと考え、workspacesを使うことにした。
-今回使った特徴は、workspace全体を設定するディレクトリから各ディレクトリの `main.rs` が実行できる機能です。
+
+競技プログラミングでは rustc コマンドで直接やっていたが、VSCode との相性や cargo に乗っかりたい気持ちから各 A~F 問題をそれぞれ `main.rs` で書きたいと考え、workspaces を使うことにした。
+今回使った特徴は、workspace 全体を設定するディレクトリから各ディレクトリの `main.rs` が実行できる機能です。
 以下のようなディレクトリ構成で、 `atcoder/abcXYZ/` で `cargo run -p a` とすると、 `a` ディレクトリで `cargo run` したのと同じことができて、 `target` ディレクトリは `abcXYZ/` ディレクトリにしか生成されません。
-また、runは `r` のエイリアスがあるので、Makefileなどで `make a` として `cargo r -p a` のようにすることも可能です。
-今回作成したpdirでは、 `pdir atcoder abcXYZ -a` というコマンドで `atcoder/abcXYZ/a/, ...`が生成されるようにしています。
+また、run は `r` のエイリアスがあるので、Makefile などで `make a` として `cargo r -p a` のようにすることも可能です。
+今回作成した pdir では、 `pdir atcoder abcXYZ -a` というコマンドで `atcoder/abcXYZ/a/, ...`が生成されるようにしています。
 
 ```shell
 atcoder/abcXYZ/
@@ -88,7 +91,8 @@ members = [
 ]
 ```
 
-## 文字列のconcatはjoinを使おう
+## 文字列の concat は join を使おう
+
 文字列の連結は、引数のスペース区切りの単語を `/` で連結するようにした。
 
 ```rust
@@ -99,7 +103,8 @@ let path = path.as_str();
 ```
 
 ## 文字列の扱いが難しい
-上のjoinのところで、以下のようにするとだめになりました。やりたいことは、Stringだと使い回せないので&strにして使いまわそうということです。
+
+上の join のところで、以下のようにするとだめになりました。やりたいことは、String だと使い回せないので&str にして使いまわそうということです。
 エラーメッセージもまだ借用きちんと理解できてなくて分からない感じなので、いい方法があれば知りたいです。
 
 ```rust
@@ -123,12 +128,13 @@ error[E0716]: temporary value dropped while borrowed
   = note: consider using a `let` binding to create a longer lived value
 ```
 
+## anyhow と thiserror の組み合わせが分からない
 
-## anyhowとthiserrorの組み合わせが分からない
-anyhowのResultを返す関数で、thiserrorを使ったenumでエラーを返そうとしたら、それはanyhowのエラー型ではありませんよと言われた。結局 `Err(anyhow!("message"))` としたが、thiserrorでエラーメッセージとエラー型を一括管理できる恩恵を受けたいときに微妙になってしまう。ドキュメントを見てもよく分からなかったので、使われている例を探したい。
+anyhow の Result を返す関数で、thiserror を使った enum でエラーを返そうとしたら、それは anyhow のエラー型ではありませんよと言われた。結局 `Err(anyhow!("message"))` としたが、thiserror でエラーメッセージとエラー型を一括管理できる恩恵を受けたいときに微妙になってしまう。ドキュメントを見てもよく分からなかったので、使われている例を探したい。
 
-## Commandが便利
-下のように、コマンドオプションがオンになっていたら、ディレクトリを `cargo` を流して作成し、workspaceのところは直接ファイルを生成するようにした。個人的にわかりやすいコマンド体系で、変数を直接入れることは危険なため避けるが、こういう固定のコマンド発行のときは使っていくつもり。
+## Command が便利
+
+下のように、コマンドオプションがオンになっていたら、ディレクトリを `cargo` を流して作成し、workspace のところは直接ファイルを生成するようにした。個人的にわかりやすいコマンド体系で、変数を直接入れることは危険なため避けるが、こういう固定のコマンド発行のときは使っていくつもり。
 
 ```rust:main.rs
 use std::process::Command;
@@ -155,4 +161,3 @@ members = [
     file.flush()?;
 }
 ```
-

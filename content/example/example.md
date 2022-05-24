@@ -1,13 +1,12 @@
 ---
 title: "example"
 type: "example" # or "idea"
-topics: 
+topics:
   - React
   - Rust
 emoji: 👩‍💻
 published: false
 ---
-
 
 https://twitter.com/jack/status/20
 https://twitter.com/jack/status/20
@@ -19,13 +18,14 @@ https://twitter.com/jack/status/20
 https://twitter.com/jack/status/20
 
 ![](https://octodex.github.com/images/stormtroopocat.jpg =200x)
-*captions*
+_captions_
 
 dfasdfa
 dfa
 fd
 a
 fafdafdafda
+
 ```bash
 console.log({
   a: "a",
@@ -36,11 +36,9 @@ console.log({
 })
 ```
 
-
 aafaffff
 
-
-``` js:fooBar.js
+```js:fooBar.js
 var foo = function (bar) {
   return bar++;
 };
@@ -58,13 +56,13 @@ console.log(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
      console.log(`foo: ${foo}`);
 ```
 
-``` js:example
+```js:example
 var foo = function (bar) {
   return bar++;
 };
 ```
 
-``` html:<should escape>
+```html:<should escape>
 var foo = function (bar) {
   return bar++;
 };
@@ -81,11 +79,9 @@ CMD ["echo", "$name"]
 <div>a</div>
 ```
 
-
 ::: message
 here be dragons
 :::
-
 
 ::: message alert
 here be dragons
@@ -97,45 +93,42 @@ here be dragons
 
 ↓ escaped
 
-
 ```"><img/onerror="alert(location)"src=.>
 aaa
 ```
-
-
 
 [this $ should be escaped](https://docs.angularjs.org/api/ng/service/$http#json-vulnerability-protection)
 [this $$ should be escaped](https://docs.angularjs.org/api/ng/service/$$http#json-vulnerability-protection)
 
 [test on markdown-it-textmath](https://goessner.github.io/markdown-it-texmath/index.html)
 
-$a$	
+$a$
 
 $a\ne0$
 
 $\varphi$
 
-$1+1=2$	
+$1+1=2$
 
-$1+1<3$	
+$1+1<3$
 
-$a \backslash$	
+$a \backslash$
 
-You get 3$ if you solve $1+2$	
+You get 3$ if you solve $1+2$
 
-If you solve $1+2$ you get $3	
+If you solve $1+2$ you get $3
 
-$\frac{1}{2}$	
+$\frac{1}{2}$
 
-$\begin{pmatrix}x\\y\end{pmatrix}$	
+$\begin{pmatrix}x\\y\end{pmatrix}$
 
-${\tilde\bold e}_\alpha$	
+${\tilde\bold e}_\alpha$
 
-$a^{b}$	
+$a^{b}$
 
-$a^*b$ with $a^*$	
+$a^*b$ with $a^*$
 
-$\sum_{i=1}^n$	
+$\sum_{i=1}^n$
 fafa
 
 a

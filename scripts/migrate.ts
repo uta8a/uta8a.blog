@@ -34,9 +34,9 @@ async function migrater() {
     if (name === '__index.md') continue;
     if (filename.slice(-3) === '.md') {
       console.log(filename);
-      const contentType = 1;
       const raw = await Deno.readTextFile(filename);
       const parsed: Parsed = parse(raw) as Parsed;
+      const contentType = parsed.data.type;
       const frontmatter = `---
 layout: ${contentType}
 title: ${parsed.data.title}

@@ -1,6 +1,6 @@
 ---
-title: 'embed'
-type: 'example' # or "idea"
+title: "embed"
+type: "example" # or "idea"
 topics:
   - React
   - Rust
