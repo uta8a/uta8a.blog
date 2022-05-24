@@ -1,7 +1,7 @@
 ---
 layout: post
 title: LTに向けた資料たち
-description: 
+description: LTに必要なデザインなどの資料
 draft: false
 changelog:
   - summary: 記事作成

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: F#でちょっと遊ぶ - 1 - 単純な電卓
-description: 
+description: F#って言語機能が強くて、Haskell のような、言語処理系界のスーパーカーに見えます。(個人の感想です。)
 draft: false
 changelog:
   - summary: 記事作成

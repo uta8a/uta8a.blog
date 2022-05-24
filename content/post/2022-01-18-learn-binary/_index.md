@@ -1,7 +1,7 @@
 ---
 layout: post
 title: はじめて学ぶバイナリ解析 を読んだ
-description: 
+description: はじめて学ぶバイナリ解析 の読書録
 draft: false
 changelog:
   - summary: 記事作成

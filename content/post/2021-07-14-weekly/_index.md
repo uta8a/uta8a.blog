@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 週刊ブックマーク 7/12 - 7/18
-description: 
+description: 記事を読んだ記録
 draft: false
 changelog:
   - summary: 記事作成

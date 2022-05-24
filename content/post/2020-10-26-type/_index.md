@@ -1,7 +1,7 @@
 ---
 layout: post
 title: プログラミング意味論の基礎を読みました
-description: 
+description: プログラミング意味論の基礎を読んでいる途中のメモ
 draft: false
 changelog:
   - summary: 記事作成

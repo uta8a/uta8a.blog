@@ -1,7 +1,7 @@
 ---
 layout: post
 title: InterKosenCTF 2020 writeup & 後追い
-description: 
+description: writeupと後追い
 draft: false
 changelog:
   - summary: 記事作成

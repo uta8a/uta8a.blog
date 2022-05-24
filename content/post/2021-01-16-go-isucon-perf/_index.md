@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 読書: やってみようGoでISUCONパフォーマンスチューニングーISUCON7の予想問題を試してみる本ー
-description: 
+description: 本を読んで進捗を報告し合う会をしました
 draft: false
 changelog:
   - summary: 記事作成

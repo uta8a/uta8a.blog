@@ -1,7 +1,7 @@
 ---
 layout: post
 title: taskctf2020 writeup
-description: 
+description: 広島大学 IT エンジニア Advent Calendar 2020 の 15 日目です。
 draft: false
 changelog:
   - summary: 記事作成

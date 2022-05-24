@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 入門インフラリンク集を読んで、今後の方針を固めました
-description: 
+description: インフラ領域の勉強方針
 draft: false
 changelog:
   - summary: 記事作成

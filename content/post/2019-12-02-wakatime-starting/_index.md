@@ -1,7 +1,7 @@
 ---
 layout: post
 title: waka-boxを使ってみる 広島大学ITエンジニアアドベントカレンダー
-description: 
+description: 広島大学 IT エンジニアアドベントカレンダーの 4 日目です。
 draft: false
 changelog:
   - summary: 記事作成

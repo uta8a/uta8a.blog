@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 超楕円曲線についてメモ / hxp ctf 2020 hyper
-description: 
+description: hxp ctf 2020 hyper を学ぶ
 draft: false
 changelog:
   - summary: 記事作成

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: AtCoder ドワンゴからの挑戦状 予選
-description: 
+description: B 問題のみ書きます。
 draft: false
 changelog:
   - summary: 記事作成

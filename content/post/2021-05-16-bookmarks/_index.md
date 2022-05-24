@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 週刊ブックマーク 5/14 - 6/28
-description: 
+description: 記事を読んだ記録や小さなメモ。
 draft: false
 changelog:
   - summary: 記事作成

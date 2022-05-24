@@ -1,7 +1,7 @@
 ---
 layout: post
 title: ContrailCTF Writeup
-description: 
+description: チーム StarrySky は正の点数を得た 78 チーム中、2126 点を獲得して 4 位でした。うち僕は 504 点を獲得しました。 
 draft: false
 changelog:
   - summary: 記事作成

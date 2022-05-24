@@ -1,7 +1,7 @@
 ---
 layout: post
 title: SECCON CTF 2019 qual Writeup
-description: 
+description: 2019/10/19(土)15:00-2019/10/20(日)15:00 まで開催されていた、SECCON CTF 2019 qual にチーム StarrySky で参加していました。
 draft: false
 changelog:
   - summary: 記事作成

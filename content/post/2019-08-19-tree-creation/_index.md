@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 木の作り方
-description: 
+description: 木の作り方を複数書きます
 draft: false
 changelog:
   - summary: 記事作成

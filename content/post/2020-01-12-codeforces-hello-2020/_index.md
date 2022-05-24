@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Codeforces Hello 2020 Writeup
-description: 
+description: C 問題についてのみ書きます。
 draft: false
 changelog:
   - summary: 記事作成

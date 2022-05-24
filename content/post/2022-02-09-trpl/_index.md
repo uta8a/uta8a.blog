@@ -1,7 +1,7 @@
 ---
 layout: post
 title: The Rust Programming Language を読んだ
-description: 
+description: The Rust Programming Language 日本語版を読みました
 draft: false
 changelog:
   - summary: 記事作成

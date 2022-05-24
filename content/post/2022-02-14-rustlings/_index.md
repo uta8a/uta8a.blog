@@ -1,7 +1,7 @@
 ---
 layout: post
 title: rustlings を読んだ
-description: 
+description: rustlings を読み終えました
 draft: false
 changelog:
   - summary: 記事作成

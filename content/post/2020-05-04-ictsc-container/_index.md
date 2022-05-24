@@ -1,7 +1,7 @@
 ---
 layout: post
 title: ICTSC 2019 一次予選 コンテナが作れない 復習
-description: 
+description: コンテナがつくれない を復習します
 draft: false
 changelog:
   - summary: 記事作成

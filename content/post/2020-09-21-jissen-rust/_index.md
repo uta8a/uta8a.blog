@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 実践Rustプログラミング入門を読みました
-description: 
+description: 実践Rustプログラミング入門を読んだ感想
 draft: false
 changelog:
   - summary: 記事作成

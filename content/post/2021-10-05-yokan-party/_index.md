@@ -1,7 +1,7 @@
 ---
 layout: post
 title: [writeup::procon] Yokan Party
-description: 
+description: Yokan Partyを解いた記録
 draft: false
 changelog:
   - summary: 記事作成

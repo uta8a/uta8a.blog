@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 僕が分からない技術的な事柄をまとめた
-description: 
+description: 分からないことをまとめました
 draft: false
 changelog:
   - summary: 記事作成

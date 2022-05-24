@@ -1,7 +1,7 @@
 ---
 layout: post
 title: セキュリティ・ミニキャンプ in 山梨 2019 専門講座 参加記
-description: 
+description: 2019/9/29(日)に開催された、セキュリティ・ミニキャンプ in 山梨 2019 専門講座 に参加してきました。
 draft: false
 changelog:
   - summary: 記事作成

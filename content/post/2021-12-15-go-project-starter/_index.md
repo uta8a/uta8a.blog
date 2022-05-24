@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 僕がGoのプロジェクトを作ったらまずやることメモ
-description: 
+description: この記事の目的は、Go のプロジェクトを作るときに毎回自分が調べてしまうことを整理して、プロジェクトを作るハードルを下げることです。
 draft: false
 changelog:
   - summary: 記事作成

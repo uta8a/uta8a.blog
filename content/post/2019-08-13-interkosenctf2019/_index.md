@@ -1,7 +1,7 @@
 ---
 layout: post
 title: InterKosenCTF 2019 Writeup
-description: 
+description: CTFのwriteupです
 draft: false
 changelog:
   - summary: 記事作成

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: [ansible+goss] PCの初期セットアップで学ぶサーバー設定テスト
-description: 
+description: 広島大学 IT エンジニア Advent Calendar 2020 の 1 日目です。
 draft: false
 changelog:
   - summary: 記事作成

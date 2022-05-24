@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 勉強するぞ！ 2020年9月版
-description: 
+description: ここでのコンピュータサイエンスとは、離散数学や物理レイヤ、言語処理も含み、かつインターンや就活で尋ねられるような成果物的な、サイエンスではないものも広く含みます。
 draft: false
 changelog:
   - summary: 記事作成

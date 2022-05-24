@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 技育祭2020参加記
-description: 
+description: 技育祭2020に参加しました
 draft: false
 changelog:
   - summary: 記事作成

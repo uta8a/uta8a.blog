@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 週間ブックマーク 2021/05/09 - 2021/05/13
-description: 
+description: 記事を読んだ記録や小さなメモ。
 draft: false
 changelog:
   - summary: 記事作成

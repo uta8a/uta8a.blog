@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Minecraftのサーバをterraformを使って立てる
-description: 
+description: マイクラサーバをterraformを使って立てます
 draft: false
 changelog:
   - summary: 記事作成

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: [draft] 誰かのコードを読んで学ぶ
-description: 
+description: 誰かのコードを読んで学びます
 draft: false
 changelog:
   - summary: 記事作成

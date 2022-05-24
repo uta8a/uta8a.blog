@@ -1,7 +1,7 @@
 ---
 layout: post
 title: goでAPIサーバを書いた
-description: 
+description: go で 1 週間くらいかけて API サーバを書きました。
 draft: false
 changelog:
   - summary: 記事作成

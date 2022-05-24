@@ -1,7 +1,7 @@
 ---
 layout: post
 title: ゲームAIプログラミング codingameのTronをやってみる
-description: 
+description: 広島大学 IT エンジニア Advent Calendar 2020 の 8 日目です
 draft: false
 changelog:
   - summary: 記事作成

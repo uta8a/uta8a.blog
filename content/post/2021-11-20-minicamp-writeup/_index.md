@@ -1,7 +1,7 @@
 ---
 layout: post
 title: セキュリティ・ミニキャンプ オンライン 2021 修了試験 writeup
-description: 
+description: これは 2021/10/30(土) から 2021/11/20(土) かけて行われたセキュリティ・ミニキャンプ オンライン 2021 の修了試験の writeup です。
 draft: false
 changelog:
   - summary: 記事作成
