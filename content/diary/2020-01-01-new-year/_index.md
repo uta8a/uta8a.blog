@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 2019年振り返りと2020年の目標
-description: 
+description: 2019 年は体調管理と単位をとることに集中していました。大学での生活基盤を固めたので、2020 年は外に出て評価される体験を積みたいと思っています。
 draft: false
 changelog:
   - summary: 記事作成

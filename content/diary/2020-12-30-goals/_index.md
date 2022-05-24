@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 2021年の目標リスト
-description: 
+description: 2021 年は手を動かしていきたいので、漠然とするより具体的に手が動く範囲に目標を小さく分割したいと思いました。宣言すると後に引けなくなるので日記帳に書いてみます。
 draft: false
 changelog:
   - summary: 記事作成

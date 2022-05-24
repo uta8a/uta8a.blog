@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: [感想] HappyEND 6曲目 「ニライカナイ / HoneyComeBear」
-description: 
+description: HoneyComeBear - ニライカナイ の感想を書きます。
 draft: false
 changelog:
   - summary: 記事作成

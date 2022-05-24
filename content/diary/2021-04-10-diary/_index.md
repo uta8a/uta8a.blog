@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 文章の練習をする その2
-description: 
+description: なんとなく今日も書く気になったので書きます。
 draft: false
 changelog:
   - summary: 記事作成

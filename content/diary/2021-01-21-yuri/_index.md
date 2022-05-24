@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 読んだ漫画の感想文 山田と加瀬さん。 と 欠けた月とドーナッツ
-description: 
+description: 百合にはあまり造形が深くない限界型男子大学生による感想文になります。
 draft: false
 changelog:
   - summary: 記事作成

@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 文章の練習をする その1
-description: 
+description: Twitter ばかりしているとまとまった文章が書けなくなってしまって困っています。ときどきは文章の練習という形で考えていることをまとまった形にしていこうと思います。
 draft: false
 changelog:
   - summary: 記事作成

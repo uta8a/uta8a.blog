@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: [感想] HappyEND 9曲目 「さよならの支度 / HoneyComeBear」
-description: 
+description: HoneyComeBear - さよならの支度 の感想を書きます。
 draft: false
 changelog:
   - summary: 記事作成

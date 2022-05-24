@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: [感想] HappyEND 1曲目 「夏の魔法 / HoneyComeBear」
-description: 
+description: HoneyComeBear - 夏の魔法 の感想を書きます。
 draft: false
 changelog:
   - summary: 記事作成

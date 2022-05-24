@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 散歩に出かけた
-description: 
+description: 散歩に出かけた
 draft: false
 changelog:
   - summary: 記事作成

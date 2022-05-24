@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 強くなりたいと思って独学するが、僕はものごとの習得の仕方をよく忘れる
-description: 
+description: 強くなりたいと思う気持ちと独学について書きました。
 draft: false
 changelog:
   - summary: 記事作成

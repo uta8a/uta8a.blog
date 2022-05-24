@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 逆求人に行ってきた
-description: 
+description: ジースタイラスさんの逆求人について話します(2021/04/17 開催)
 draft: false
 changelog:
   - summary: 記事作成

@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 文章の練習をする その3
-description: 
+description: 変な時間に寝たら変な時間に起きました。
 draft: false
 changelog:
   - summary: 記事作成

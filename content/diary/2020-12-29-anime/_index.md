@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 今年見て勇気づけられたアニメの感想
-description: 
+description: 2020年に見て勇気づけられたアニメ3選。SHOW BY ROCK!!ましゅまいれっしゅ!! / トニカクカワイイ / Re:ゼロから始める異世界生活
 draft: false
 changelog:
   - summary: 記事作成

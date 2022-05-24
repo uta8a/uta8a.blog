@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 都落ちしてからだいたい3年半たった
-description: 
+description: 東大を中退して、地元に帰ってきて 3 年半がたったので、振り返ろうと思います。
 draft: false
 changelog:
   - summary: 記事作成

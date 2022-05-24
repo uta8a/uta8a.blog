@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: サポーターズ 1on1 に参加してきた
-description: 
+description: サポーターズ 1on1 について話します。(2021/04/18 開催)
 draft: false
 changelog:
   - summary: 記事作成

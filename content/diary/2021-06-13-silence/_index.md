@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 静寂の中で育まれる自分の価値観
-description: 
+description: 静寂の中にいる
 draft: false
 changelog:
   - summary: 記事作成

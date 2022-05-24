@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 何度も繰り返し聞いた音楽が支えになる
-description: 
+description: この 2 日はずっとこの曲を聴いています
 draft: false
 changelog:
   - summary: 記事作成

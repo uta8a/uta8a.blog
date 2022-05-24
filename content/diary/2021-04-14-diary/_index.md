@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 文章の練習をする その5
-description: 
+description: IT 技術関連でない話題を書くのって難しいけどトレーニングになってよいですね。
 draft: false
 changelog:
   - summary: 記事作成

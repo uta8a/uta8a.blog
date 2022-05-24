@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 心地よいぬるま湯を抜けることへの耐性
-description: 
+description: 日記、だけのタイトルだと何書いたか分からんし読む気なくなるのでタイトルをちゃんとつけることにしました
 draft: false
 changelog:
   - summary: 記事作成

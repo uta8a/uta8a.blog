@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 文章の練習をする その4
-description: 
+description: 3 日過ぎると現れる坊主が僕の元にもやってきたので倒します。
 draft: false
 changelog:
   - summary: 記事作成

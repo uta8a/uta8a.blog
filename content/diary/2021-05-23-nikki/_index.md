@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 日記 2021/05/23 - ラムネを買った -
-description: 
+description: ブログを新しくしました。映画大好きポンポさんの原作のネタバレを含みます。
 draft: false
 changelog:
   - summary: 記事作成

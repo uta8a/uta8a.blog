@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: [感想] HappyEND 3曲目 「雨泳ぎ / HoneyComeBear」
-description: 
+description: HoneyComeBear - 雨泳ぎ の感想を書きます。
 draft: false
 changelog:
   - summary: 記事作成

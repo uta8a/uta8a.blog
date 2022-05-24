@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 数学とその周辺に対する劣等感とそれでも学習を続けたい気持ち
-description: 
+description: これは自分の中にある劣等感を外向きの文章にすることで整理しようとしたものです。
 draft: false
 changelog:
   - summary: 記事作成

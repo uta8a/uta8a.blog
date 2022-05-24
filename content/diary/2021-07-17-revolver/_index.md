@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: HoneyComeBearのRevolverについての考察
-description: 
+description: HoneyComeBear という最高のアーティストがいて、そのアーティストが夏が来たことを知らせてくれました。
 draft: false
 changelog:
   - summary: 記事作成

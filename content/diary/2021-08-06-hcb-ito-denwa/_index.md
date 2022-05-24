@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: [感想] HappyEND 5曲目 「糸電話 / HoneyComeBear」
-description: 
+description: HoneyComeBear - 糸電話 の感想を書きます。
 draft: false
 changelog:
   - summary: 記事作成

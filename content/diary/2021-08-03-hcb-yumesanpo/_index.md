@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: [感想] HappyEND 2曲目 「夢さんぽ / HoneyComeBear」
-description: 
+description: HoneyComeBear - 夢さんぽ の感想を書きます。
 draft: false
 changelog:
   - summary: 記事作成

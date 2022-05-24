@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 23卒エンジニア志望Slack主催LT vol.2 運営の振り返り
-description: 
+description: 今回春に行われた第一回に続き第二回の LT を行ったので、忘れないうちに振り返っておこうと思います。
 draft: false
 changelog:
   - summary: 記事作成

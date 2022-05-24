@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 日記 2021/05/26 - ラムネを食べきってしまった -
-description: 
+description: ラムネを食べきってしまった
 draft: false
 changelog:
   - summary: 記事作成

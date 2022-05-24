@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 夏を振り返る
-description: 
+description: 夏が終わってしまいました。
 draft: false
 changelog:
   - summary: 記事作成

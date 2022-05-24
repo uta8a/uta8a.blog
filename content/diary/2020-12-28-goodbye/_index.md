@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 2020年振り返り
-description: 
+description: 今年も一年お世話になりました。
 draft: false
 changelog:
   - summary: 記事作成

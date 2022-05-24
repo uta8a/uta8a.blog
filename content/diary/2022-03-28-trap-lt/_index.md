@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: [感想] traP LT 2022 これすき6選
-description: 
+description: 全 14 本の LT のうち僕が特にこれすきと思った 6 本について感想を書きます。
 draft: false
 changelog:
   - summary: 記事作成

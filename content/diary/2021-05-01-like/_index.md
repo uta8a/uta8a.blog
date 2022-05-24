@@ -1,7 +1,7 @@
 ---
 layout: diary
 title: 文章の練習をする その6
-description: 
+description: 僕は映像と音楽がとても好きです。モーショングラフィックス/3D 寄りで、僕が好きな映像を上げている方を紹介します。
 draft: false
 changelog:
   - summary: 記事作成
