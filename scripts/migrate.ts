@@ -6,7 +6,7 @@ import { parse } from "https://deno.land/x/frontmatter@v0.1.4/mod.ts";
 // index.mdをキャッチして_index.mdに書き出す
 // まずはdiaryとpostに対して行う。_を先頭に足す
 
-import { walk, walkSync } from "https://deno.land/std@0.140.0/fs/mod.ts";
+import { walk, move } from "https://deno.land/std@0.140.0/fs/mod.ts";
 import dayjs from 'https://cdn.skypack.dev/dayjs'; 
 import utc from 'https://cdn.skypack.dev/dayjs/plugin/utc';
 import timezone from 'https://cdn.skypack.dev/dayjs/plugin/timezone';
@@ -55,5 +55,15 @@ changelog:
   }
 }
 
-migrater().then(() => console.log("Done!"));
+async function remover() {
+  for await (const entry of walk("content")) {
+    const filename = entry.path;
+    const name = basename(filename);
+    if (name === 'index.md') move(filename, '.delete', {overwrite: true});
+    
+  }
+}
+
+// migrater().then(() => console.log("Done!"));
+// remover().then(() => console.log("Done!"));
 
