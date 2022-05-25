@@ -17,24 +17,30 @@
   </div>
   <!-- not display changelog, display each published date at topic page -->
   <hr />
+  {{ $selected := where .Site.Pages ".Params.layout" "!=" nil}}
+  {{ $selected := where $selected ".Params.layout" "=" (path.Base (path.Dir .RelPermalink)) }}
+  {{
+          $pages := slice }} {{ range $selected}} {{ $pages = $pages | append
+          (dict "date" (index (index (first 1 .Params.changelog) 0) "date")
+          "title" .Title "link" .Permalink "description" .Params.description) }}
+          {{ end }} {{ $created := sort $pages "date" "desc" }}
   <div class="list-container">
     <dl>
-      {{ range .Pages }}
+      {{ range $created }}
       <dt>
         <div class="title">
-          <a href="{{ .Permalink }}">{{ .Title }}</a>
+          <a href="{{ .link }}">{{ .title }}</a>
         </div>
         <div class="published">
           <span class="prefix">last edited: </span>
           <span class="date">
-            {{ (index (index (last 1 .Params.changelog) 0) "date") | time.Format
-            "2006-01-02" }}
+            {{ time.Format "2006-01-02" .date }}
           </span>
         </div>
       </dt>
       <dd>
         <span class="description">
-          {{ .Params.description | .RenderString (dict "display" "block") }}
+          {{ .description | $.RenderString (dict "display" "block") }}
         </span>
       </dd>
       {{ end }}

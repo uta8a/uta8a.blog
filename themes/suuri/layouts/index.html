@@ -29,13 +29,13 @@
           <!-- why: changelogの最後を取り出しkeyにするという操作は、sortのkeyが文字列しか入らないこととByParamsでも成功しなかったことから。rangeの外で `.Params.changelog` を使うとこれはその記事(toppageの _index.md)のfrontmatterの値に置き換わってしまうため、range外では文字列としてプロパティを指定する必要がある。 -->
           {{ $selected := where .Site.Pages ".Params.layout" "!=" nil}} {{
           $pages := slice }} {{ range $selected}} {{ $pages = $pages | append
-          (dict "date" (index (index (last 1 .Params.changelog) 0) "date")
+          (dict "date" (index (index (first 1 .Params.changelog) 0) "date")
           "title" .Title "link" .Permalink "description" .Params.description) }}
-          {{ end }} {{ $lastEdit := sort $pages "date" "desc" }}
+          {{ end }} {{ $created := sort $pages "date" "desc" }}
           <!-- reverse: desc order -->
           <!-- render -->
           <dl>
-            {{ range first 10 $lastEdit }}
+            {{ range first 10 $created }}
             <dt>
               <div class="title">
                 <a href="{{ .link }}">{{ .title }}</a>
