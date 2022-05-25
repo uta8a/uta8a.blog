@@ -123,8 +123,10 @@ blockquote {
 
 blockquote + p {
   margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 p + blockquote {
   margin-top: 1rem;
+  margin-bottom: 1rem;
 }
