@@ -4,4 +4,5 @@
 
 ```
 npx prettier -w **/*.md
+date --iso-8601=seconds
 ```
