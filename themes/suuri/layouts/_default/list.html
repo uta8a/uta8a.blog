@@ -1,0 +1,52 @@
+{{ define "main" }}
+<main id="content">
+  <!-- change layout by searching frontmatter's layout property -->
+  {{ if (isset .Params "layout") }}
+  <p class="category">
+    カテゴリー: <a href="{{ path.Dir (path.Dir .RelPermalink) }}">{{ path.Base (path.Dir (path.Dir .RelPermalink)) }}</a>
+  </p>
+  <article class="suuri">{{.Content}}</article>
+  {{ else }}
+  <!-- auto generated list of each  content pages -->
+  <p class="category"><a href="/">トップページ</a></p>
+  <div class="title">
+    <h1>{{ .Title }}</h1>
+  </div>
+  <div class="description">
+    {{ .Params.description | .RenderString (dict "display" "block") }}
+  </div>
+  <!-- not display changelog, display each published date at topic page -->
+  <hr />
+  {{ $selected := where .Site.Pages ".Params.layout" "!=" nil}}
+  {{ $selected := where $selected ".Params.layout" "=" (path.Base (path.Dir .RelPermalink)) }}
+  {{
+          $pages := slice }} {{ range $selected}} {{ $pages = $pages | append
+          (dict "date" (index (index (first 1 .Params.changelog) 0) "date")
+          "title" .Title "link" .Permalink "description" .Params.description) }}
+          {{ end }} {{ $created := sort $pages "date" "desc" }}
+  <div class="list-container">
+    <dl>
+      {{ range $created }}
+      <dt>
+        <div class="title">
+          <a href="{{ .link }}">{{ .title }}</a>
+        </div>
+        <div class="published">
+          <span class="prefix">last edited: </span>
+          <span class="date">
+            {{ time.Format "2006-01-02" .date }}
+          </span>
+        </div>
+      </dt>
+      <dd>
+        <span class="description">
+          {{ .description | $.RenderString (dict "display" "block") }}
+        </span>
+      </dd>
+      {{ end }}
+    </dl>
+  </div>
+  {{ end }}
+  {{ partial "footer.html" }}
+</main>
+{{ end }}
