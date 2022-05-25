@@ -8,7 +8,7 @@ changelog:
     date: 2020-12-28T20:51:57+09:00
   - summary: hugoにmigrate
     date: 2022-05-25T07:19:22+09:00
-  - summary: 記事のstyle checkした
+  - summary: 文書の整形をした
     date: 2022-05-25T18:14:37+09:00
 ---
 
