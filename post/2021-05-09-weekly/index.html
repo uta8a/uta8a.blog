@@ -1,0 +1,78 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>記事を読んだ記録や小さなメモ。</p>
+<h2 id=typescript>TypeScript</h2>
+<p><a href=https://gist.github.com/kenmori/8cea4b82dd12ad31f565721c9c456662>TypeScript 練習問題集</a> と積んでいる <a href=https://github.com/type-challenges/type-challenges>type-challege</a> をしないとなあという気持ちに。</p>
+<p>このブログは <a href=https://github.com/zenn-dev/zenn-editor>zenn-dev/zenn-editor</a> をかなり参考にしていて、その過程で any を潰していたら JSON 周りと型周りでつらかった。</p>
+<p><a href=https://twitter.com/kgtkr>tkr</a>さんに教えてもらったこと:</p>
+<ul>
+<li><a href=https://github.com/gcanti/io-ts>io-ts</a>が JSON を扱う上で役立つ</li>
+<li>以下のようにして Union から Array に変換できる</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-ts:sample.ts data-lang=ts:sample.ts><span class=kr>const</span> <span class=nx>_dummy</span> <span class=o>=</span> <span class=p>{</span> <span class=nx>a</span>: <span class=kt>null</span><span class=p>,</span> <span class=nx>b</span>: <span class=kt>null</span><span class=p>,</span> <span class=nx>c</span>: <span class=kt>null</span> <span class=p>}</span>
+<span class=kr>type</span> <span class=nx>Union</span> <span class=o>=</span> <span class=k>keyof</span> <span class=k>typeof</span> <span class=nx>_dummy</span>
+<span class=kr>const</span> <span class=nx>unionArray</span> <span class=o>=</span> <span class=nb>Object</span><span class=p>.</span><span class=nx>keys</span><span class=p>(</span><span class=nx>_dummy</span><span class=p>)</span> <span class=kr>as</span> <span class=nx>Union</span><span class=p>[];</span> <span class=c1>// [&#34;a&#34;, &#34;b&#34;, &#34;c&#34;]
+</span></code></pre></div><p>後は Rust の気持ちになると null, undefined などがつらかった。気持ち的に Option, Result が欲しい。ちょっと調べると <a href=https://github.com/gcanti/fp-ts>fp-ts</a> がよさそう。</p>
+<h2 id=rustcraft>rustcraft</h2>
+<p><a href=https://github.com/dskart/rustcraft>dskart/rustcraft</a> を知った。Rust の wgpu クレート(iced でも内部的に使われている低レイヤなクレート)を用いて minecraft っぽい見た目のゲームを実装。動けたりブロックを破壊できるらしい。アイテムとか細かいところはなくてほんとに基本のみ。</p>
+<h2 id=ハックの学び方の学び方httpsspeakerdeckcompuhitakuhatukufalsexue-bifang-falsexue-bifang><a href=https://speakerdeck.com/puhitaku/hatukufalsexue-bifang-falsexue-bifang>ハックの学び方、の学び方</a></h2>
+<p>電子辞書 Brain を改造して Linux を入れるというイケているハッカー puhitaku さんによる hack のやり方指南。<br>
+興味あるものから触ろう。コンピュータが好きな人間は大半がノリで技術を習得してきた。どこかでつながるときが来るから触り続けよう。質問するときは自分の現在地が伝わるよう、やってきたこととこうしたいということを話そう。</p>
+<h2 id=2020-年の振り返りと来年の抱負-読みたい本-magurotunahttpszenndevmagurotunaarticlesf0a946e47b32ae><a href=https://zenn.dev/magurotuna/articles/f0a946e47b32ae>2020 年の振り返りと来年の抱負 読みたい本 magurotuna</a></h2>
+<p>maguro さんによる振り返り記事。コンピュータサイエンスの勉強を続けて OSS に貢献するという姿勢に感動して影響を受けた。</p>
+<h2 id=その他>その他</h2>
+<ul>
+<li><a href=http://nahitafu.cocolog-nifty.com/nahitafu/2021/05/post-0027a5.html>Windows のデバイスドライバをマイクロソフトに送って署名してもらう方法</a></li>
+<li><a href=https://hyoshiok.hatenablog.com/entry/20180930/p1>9 月末で 60 歳定年退職しました</a></li>
+<li><a href=https://github.com/donnemartin/system-design-primer/blob/master/README-ja.md#%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E8%A8%AD%E8%A8%88%E7%9B%AE%E6%AC%A1>システム設計入門</a> これいいなと思った。コーディングインタビュー対策的ではあるが、これを軸にして CDN とか設計を学べそう。</li>
+<li><a href=https://ubansi.com/cloud_spanner/>Spanner を解説したら講義になった話</a> DB の勉強するときに読み返したい。</li>
+<li><a href=https://thelarklife1021.hatenablog.com/entry/2021/04/30/114122>知っておきたかった Linux サーバ設計、構築、運用知識まとめ</a> Docker より下の階層。自宅サーバとかやったらすごい役立ちそう。</li>
+<li><a href=https://zenn.dev/mshaka/articles/5e2e9a0e02c93bc3d38b>Brainfuck の wasm ターゲットコンパイラを書いて wasm と WASI に入門</a> wat の仕様が書いてある。cl8w と一緒に見たい。</li>
+<li><a href=https://little-hands.hatenablog.com/entry/2017/10/04/231743>ドメイン駆動設計で実装を始めるのに一番とっつきやすいアーキテクチャは何か</a> DDD の話。レイヤード/ヘキサゴナル/オニオン/クリーンの 4 つの概略がある。</li>
+<li><a href=https://landscape.cncf.io/>CNCF Cloud Native Interactive Landscape</a> クラウド周りの分類ごとの色々な選択肢が書いてあって、技術選択に役立ちそう。</li>
+<li><a href=https://engineering.mercari.com/blog/entry/2020-03-25-180000/>機械学習と Human-in-the-Loop で優勝する違反検知の話</a> メルカリの AI チームによる Human in the loop(HITL)の利用事例。Human 部分がうまくラベルになるよう設計されているとよい。</li>
+<li><a href=https://blog.jxck.io/entries/2020-09-01/webcodecs-webtransport-chat.html>WebCodecs と WebTransport でビデオチャット</a> WebRTC の中で、API の抽象度をもう少し下げてバイナリを触りたい背景から検討されている API</li>
+<li><a href=https://notoken.hatenadiary.com/entry/2021/05/10/010256>フレッツ光ライトの課金対象に関する考察</a> ネタ記事かと思いきや計測を行っていて面白い。PPPoE とか未だに分かっていないので調べる。</li>
+<li><a href=https://tech.ga-tech.co.jp/entry/ruby3-typecheck-rails>Ruby3 の静的型検査を活用して、新規プロダクト開発の開発効率を向上させた話</a> steep を利用して、妥協しながらも効果を出している例。</li>
+<li><a href=https://zenn.dev/magurotuna/articles/2c4037b75f7e51>anyhow::Context を use したいが名前が被ってしまうときの解決策 -> impl-only-use</a> Rust で直接使わないけど欲しいトレイトを import するときに使える</li>
+<li><a href=https://qiita.com/ishishow/items/e4340a598fdfae52510a>3D でライフゲームを試せるサイト作りました</a> Go Ubity React という技術スタックが珍しいので後で深く見ておきたい。</li>
+<li><a href=https://aws.amazon.com/jp/cloudhsm/>AWS CloudHSM</a> 暗号キーを生成するサービスらしい。</li>
+<li><a href=https://adventar.org/calendars/5573>CTO advent calendar</a> CTO 協会によるアドベントカレンダー。</li>
+<li><a href=https://techcon.gree.jp/2020/session/Session-11>REALITY 低遅延モード配信を支えるリアルタイムサーバとデータパイプライン</a> 低遅延モードというのがあるらしい。Apache Beam は知らなかった。</li>
+<li><a href=https://heartbeats.jp/hbblog/2021/05/availability-on-cloud.html>クラウドと可用性</a> 用語について補完できる。</li>
+<li><a href=https://inside.dmm.com/entry/2021/03/08/fraud-prevention-team-introduction-3>ユーザを不正被害から守るためにやってること #3</a> 不正検知、false-positive がつらそう。</li>
+<li><a href=https://piyolog.hatenadiary.jp/entry/2021/05/12/051650>米石油パイプライン企業へのサイバー攻撃についてまとめてみた</a> piyolog さんはセキュリティの実社会へのケーススタディに富んでいるのでこういうとき本当に助かります</li>
+<li><a href=https://www.moguravr.com/niantic-lightship-ardk/>ナイアンティックが AR 開発者キット「Niantic Lightship ARDK」のベータ版を提供開始</a> Ingress の時代から AR sdk を提供したいというプラットフォーム化を目指していたのでいよいよかという感じ。期待</li>
+<li><a href=https://bagelee.com/programming/react/validation-library/>React で使えるバリデーションライブラリを紹介！</a> Zod についての話。io-ts とも関連している。</li>
+<li><a href=https://engineering.linecorp.com/ja/blog/2020-line-kyoto-summer-internship/>2020LINE KYOTO で開催したサマーインターン、ハッカソンプログラムの様子をご紹介</a> LINE のクローンアプリを作るハッカソン型のインターン。Redis 使ったことないから使ってみたいな。</li>
+<li><a href=https://medium.com/fortmatic/security-infrastructure-at-fortmatic-4a95c3688997>Security & Infrastructure at Fortmatic</a> Formatic での取り組み。Security や Cloud HSM を使用しているところが面白い。</li>
+<li><a href=https://scrapbox.io/crosssceneofwin-55673688/2020%E5%B9%B4%E3%82%92%E6%8C%AF%E3%82%8A%E8%BF%94%E3%81%A3%E3%81%A6>2020 年を振り返って</a> 機械学習系の方の振り返り。英語学習の項目が参考になる。</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><ul>
+<li>この記事は<a href=https://ctftime.org/task/14387>hxp ctf 2020 hyper</a>の writeup を読んで超楕円曲線について学んだ記録です。</li>
+<li>間違いなどあれば<a href=https://twitter.com/kaito_tateyama>@kaito_tateyama</a>にお知らせいただけると幸いです。</li>
+</ul>
+<h2 id=-hyper># hyper</h2>
+<ul>
+<li>問題概要</li>
+</ul>
+<h2 id=-超楕円曲線と楕円曲線の違い>## 超楕円曲線と楕円曲線の違い</h2>
+<ul>
+<li><strong>def.</strong> 超楕円曲線</li>
+<li>体$K$上の種数(genus) $g$ の超楕円曲線は以下のように定義される。</li>
+<li>超楕円曲線とは、代数曲線の中でも特に以下の形式で表されるものを指す。</li>
+</ul>
+<p>$$<br>
+y^2 + h(x)y = f(x)<br>
+$$</p>
+<ul>
+<li>
+<p>ここで、 $h(x) \in K[x]$ , $\deg(h(x)) \leq g$ , $f(x) \in K[x]$ , $f(x)$は Monic で , $\deg(f(x)) = 2g + 1$ である。</p>
+</li>
+<li>
+<p>今回の問題を例として見ると、$y^2 = x^7 + x$であり、$\deg(f(x)) = 7 (=2 \times 3+1)$, $\deg(h(x)) = \deg(0) = -\infty &lt; 3$から、$\mathbb{F}_p$上の種数$3$の超楕円曲線であると分かる。</p>
+</li>
+<li>
+<p><strong>def.</strong> 楕円曲線</p>
+</li>
+<li>
+<p>楕円曲線とは、代数曲線の中でも、以下の形式で表されるものを指す。</p>
+</li>
+</ul>
+<p>$$<br>
+y^2 = x^3 + ax + b<br>
+$$</p>
+<ul>
+<li>
+<p>ここで、$a,b \in \mathbb{R}$である。</p>
+</li>
+<li>
+<p>違いをまとめると、超楕円曲線は種数の概念を入れて楕円曲線を一般化したものとみなせそう。</p>
+</li>
+<li>
+<p><strong>補足</strong></p>
+</li>
+<li>
+<p>$K[x]$は係数が体$K$の要素である多項式$f(x)$の集合を表す。</p>
+</li>
+<li>
+<p>$\deg(f(x))$は多項式の最大次数を表す。</p>
+</li>
+<li>
+<p>Monic とは、最大次数の係数が$1$であることを表す。</p>
+</li>
+</ul>
+<h2 id=-超楕円曲線の定義の仕方について>## 超楕円曲線の定義の仕方について</h2>
+<ul>
+<li>英語版 wikipedia や、hxp/hyper の writeup をいくつか見て、超楕円曲線の定義の仕方は複数あることが分かった。</li>
+<li>上の定義とは別の定義では、</li>
+</ul>
+<p>$$<br>
+y^2 = f(x)<br>
+$$</p>
+<ul>
+<li>としている。($f(x)$については上の定義と同じ条件である。)どちらの定義でも hxp/hyper を解く上では問題ない。</li>
+<li>英語版 wikipedia では$y \rightarrow y - \frac{h(x)}{2}$の変数変換によって 2 つ目の定義と同一視できるとあるが、この変数変換による同一視がなぜ許されるのか納得できなかった。</li>
+<li>例えば、$y^2 + 2xy = x^3$はこの変数変換によって$y^2 = x^3 + x^2$に移り、この 2 つの楕円曲線を描いてみると以下のようになる。(緑が前者、青が後者)</li>
+</ul>
+<p><img src=./p-1.png alt=img-1></p>
+<ul>
+<li>形はだいたい一緒な気がするが、例えば$y \rightarrow y^2$のような変換は超楕円曲線ではなくなってしまうし、この変換で何を同一視しているのかは分からなかった。</li>
+</ul>
+<pre tabindex=0><code>https://en.wikipedia.org/wiki/Hyperelliptic_curve
+https://neuromancer.sk/article/25
+https://mystiz.hk/posts/2020-12-20-hxpctf-hyper/
+https://homes.esat.kuleuven.be/~fvercaut/papers/cc03.pdf
+https://www.iisec.ac.jp/proc/vol0002/iisec_proc_002_p043.pdf
+https://pwnthem0le.polito.it/2020/12/20/hxpCTF-2020-Hyper-writeup/
+https://mattyuu.hatenadiary.com/entry/2017/01/29/161758
+https://www.josephsurin.me/posts/2020-12-21-hxp-ctf-2020-hyper-writeup
+
+</code></pre></article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

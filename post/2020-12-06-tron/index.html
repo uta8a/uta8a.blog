@@ -1,0 +1,147 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><ul>
+<li><strong>2020/12/08 修正</strong> codingame のソース全公開は運営から注意を受けることがあるそうなので、部分公開に変更しました。</li>
+<li>この記事は、<a href=https://adventar.org/calendars/5209>広島大学 IT エンジニア Advent Calendar 2020</a> の 8 日目です。みんな間に合わせていてえらい。</li>
+<li>今回は、ゲーム AI プログラミングができるサイト <a href=https://www.codingame.com/home>CodinGame</a> にチャレンジしてみました。僕は bfs を実装してヤッター！な初心者なので、お手柔らかにお願いします。</li>
+</ul>
+<h2 id=-codingame-ってなに># CodinGame ってなに？</h2>
+<ul>
+<li>CodinGame, 通称「こどげ」はプログラミングでゲームをして遊べるサイトのようです。よく分かっていませんが、今回紹介するゲーム AI Bot を作って戦わせるタイプの他にも、最適化部門もあるようです。今回は <a href=https://www.codingame.com/multiplayer/bot-programming/tron-battle>TRON</a> という bot プログラミング部門の入門的な立ち位置のゲームで遊んでいきます。</li>
+<li>使える言語は <a href=https://www.codingame.com/faq>こちらの FAQ</a> にまとまっています。僕は Rust を使うので、</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>Rust: 1.38.0
+Includes chrono 0.4.9, itertools 0.8.0, libc 0.2.62, rand 0.7.2, regex 1.3.0, time 0.1.42
+</code></pre></div><ul>
+<li>今確認して知ったんですが <code>rand</code> crate あるやんけ！線形合同法のコードを引っ張ってきてしまった。</li>
+</ul>
+<h2 id=-やってみる># やってみる</h2>
+<ul>
+<li>2 年ほど前にちょっと触った(サンプル動かした程度)ので、アカウントは作っていました。</li>
+</ul>
+<p><img src=./p-1.png alt=p-1></p>
+<ul>
+<li><code>JOIN</code> ボタンを押すと以下のような画面に行きます。</li>
+</ul>
+<p><img src=./p-2.png alt=p-2></p>
+<ul>
+<li>左上の <code>Wood 2 League</code> が自分がいるリーグです。TRON では、 <code>Wood 2</code> -> <code>Wood 1</code> -> <code>Bronze</code> -> <code>Silver</code> -> <code>Gold</code> -> <code>Legend</code> とリーグが上がっていきます。上のリーグに行くには、各リーグの「ボス」に勝利する必要があります。一ケタ順位をとっても上にいけないな〜と思った、そこのお方！(僕のことです) ボスに勝ちにいきましょう。</li>
+</ul>
+<p><img src=./p-3.png alt=p-3></p>
+<ul>
+<li>画面の詳しい説明は <a href=https://qiita.com/javacommons/items/b178c924199d1a6d524d>CodinGame は BOT(AI プログラム)でバトルするのが正しい楽しみ方かもしれません</a> を見るとよいです。</li>
+<li>基本的には、コードの画面にコードを書いて、<code>PLAY MY CODE</code> を押してテストプレイ、<code>TEST IN ARENA</code>を押して実戦、です。</li>
+</ul>
+<p><img src=./p-4.png alt=p-4></p>
+<h2 id=-ゲームのルール># ゲームのルール</h2>
+<ul>
+<li>光をできるだけ長く伸ばす(長い時間生き残る)と勝ちです。壁や、相手の光に当たると消滅してしまい、負けになります。</li>
+</ul>
+<h2 id=-とりあえずサンプルを動かす># とりあえずサンプルを動かす</h2>
+<ul>
+<li>書いてあるものをそのままテストプレイすると、毎回左に動くのでそのまま壁に激突して TRON 人生が終了します。</li>
+<li>これではいけません。</li>
+</ul>
+<h2 id=-改良の前にコードを書くときのフレームを考える># 改良の前に、コードを書くときのフレームを考える</h2>
+<ul>
+<li>いろいろ書き直したり調べていると、以下のように考えるとよいことに気づきました。</li>
+</ul>
+<p><img src=./p-5.png alt=p-5></p>
+<ul>
+<li>まず、ありうる手として上下右左があります(Possible Move)</li>
+<li>次に、例えばいまきた道には引き返せない、壁は無理、といった制約から合法な手が決まります(Legal Move)</li>
+<li>最後に、Legal Move の中から一番よさげな手を選びます(Best Move)</li>
+</ul>
+<h2 id=-最初の改良># 最初の改良</h2>
+<ul>
+<li>まずは Legal Move を実装して、Best Move のところではランダムに選んでしまうことにしました。</li>
+<li>線形合同法は Linux Programming お気楽 Rust プログラミング超入門 さんのコードを参考にしました。ありがとうございます。</li>
+<li>本質的に Best Move を選択するパートは以下になります</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=kd>let</span><span class=w> </span><span class=n>best_move</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>legal_move</span><span class=p>[</span><span class=n>rng</span><span class=p>.</span><span class=n>rand</span><span class=p>(</span><span class=n>legal_move</span><span class=p>.</span><span class=n>len</span><span class=p>()</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u32</span><span class=w> </span><span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>];</span><span class=w>
+</span></code></pre></div><ul>
+<li>このコードで Wood 1 でちょっと勝てるようになりました。</li>
+<li>しかしボスを倒すにはまだまだ足りないようです。</li>
+</ul>
+<h2 id=-次の改良-bfs-をしてみる># 次の改良 bfs をしてみる</h2>
+<ul>
+<li>少し考えて、「もしかしてその場で legal move それぞれに対し dfs/bfs を行い、一番遠くに行けるような手を選べば勝てるのでは？」と思いつきました。やってみましょう。</li>
+<li>Best Move を選ぶ部分は以下のようになります。bfs っぽいことをしています。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=c1>// choose best_move
+</span><span class=c1>// update this part
+</span><span class=c1></span><span class=fm>eprintln!</span><span class=p>(</span><span class=s>&#34;{:?}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>legal_move</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=k>if</span><span class=w> </span><span class=n>legal_move</span><span class=p>.</span><span class=n>len</span><span class=p>()</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=mi>0</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;UP&#34;</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>max_mv</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mi>0</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>_best_move</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span><span class=w> </span><span class=c1>// invalid initial value
+</span><span class=c1></span><span class=k>for</span><span class=w> </span><span class=n>mv</span><span class=w> </span><span class=k>in</span><span class=w> </span><span class=o>&amp;</span><span class=n>legal_move</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=c1>// value = bfs(mv.2, mv.3)
+</span><span class=c1></span><span class=w>    </span><span class=c1>// if max_mv &lt; value { update(_best_move) }
+</span><span class=c1></span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>tmp_game_field</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>game_field</span><span class=p>.</span><span class=n>clone</span><span class=p>();</span><span class=w>
+</span><span class=w>    </span><span class=n>tmp_game_field</span><span class=p>[</span><span class=n>mv</span><span class=p>.</span><span class=mi>3</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>][</span><span class=n>mv</span><span class=p>.</span><span class=mi>2</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>now</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>mv</span><span class=p>.</span><span class=mi>2</span><span class=p>,</span><span class=w> </span><span class=n>mv</span><span class=p>.</span><span class=mi>3</span><span class=p>);</span><span class=w> </span><span class=c1>// x,y
+</span><span class=c1></span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>q</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>VecDeque</span>::<span class=n>new</span><span class=p>();</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>tmp_max_mv</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mi>0</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=n>q</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>now</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=k>while</span><span class=w> </span><span class=n>q</span><span class=p>.</span><span class=n>is_empty</span><span class=p>()</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>false</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>        </span><span class=kd>let</span><span class=w> </span><span class=n>tmp</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>q</span><span class=p>.</span><span class=n>pop_front</span><span class=p>().</span><span class=n>unwrap</span><span class=p>();</span><span class=w>
+</span><span class=w>        </span><span class=n>tmp_max_mv</span><span class=w> </span><span class=o>+=</span><span class=w> </span><span class=mi>1</span><span class=p>;</span><span class=w>
+</span><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=n>t_mv</span><span class=w> </span><span class=k>in</span><span class=w> </span><span class=o>&amp;</span><span class=n>possible_move</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>            </span><span class=kd>let</span><span class=w> </span><span class=p>(</span><span class=n>x</span><span class=p>,</span><span class=n>y</span><span class=p>)</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>tmp</span><span class=p>.</span><span class=mi>0</span><span class=o>+</span><span class=n>t_mv</span><span class=p>.</span><span class=mi>0</span><span class=p>,</span><span class=w> </span><span class=n>tmp</span><span class=p>.</span><span class=mi>1</span><span class=o>+</span><span class=n>t_mv</span><span class=p>.</span><span class=mi>1</span><span class=p>);</span><span class=w>
+</span><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=mi>0</span><span class=w> </span><span class=o>&lt;=</span><span class=w> </span><span class=n>x</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>x</span><span class=w> </span><span class=o>&lt;</span><span class=n>len_x</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>i32</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=mi>0</span><span class=w> </span><span class=o>&lt;=</span><span class=w> </span><span class=n>y</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>y</span><span class=o>&lt;</span><span class=n>len_y</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>i32</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=n>tmp_game_field</span><span class=p>[</span><span class=n>y</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>][</span><span class=n>x</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>]</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>                    </span><span class=c1>// valid
+</span><span class=c1></span><span class=w>                    </span><span class=n>tmp_game_field</span><span class=p>[</span><span class=n>y</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>][</span><span class=n>x</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
+</span><span class=w>                    </span><span class=n>q</span><span class=p>.</span><span class=n>push_back</span><span class=p>((</span><span class=n>x</span><span class=p>,</span><span class=n>y</span><span class=p>));</span><span class=w>
+</span><span class=w>                </span><span class=p>}</span><span class=w>
+</span><span class=w>            </span><span class=p>}</span><span class=w>
+</span><span class=w>        </span><span class=p>}</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=n>max_mv</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>tmp_max_mv</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>        </span><span class=n>_best_move</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>mv</span><span class=p>.</span><span class=mi>0</span><span class=p>,</span><span class=w> </span><span class=n>mv</span><span class=p>.</span><span class=mi>1</span><span class=p>);</span><span class=w>
+</span><span class=w>        </span><span class=n>max_mv</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>tmp_max_mv</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=kd>let</span><span class=w> </span><span class=n>best_move</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_best_move</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span></code></pre></div><ul>
+<li>これでボスを倒すことができました！やったーー！次は Bronze リーグです！</li>
+</ul>
+<p><img src=./p-6.png alt=p-6></p>
+<h2 id=-終わりに># 終わりに</h2>
+<ul>
+<li>めっちゃビジュアライザが楽しいので対戦中の動画ずーっと眺めてしまいますね。</li>
+<li>次の目標は silver ですが、Minimax 法とか勉強しないと無理そう感あるので(ただ bronze レベルだとまだ大丈夫らしい？)勉強していかんとなあ。</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

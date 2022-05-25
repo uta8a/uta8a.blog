@@ -1,0 +1,112 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><ul>
+<li><a href=https://www.shuwasystem.co.jp/book/9784798061702.html>実践 Rust プログラミング入門</a> を読んだので感想を書きます。</li>
+<li><a href=https://www.shuwasystem.co.jp/support/7980html/6170.html>サポートページ</a> からソースコードをダウンロードしたり、正誤表を確認できます。</li>
+</ul>
+<h1 id=全体を通しての感想>全体を通しての感想</h1>
+<ul>
+<li>技術書は今しか読めない部分(サポートがあるとはいえ、徐々に古くなってしまう)と後で読んでも嬉しい部分があると思います。Rust を昔少し触って The Rust Programming Book を途中で投げ出してしまったレベル感の自分には、とてもちょうどよく最近の情報がまとめられていて、読んでよかったと思いました。</li>
+<li>そのような、最近の Rust の様々な Topic を一望できる本だからこそ、今読むべき要素が強く、時間が立つ前に読むべきだとも思います。今読みましょう。</li>
+<li>個人的に、4 章でコマンドラインツールを作るところでエラー処理を丁寧に紹介してあるのがよかったです。6 章の Wasm は一度少しやったことのある人にとっては物足りない気がしました。7 章の GUI は僕が手を出しづらいと感じていた分野という理由もありますが一番勉強になりました。</li>
+<li>実践が見れて、Rust でこういうことができるんだ！とイメージが広がったのがよかったです。ありがとうございます。</li>
+</ul>
+<h1 id=今後>今後</h1>
+<ul>
+<li>Web 周りは Wasm, Actix-web ともに触ったことがあるので別のことがしたいです。</li>
+<li>僕は中規模のソフトウェアを Rust で作りたいという気持ちがあります。しかし一方でエラーハンドリングやファイル分割、設計がよくわからず手が出せないことも多く諦めていました。今回の本の 4 章でエラーハンドリングなど、だんだん組み立てていく感覚を得たので、その感覚をもとに 7 章の GUI で使われていた iced を用いてアプリケーションを作ってみたいです。</li>
+<li>組み込みの章は飛ばしてしまったので、秋月電子で部品を買ってみます。</li>
+</ul>
+<h1 id=ただの感想>ただの感想</h1>
+<h2 id=1-章-rust-の紹介>1 章 Rust の紹介</h2>
+<ul>
+<li>コラム「機械語とはなにか」で触れられている <code>55 8B EC 81</code> とは何を指すのでしょう？ちらっと例えばで出てくるのでこれは知っている人にしかわからないネタなのかと思って調べましたが、わかりませんでした。</li>
+</ul>
+<h2 id=2-章-環境構築>2 章 環境構築</h2>
+<ul>
+<li>ここは Rust 周りの環境を整えたいとき(OS を新しくインストールし直したときなど)に読むとよさそうです。</li>
+<li>rls が賢くてびっくりしたのですが、rust-analyzer に移っていくとのことで、今後が気になります。</li>
+</ul>
+<h2 id=3-章-文法やツール>3 章 文法やツール</h2>
+<ul>
+<li><a href=https://doc.rust-lang.org/book/>The Rust Programming Language</a> を少し読んだことがあったのですいすい読めました。</li>
+<li>Trait や iterator など、いままで僕の中で曖昧に覚えていた概念がわかりやすい言葉で説明されていたので、しっくり納得しました。</li>
+<li>新しく知ったこと
+<ul>
+<li>for, loop, while にラベルをつけられる</li>
+<li>macro なので、<code>vec![]</code>だけでなく<code>vec!()</code>という表記も可能</li>
+</ul>
+</li>
+</ul>
+<h2 id=4-章-rpn-電卓>4 章 RPN 電卓</h2>
+<ul>
+<li>エラーライブラリについて触れられていたのがよかった。個人的には thiserror のほうがエラーとそのメッセージをまとめて管理できそうなので好み。</li>
+<li><a href=https://blog.rust-lang.org/inside-rust/2020/09/18/error-handling-wg-announcement.html>Rust Blog の Announcing the Error Handling Project Group</a>によると、これらエラーライブラリの整理が入りそう？な気がするので今後の動向に注目</li>
+<li>実行パスへのインストールが楽なこと知らなかった。Rust で CLI tool を気軽にかけるのは覚えておこう。</li>
+</ul>
+<h2 id=5-章-actix-web>5 章 Actix-web</h2>
+<ul>
+<li>Actix-web の example を試したことがあったのですいすい読めた。</li>
+<li>Docker に触れられているのが嬉しくて、実際ビルド周りのテクニックは知らなかったので勉強になりました。</li>
+<li>musl+MySQL を試して失敗したことがあるので、musl に詳しくなりたいです。</li>
+</ul>
+<h2 id=6-章-wasm>6 章 Wasm</h2>
+<ul>
+<li>これはほぼ似たようなことをしたことがあるのでコードを読むまでにとどめました。</li>
+<li>ただ、後半の wasm が優位なのは計算量が大きいタスクのときという話は面白くて、実際 web で計算量が大きいタスクって何があるだろうと思ったのですが思い浮かびませんでした。もしかして、ブラウザで走る競技プログラミング向けの Sandbox とかがあると面白いのかな</li>
+</ul>
+<h2 id=7-章-gui>7 章 GUI</h2>
+<ul>
+<li>ここが一番おもしろかったです。</li>
+<li>iced は以前友人から聞いて気になっていましたが、Elm の思想など学習コストが高そうだなと感じていたのですが、Vue.js などで State とその更新という概念は知っていたのですぐに馴染めました。</li>
+<li>はじめは Windows10 に入れている VMware 上の Ubuntu20.04 で環境構築しようと奮闘していて、Vulkan がどうやっても難しいことに気づきデスクトップマシンに Ubuntu20.04 を直接入れました。やはりドライバがからむとホストで Linux が最強という気持ちです。</li>
+<li>個人的には example のつくりがよいと感じていて、機能がいろいろあってこういう関数が存在しているのかと頭にとどめておけて、これから開発するときに変に詰まったりするのをふせげそうな気がします。</li>
+</ul>
+<h2 id=8-章-組み込みシステム>8 章 組み込みシステム</h2>
+<ul>
+<li>組み込み初心者が読んでも、ある程度メモリとかのイメージがついていればわかりやすい構成になっていて、入門としてとてもよさそうです。</li>
+<li>僕は組み込みを知らないので、とりあえず読んでから秋月電子でボードを注文しようと思います。</li>
+</ul>
+<h2 id=9-章-cargo>9 章 cargo</h2>
+<ul>
+<li>cargo って思ったよりもたくさん機能があるんですね&mldr;ベンチマークなどはたくさん出ていてこれから収束していくのかなと思いました。</li>
+<li>ディレクトリ構造の例が示されていて嬉しい。</li>
+</ul>
+<h2 id=10-章-プロダクト>10 章 プロダクト</h2>
+<ul>
+<li>僕は学生なので仕事でそもそも必要なことがイメージしづらいのですが、却ってこういうことが必要とされているんだ、という知識を獲得できてよかったです。</li>
+</ul>
+<h2 id=11-章-tips>11 章 Tips</h2>
+<ul>
+<li>マクロ、賢い人が作ってくれているんだなと感じました。いやほんとよくできてる。</li>
+<li>パーサーなどの話から、もしかして macro を用いて言語を作ったりすると簡単に作れたりするんだろうかと感じた。</li>
+<li>panic, unsafe, コミュニティなどの話はすでに知っていることが多かった。</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

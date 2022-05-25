@@ -1,0 +1,57 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><h2 id=記事>記事</h2>
+<ul>
+<li><a href=https://shiho-elliptic.tumblr.com/post/187841789319/segment-tree>eshiho&rsquo;s Blog - Segment Tree</a> elliptic shiho さんによるセグメント木の数学的な説明。</li>
+<li><a href=https://kimiyuki.net/blog/2016/01/07/lifegame-in-assembly/>うさぎ小屋 - アセンブリ言語で lifegame を書いた</a> kimiyuki さんによる記事。</li>
+<li><a href=https://github.com/hikalium/nv>hikalium/nv</a> hikalium さんの書いた nv 言語のコンパイラ。川合さんの Essen の仕様に基づいている(<a href=https://github.com/hikalium/nv/wiki>wiki</a>より) Plan9 についての記述など、wiki から参考になりそうなものがありそう。</li>
+<li><a href=https://zenn.dev/gosarami/articles/dd938001eac988e44d11>driftctl の紹介記事</a> IaC 化されていない AWS リソースの追跡を行うツール</li>
+<li><a href=https://mitsuru53.github.io/ruby-roadmap/>Ruby on Rails 学習ロードマップ</a> スクール系の雰囲気が若干あるが、僕はこの記事は良い記事だと思う。かなり初心者向けのロードマップ。</li>
+<li><a href=https://fuchsia.dev/fuchsia-src/development>Fuchsia development guide</a> Google Nest Hub にも組み込まれている OS、Fuchsia の開発ガイド。フクシャと読むらしい。</li>
+<li><a href=https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html>LLVM tutorial</a> Kaleidoscope という LLVM のチュートリアル。Kaleidoscope は万華鏡という意味。</li>
+<li><a href=https://japan.googleblog.com/2021/06/CS-Education.html>コンピュータサイエンスをより幅広い子どもたちへ</a> STEAM は STEM に Art を加えたもの。Science, Technology, Engineering, Mathematics, Art の 5 つ。記事を読む限りかなり女性のソフトウェアエンジニア育成に力をいれていると感じた。すごい。</li>
+<li><a href=https://www.slideshare.net/SoheiYamaga/compile-time-type-level-c-compiler-this-may-indicate-out-of-memory>Haskell で型レベルの CPU を定義して C Compiler を動かそうとする話</a> 大阪の大学の LT で発表された。ELVM を利用して型レベル CPU を作成したがメモリ不足だった(ELVM に最適化の余地がある)</li>
+<li><a href=https://github.com/pokemium/Worldwide>pokemium/Worldwide</a> GameBoy Color Emulator. Go 製で ebiten を使っているみたい。</li>
+<li><a href=https://github.com/containers/youki>containers/youki</a> Rust 製のコンテナランタイム。</li>
+<li><a href=https://tfhe.github.io/tfhe/>TFHE</a> Fast Fully Homomorphic Encryption over the Torus 完全準同型暗号</li>
+<li><a href=https://nindanaoto.github.io/>セキュリティキャンプ 2020 資料置き場</a> nindanaoto さんの資料が置いてある。</li>
+</ul>
+<h2 id=todo>todo!</h2>
+<p>記事を読んで、これやりたいなと思ったアイデア集。実際に手を動かしてできるのはごく一部だけど面白そうという気持ちをメモっておくのが大事。</p>
+<ul>
+<li>基本的なデータ構造に数学的な説明をつける。ここは Coq で証明するところが近そう。この前の IPSJ PRO で確か計算量周りの証明を行っていた研究があったのでそのへんと合わせると数学的構造がある側面でバグってないことの保証に加えて計算量の保証もできそうで実用的な話になる。(証明つきコードの実現)</li>
+<li>アセンブリで lifegame を書く(befunge 実装もあったので esolang でもやってみたい) そもそも lifegame ってどのくらいシンプルなんだろうか</li>
+<li>driftctl を使ってみる。記事がハンズオンになっていたのでやってみる。まだ発展途上のようなので、go 製だし OSS コントリビュートチャンスかも</li>
+<li>Fuchsia で遊ぶ。機能追加にチャレンジして内部構造を学びたい。mold でリンクするのもよさそう。</li>
+<li>Kaleidoscope をする。LLVM フロントエンドは簡単に書いたことがあるがバックエンドはまだ触ったことがない。Inkwell を使うのもいいかも 参考になるかも: <a href=https://cordx56.hatenablog.com/entry/2021/07/09/191006>Inkwell を使って Rust で LLVM をやっていく</a></li>
+<li>読んでみたいコード: pokemium/Worldwide, containers/youki</li>
+<li>暗号は研究でもやる予定なので、<a href=https://qiita.com/nindanaoto/items/98335ad4d32b927effa9>nindanaoto さんのシリーズ</a>を読んでいきたい。</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

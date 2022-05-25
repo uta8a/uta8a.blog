@@ -1,0 +1,60 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p><a href=https://github.com/rust-lang/rustlings>rustlings</a> を読み終えました。</p>
+<h1 id=概要>概要</h1>
+<p>主に <a href=https://doc.rust-lang.org/book/>TRPL</a> に対応する演習問題集。私は TRPL を読んだ後だったのでサクサク進めることができました。</p>
+<p>この資料の良さは、 <code>rustlings watch</code> コマンドでライブで確認しながら穴埋め形式でさまざまな Topic をサクサク学ぶことができるところにあると思います。学習体験は非常によくて、すぐに次の問題に取り掛かることができます。</p>
+<h1 id=記憶に残った問題>記憶に残った問題</h1>
+<p>ネタバレを防いだ方がいいかなと思ったので、記憶に残った理由は載せません。</p>
+<ul>
+<li><a href=https://github.com/rust-lang/rustlings/blob/cd2b5e8e3b616e769d2c17df45f813772aa81530/exercises/move_semantics/move_semantics5.rs>move_semantics5</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/1c3beb0a59178c950dc05fe8ee2346b017429ae0/exercises/modules/modules2.rs>modules2</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/101072ab9f8c80b40b8b88cb06cbe38aca2481c5/exercises/quiz2.rs>quiz2</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/ec2d4bd3ee665f2a4c79dd42c41078223074d4c1/exercises/error_handling/errors2.rs>errors2</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/b7ddd09fab97fc96f032bc8c0b9e1a64e5ffbcdd/exercises/error_handling/errors6.rs>errors6</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/baf4ba175ba6eb92989e3dd54ecbec4bedc9a863/exercises/standard_library_types/iterators2.rs>iterators2</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/c6712dfccd1a093e590ad22bbc4f49edc417dac0/exercises/standard_library_types/iterators3.rs>iterator3</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/959008284834bece0196a01e17ac69a7e3590116/exercises/standard_library_types/iterators4.rs>iterators4</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/ec2d4bd3ee665f2a4c79dd42c41078223074d4c1/exercises/macros/macros3.rs>macros3</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/6bb0b48b100fe4af5bddbcf639e8843350b62555/exercises/macros/macros4.rs>macros4</a></li>
+<li><a href=https://github.com/rust-lang/rustlings/blob/bb5f404e35f0091b4beb691105e7ed2a94ce4a13/exercises/conversions/as_ref_mut.rs>as_ref_mut</a></li>
+</ul>
+<h1 id=今後やりたいこと>今後やりたいこと</h1>
+<ul>
+<li><code>move_semantics5</code> の理由を調べる</li>
+<li>Error の扱いに慣れる</li>
+<li>macro に慣れる</li>
+</ul>
+<h1 id=感想>感想</h1>
+<p>この資料は 2022/02/13 - 2022/02/14 にかけて、4 回に分けて合計 5 時間 20 分かけて読み終えました。前半半分が 1 時間くらいでスッと終了し、後半は知らないことが多く調べたりメモして時間をかけました。</p>
+<p>英語の問題文や指示ですがそんなに分量はないし、コードとコンパイルエラーを見れば大体分かるので苦労しませんでした。</p>
+<p>詰まった問題を眺めてみると、Iterator, Macro, Error にまつわる Box やトレイトなどのトピックが苦手なようです。これらはあまり使ったことがないという点と、メソッドがめちゃくちゃ多くてこんな便利メソッドがあるの！みたいなことがよく起こることが理由にありそうです。</p>
+<p>また、比較的できた問題としては <code>&str</code> と <code>String</code> の違いを問うものがありました。これは <a href=https://docs.uta8a.net/learn-rust>サークルの Rust 講習会</a> でこの違いを質問されたり講義したりして裏でかなり調べていたことが実力につながっているのだと思います。ということは、人に教える資料として Iterator 編と Macro 編と Error 編を作れば万事解決ですね。人に説明できる水準で理解することは大切だと改めて思いました。</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

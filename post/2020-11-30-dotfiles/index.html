@@ -1,0 +1,370 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><ul>
+<li>この記事は <a href=https://adventar.org/calendars/5209>広島大学 IT エンジニア Advent Calendar 2020</a> の 1 日目です。新しい PC を買って vim を入れて git を入れて&mldr;とか、VirtualBox で新しく VM 立ち上げて設定して&mldr;と何度も同じことをしていると自動化したくなります。テストを含めてやってしまいましょう！</li>
+<li>[使用技術、キーワード] ansible, goss, Docker, dotfiles, GitHub Actions</li>
+<li>なにか間違いや感想ありましたら <a href=https://twitter.com/kaito_tateyama>Twitter: @kaito_tateyama</a> か <a href=https://marshmallow-qa.com/kaito_tateyama>マシュマロ</a> にお願いします。</li>
+</ul>
+<h2 id=-目次># 目次</h2>
+<ul>
+<li>まず、<strong>目標</strong>、<strong>環境</strong>、<strong>概要</strong>、<strong>やってみる</strong> でざっくりと PC の初期セットアップする流れを見ていきます。</li>
+<li>後半は、<strong>用語説明</strong>、<strong>ディレクトリ構成の説明</strong>、<strong>ansible について</strong>、<strong>goss について</strong>、<strong>GitHub Actions について</strong>を通して、セットアップのために使うツールとして ansible、セットアップの事前に行うテストツールとして goss と GitHub Actions を説明します。</li>
+<li>そして<strong>その他</strong>で細かい話やなぜ ansible なのかを述べます。</li>
+</ul>
+<h2 id=-目標># 目標</h2>
+<ul>
+<li>neovim を新 PC に入れる作業を自動化する。そのとき、スクリプトがちゃんと動くことを保証するために GitHub Actions で CI を回してテストを行う。</li>
+</ul>
+<h2 id=-環境># 環境</h2>
+<ul>
+<li>使用するコードは <a href=https://github.com/uta8a/dotfiles>https://github.com/uta8a/dotfiles</a> で公開しています。</li>
+<li>以下の環境で確認しています。(2020/11/30 現在)</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>OS: Ubuntu20.04
+ansible: 2.9.6
+goss: v0.3.15
+Docker: version 19.03.8, build afacb8b7f0
+docker-compose: version 1.25.0, build unknown
+</code></pre></div><h2 id=-概要># 概要</h2>
+<ul>
+<li>以下のような手順で PC の初期セットアップをしていきます。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>1. PCを買う
+    - OSを入れる。(Ubuntu 20.04)
+    - credential(SSH keysなど)をダウンロード(USBやクラウド(private storage)経由)
+2. https://github.com/uta8a/dotfiles にアクセス
+    - install.ubuntu-20.sh の中身をコピー
+    - 手元でinstall.ubuntu-20.shにそれを書き込み、chmod +xしてから実行 # ここでansibleとgitが入る
+3. git clone https://github.com/uta8a/dotfiles して手元にリポジトリを持ってくる
+    - cd dotfiles
+    - ansible-playbook main.yml -K # ansibleを実行してセットアップ
+</code></pre></div><ul>
+<li>期待される結果として、neovim が使える(nvim コマンドが使える)ようになっていれば OK です。</li>
+<li><strong>注意</strong> gitconfig など、私個人に依存する情報が入っているので、clone して試すときは後半の仕組みやディレクトリの構造を理解して必要な箇所を変更して行ってください。</li>
+</ul>
+<h2 id=-やってみる># やってみる</h2>
+<ul>
+<li>今回は新しい PC を用意できなかったので VM(VirtualBox+Vagrant)で行いました。使用したのは <code>bento/ubuntu-20.04</code> です。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>19:29 $ ./install.ubuntu-20.sh
+19:32 $ ansible-playbook main.yml -K # password入力を求められる
+19:37 $ nvim # 使えた！
+</code></pre></div><ul>
+<li>install する量にもよりますが、今回はだいたい 10 分弱くらいセットアップにかかるようです。</li>
+<li>neovim を使うことができるようになりました。やったね！</li>
+</ul>
+<p><img src=./p-1.png alt=p-1.png></p>
+<h2 id=-用語説明># 用語説明</h2>
+<ul>
+<li>ansible: <a href=https://github.com/ansible/ansible>repository</a> / <a href=https://docs.ansible.com/ansible/latest/index.html>documents</a> / サーバのコマンドラインでやれる設定をコード化できる自動化ツール。複数回実行したときに、サーバの状態が変わらない冪等性(idempotency)が特徴。</li>
+<li>goss: <a href=https://github.com/aelsabbahy/goss>repository</a> / <a href=https://github.com/aelsabbahy/goss/blob/master/docs/manual.md>documents</a> / サーバの状態を yaml で指定して、その状態になっているかテストすることができる。</li>
+<li>Docker: <a href=https://github.com/docker>repository</a> / <a href=https://docs.docker.com/reference/>documents</a> / 仮想化された環境、コンテナを扱う技術。</li>
+</ul>
+<h2 id=-ディレクトリ構成の説明># ディレクトリ構成の説明</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>.
+├── action.yml
+├── docker-compose.yml
+├── Dockerfile
+├── entrypoint.sh
+├── goss.yaml
+├── install.sh
+├── install.ubuntu-20.sh
+├── ISSUE.md
+├── LICENSE
+├── main.yml
+├── os
+│   └── ubuntu-20.yml
+├── README.md
+└── roles
+    ├── cfg
+    │   ├── files
+    │   ├── README.md
+    │   ├── tasks
+    │   │   └── main.yml
+    │   ├── tests
+    │   │   └── goss.yaml
+    │   └── vars
+    │       └── main.yml
+    └── neovim
+        ├── files
+        ├── README.md
+        ├── tasks
+        │   └── main.yml
+        ├── tests
+        │   └── goss.yaml
+        └── vars
+            └── main.yml
+</code></pre></div><ul>
+<li>ひとつひとつ説明していく</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style=text-align:left>ファイル名</th>
+<th style=text-align:left>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style=text-align:left>action.yml</td>
+<td style=text-align:left>GitHub Actions で使う</td>
+</tr>
+<tr>
+<td style=text-align:left>docker-compose.yml</td>
+<td style=text-align:left>ローカルで goss validate を回すときに使う</td>
+</tr>
+<tr>
+<td style=text-align:left>Dockerfile</td>
+<td style=text-align:left>ローカルと GitHub Actions で使用</td>
+</tr>
+<tr>
+<td style=text-align:left>entrypoint.sh</td>
+<td style=text-align:left>GitHub Actions で、Dockerfile とセットで使う</td>
+</tr>
+<tr>
+<td style=text-align:left>.github</td>
+<td style=text-align:left>GitHub Actions workflow</td>
+</tr>
+<tr>
+<td style=text-align:left>goss.yaml</td>
+<td style=text-align:left>goss で指定する yaml。roles/**/tests/goss.yaml をまとめたもの</td>
+</tr>
+<tr>
+<td style=text-align:left>install.sh</td>
+<td style=text-align:left>(deprecated なので後で消す)</td>
+</tr>
+<tr>
+<td style=text-align:left>install.ubuntu-20.sh</td>
+<td style=text-align:left>PC で一番最初に行う。この段階では git も使えない状態なので GitHub(web)からコピーして使う</td>
+</tr>
+<tr>
+<td style=text-align:left>ISSUE.md</td>
+<td style=text-align:left>(for development, メモ)</td>
+</tr>
+<tr>
+<td style=text-align:left>LICENSE</td>
+<td style=text-align:left>MIT license</td>
+</tr>
+<tr>
+<td style=text-align:left>main.yml</td>
+<td style=text-align:left>ansible-playbook で指定する。ここで OS の判別を行う。</td>
+</tr>
+<tr>
+<td style=text-align:left>os/</td>
+<td style=text-align:left>Ubuntu20.04, 将来的には macOS など、OS 別に playbook を定義したい。</td>
+</tr>
+<tr>
+<td style=text-align:left>README.md</td>
+<td style=text-align:left>説明書</td>
+</tr>
+<tr>
+<td style=text-align:left>roles/</td>
+<td style=text-align:left>ansible の roles.(次の章で詳しく説明する)</td>
+</tr>
+</tbody>
+</table>
+<h2 id=-ansible-について># ansible について</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>roles/cfg/
+├── files
+├── README.md
+├── tasks
+│   └── main.yml
+├── tests
+│   └── goss.yaml
+└── vars
+    └── main.yml
+</code></pre></div><ul>
+<li><code>ansible-playbook</code> を実行したとき、まず指定した yaml( <code>main.yml</code> )を見に行って、次にその中で指定された yaml( <code>os/ubuntu-20.yml</code> )を見に行きます。 <a href=https://github.com/uta8a/dotfiles/blob/683a89ccffc6bbf439eadefaa08e1f9faf9c05ad/os/ubuntu-20.yml><code>os/ubuntu-20.yml</code></a> を見てみましょう。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Update apt</span><span class=w>
+</span><span class=w>  </span><span class=l>...</span><span class=w>
+</span><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Setup config</span><span class=w>
+</span><span class=w>  </span><span class=nt>import_role</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>cfg</span><span class=w>
+</span><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Install neovim &amp; neovim settings</span><span class=w>
+</span><span class=w>  </span><span class=l>...</span><span class=w>
+</span></code></pre></div><ul>
+<li>一部省略していますが、 <code>import_role</code> で <code>cfg</code> という名前の role を見に行っていることがわかります。</li>
+<li>では <a href=https://github.com/uta8a/dotfiles/tree/683a89ccffc6bbf439eadefaa08e1f9faf9c05ad/roles/cfg><code>roles/cfg</code></a> を見てみましょう。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=c># tasks/main.yml</span><span class=w>
+</span><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Install pkgs via apt</span><span class=w>
+</span><span class=w>  </span><span class=nt>apt</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>pkg</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>cmake</span><span class=w>
+</span><span class=w>      </span><span class=l>...</span><span class=w>
+</span><span class=w>  </span><span class=nt>become</span><span class=p>:</span><span class=w> </span><span class=kc>yes</span><span class=w>
+</span><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Add git configuration</span><span class=w>
+</span><span class=w>  </span><span class=nt>git_config</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=l>...</span><span class=w>
+</span><span class=w></span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Create .cache</span><span class=w>
+</span><span class=w>  </span><span class=nt>file</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=l>...</span><span class=w>
+</span></code></pre></div><ul>
+<li><code>become: yes</code> などは ansible の documents を見れば分かるので省略します。</li>
+<li>ここでようやく終着点で、 <code>apt install</code> など、必要なパッケージをインストールしたり、file を配置したりします。これらの作業単位を <code>task</code> と呼びます。その task をまとめたものが <code>role</code> になります。</li>
+<li>ここまでで、ansible が role を見に行って task を実行し、サーバや PC にパッケージをインストールするなどの設定を行っていることが分かりました。</li>
+</ul>
+<h2 id=-goss-について># goss について</h2>
+<ul>
+<li>ここまでで、ansible の動きは分かりました。</li>
+<li>では、それらをテストするにはどうしたらよいでしょうか？実機で実際に ansible を流す前に、Docker のような仮想的な環境を用いてテストを行いましょう！</li>
+<li>ここでは goss というツールを使います。(ansible molecule という選択肢も検討しましたがこちらを選びました。理由はその他で後述)</li>
+<li>goss は以下のようにバイナリをとってきて設定ファイル( <code>goss.yaml</code> )を指定すればよいです。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ goss -g ./goss.yaml validate
+</code></pre></div><ul>
+<li><code>goss.yaml</code> を見ていくと、以下のようになっています。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>gossfile</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>roles/cfg/tests/goss.yaml</span><span class=p>:</span><span class=w> </span>{}<span class=w>
+</span><span class=w>  </span><span class=nt>roles/neovim/tests/goss.yaml</span><span class=p>:</span><span class=w> </span>{}<span class=w>
+</span></code></pre></div><ul>
+<li>ここでは複数の goss の設定ファイルをまとめています。cfg の方を見てみましょう。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>package</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>vim</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>title</span><span class=p>:</span><span class=w> </span><span class=l>Installed check vim</span><span class=w>
+</span><span class=w>    </span><span class=nt>installed</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>  </span><span class=nt>git</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>title</span><span class=p>:</span><span class=w> </span><span class=l>Installed check git</span><span class=w>
+</span><span class=w>    </span><span class=nt>installed</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w></span><span class=nt>file</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>~/.gitconfig</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>title</span><span class=p>:</span><span class=w> </span><span class=l>File check gitconfig</span><span class=w>
+</span><span class=w>    </span><span class=nt>exists</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>    </span><span class=nt>contains</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;name = uta8a&#34;</span><span class=w>
+</span></code></pre></div><ul>
+<li>ここが具体的にテストを行っているところです。状態を記述していますね。</li>
+<li>以上で、goss と設定ファイルについて述べてきました。</li>
+</ul>
+<h2 id=-github-actions-について># GitHub Actions について</h2>
+<ul>
+<li>ここまでで、ansible で設定をする →goss でその状態になっているかテストする流れが分かりました。</li>
+<li>では、これらを Docker 上で行い、 <code>goss validate</code> の結果を見てみましょう。</li>
+<li><code>.github/workflows/main.yml</code></li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Test dotfiles on GitHub Actions</span><span class=w>
+</span><span class=w></span><span class=nt>on</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=l>push]</span><span class=w>
+</span><span class=w></span><span class=nt>jobs</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>skipci</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>runs-on</span><span class=p>:</span><span class=w> </span><span class=l>ubuntu-latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>steps</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=l>echo &#34;[skip ci] ${{ contains(github.event.head_commit.message, &#39;[skip ci]&#39;) }}&#34;</span><span class=w>
+</span><span class=w>  </span><span class=nt>test_ubuntu_20</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Test for Ubuntu 20.04</span><span class=w>
+</span><span class=w>    </span><span class=nt>runs-on</span><span class=p>:</span><span class=w> </span><span class=l>ubuntu-latest</span><span class=w>
+</span><span class=w>    </span><span class=nt>if</span><span class=p>:</span><span class=w> </span><span class=l>contains(github.event.head_commit.message, &#39;[skip ci]&#39;) == false</span><span class=w>
+</span><span class=w>    </span><span class=nt>steps</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Checkout the repository</span><span class=w>
+</span><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>actions/checkout@v2</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Build docker</span><span class=w>
+</span><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>./</span><span class=w>
+</span><span class=w>        </span><span class=nt>id</span><span class=p>:</span><span class=w> </span><span class=l>dotfiles</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Message</span><span class=w>
+</span><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=l>echo &#34;See Build docker goss output&#34;</span><span class=w>
+</span></code></pre></div><ul>
+<li>skipci で、コミットメッセージに <code>[skip ci]</code> が含まれていた場合に後続の <code>test_ubuntu_20</code> を行わず skip します。</li>
+<li><code>uses</code> で <code>./</code> を指定するとその場所の Dockerfile をビルドします。このとき、Dockerfile の entrypoint.sh で <code>goss validate</code> しているので、テストが失敗すれば Exit Status が 0 以外になって GitHub Actions も Fail します。</li>
+<li>以上で、GitHub Actions で push したら CI を回して、ansible を流して goss でテストする Docker をたてることでテストできることが分かりました。</li>
+<li>下は GitHub Actions で goss validate が動いている様子です。(5 つのテストが pass している)</li>
+</ul>
+<p><img src=./p-2.png alt=p-2.png></p>
+<h2 id=その他>その他</h2>
+<h2 id=-なぜ個人環境構築に-ansible-を選んだのか># なぜ個人環境構築に ansible を選んだのか？</h2>
+<ul>
+<li>冪等性があるからです。</li>
+<li>例えば、shell script を使うとファイルのダウンロードなど、2 度スクリプトを流したときに困る場面がでてきます。解決するために shell script をたくさん書いて条件分岐するより、ansible を使ったほうがよいと判断しました。</li>
+</ul>
+<h2 id=-apt-で大量に入れると時間がかかる># apt で大量に入れると時間がかかる</h2>
+<ul>
+<li>setup 時に apt で大量に入れると結構時間かかります。これは GitHub Actions でも効いてくるので、時間がかかって不安な場合は verbose 出したほうがいいかもしれない。(<code>-v, -vv, -vvv</code>)</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ ansible-playbook main.yml -K
+BECOME password:
+<span class=o>[</span>WARNING<span class=o>]</span>: provided hosts list is empty, only localhost is available. Note that the
+implicit localhost does not match <span class=s1>&#39;all&#39;</span>
+
+PLAY <span class=o>[</span>Setup environments<span class=o>]</span> **************************************************************
+
+TASK <span class=o>[</span>Gathering Facts<span class=o>]</span> *****************************************************************
+ok: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>Update apt<span class=o>]</span> **********************************************************************
+ok: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>cfg : Install pkgs via apt<span class=o>]</span> ****************************************************** <span class=c1># ここでめっちゃ時間かかる</span>
+changed: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>cfg : Add git configuration<span class=o>]</span> *****************************************************
+-- snipped --
+
+TASK <span class=o>[</span>cfg : Create .cache<span class=o>]</span> *************************************************************
+changed: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>neovim : Install pre requirements<span class=o>]</span> ***********************************************
+changed: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>neovim : Add repository <span class=k>for</span> nvim<span class=o>]</span> ************************************************
+changed: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>neovim : Install nvim<span class=o>]</span> ***********************************************************
+changed: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>neovim : Fetch dein.vim<span class=o>]</span> *********************************************************
+changed: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>neovim : Install dein.vim<span class=o>]</span> *******************************************************
+changed: <span class=o>[</span>localhost<span class=o>]</span>
+
+TASK <span class=o>[</span>neovim : Clean up installer<span class=o>]</span> *****************************************************
+changed: <span class=o>[</span>localhost<span class=o>]</span>
+
+PLAY RECAP *****************************************************************************
+localhost                  : <span class=nv>ok</span><span class=o>=</span><span class=m>11</span>   <span class=nv>changed</span><span class=o>=</span><span class=m>9</span>    <span class=nv>unreachable</span><span class=o>=</span><span class=m>0</span>    <span class=nv>failed</span><span class=o>=</span><span class=m>0</span>    <span class=nv>skipped</span><span class=o>=</span><span class=m>0</span>    <span class=nv>rescued</span><span class=o>=</span><span class=m>0</span>    <span class=nv>ignored</span><span class=o>=</span><span class=m>0</span>
+</code></pre></div><h2 id=-github-actions-で自分の-dockerfile-を使う># GitHub Actions で自分の Dockerfile を使う</h2>
+<ul>
+<li>action.yml, Dockerfile, entrypoint.sh が必要で、それらを workflows から指定すると自前の Docker が組めるという認識をしています。ただあまり深く分かってないです&mldr;</li>
+</ul>
+<h2 id=-molecule-をあきらめて-goss-を採用した理由># molecule をあきらめて goss を採用した理由</h2>
+<ul>
+<li>molecule は root での動きが想定されている気がします。driver docker で<code>sudo docker</code>したいと思ったときに、sudo なし docker にしなければいけない雰囲気があり、回避策が見つけられず断念しました。(個人的に sudo なし docker コマンドを使いたくなかったという理由です)</li>
+<li>また、molecule でテストするとなると、最初に docker と molecule を入れるための ansible を書く必要があり、ansible が 2 段階になり複雑化しそうでした。goss はバイナリを取ってくるだけでよいので、ansible の設定ファイルをすっきりさせることができました。</li>
+<li>最後に、goss は定期的に回せるスクリプトである点が良いと思いました。ansible molecule はあくまで ansible に対するテストですが、goss は使い方によって定期的に PC の状態を確認する方にも使えます。これは例えば<code>.bashrc</code>などに変更があったとき、ローカル PC で goss を回してそれに気づき、dotfiles を更新するといった使い方もできそうです。</li>
+</ul>
+<h2 id=終わりに>終わりに</h2>
+<ul>
+<li>まとめ</li>
+<li>⭐ ansible は yaml をたどっていくと、具体的には <code>roles/**/tasks/main.yml</code> の中に書いてある処理を行っている。</li>
+<li>⭐ goss は設定ファイルの yaml に状態を記述してテストする。</li>
+<li>⭐ GitHub Actions で CI test を回すとき、ci skip なども使える(docuement のみの更新は skip ci する)</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

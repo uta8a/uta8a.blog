@@ -1,0 +1,80 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>ABC138D Ki を本番で嘘解法で通してしまった(after_contest で気づいた)ので、AC コードと自分のコードにランダムにケースを入れて Hack ケースを探そう！と思いました。このとき、木のテストケースの作り方が分からなかったので Twitter で教えてもらいました。以下、それらをまとめておきます。意見をくださった方、ありがとうございます。</p>
+<h1 id=便利なツール>便利なツール</h1>
+<p>グラフの可視化には<a href=https://hello-world-494ec.firebaseapp.com/about.html>GRAPH×GRAPH</a> が便利です。</p>
+<h1 id=木を順に構成する>木を順に構成する</h1>
+<p>Python3 で書きました。</p>
+<pre tabindex=0><code>import itertools, random
+N = 11
+R = 10
+l = list(range(1,N))
+h = list(itertools.permutations(l))
+seed = list(h[R])
+graph = []
+edge = []
+for i in seed:
+    if len(graph) != 0:
+        edge.append([i, graph[random.randrange(len(graph))]])
+    graph.append(i)
+print(edge)
+for i in edge:
+    print(&quot;{} {}&quot;.format(i[0], i[1]))
+</code></pre><p>output</p>
+<pre tabindex=0><code>[[2, 1], [3, 1], [4, 2], [5, 3], [6, 2], [8, 4], [10, 4], [7, 2], [9, 2]]
+2 1
+3 1
+4 2
+5 3
+6 2
+8 4
+10 4
+7 2
+9 2
+</code></pre><p>GRAPH×GRAPH での結果<br>
+<img src=./p-1.png alt><br>
+木ができています！<br>
+<strong># 原理</strong><br>
+$1$から$N$までの順列からランダムにひとつとってきて<code>seed</code>とします。以下のように木を構成します。<code>graph</code>はその時点での木の頂点、<code>edge</code>は出力する辺の集合を表します。<br>
+1.まず<code>seed[0]</code>を<code>graph</code>に加える<br>
+2.<code>seed[i]</code>と、<code>graph</code>からひとつだけ任意に選んだ頂点<code>K</code>をつなぐ。具体的には、<code>edge</code>に<code>[seed[i], K]</code>を追加する。<br>
+3.<code>seed[i]</code>を<code>graph</code>に加える。<br>
+以降、<code>seed[i]</code>がとれなくなるまで手順 2,3 を繰り返す。<br>
+手順 2 で連結かつ閉路が存在しないことが確認できるので、これは木になります。</p>
+<p>注意点としては、このコードでは<code>itertools.permutations</code>に時間がかかっているので、適当に順列を指定してあげればよいです。</p>
+<h1 id=unionfind-を使う>UnionFind を使う</h1>
+<p>これたぶん次の完全グラフを間引く方法と似ている気がします。(よく分からなかった)<br>
+おそらく Kruscal が UnionFind をつかうので、それと近い…？</p>
+<h1 id=完全グラフを間引いて全域木を作る>完全グラフを間引いて全域木を作る</h1>
+<p>(後でやる)</p>
+<h1 id=prufer-sequence>Prufer Sequence</h1>
+<p><a href=https://en.wikipedia.org/wiki/Pr%C3%BCfer_sequence>https://en.wikipedia.org/wiki/Pr%C3%BCfer_sequence</a><br>
+(後でやる)</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

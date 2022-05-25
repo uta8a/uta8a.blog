@@ -1,0 +1,49 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><ul>
+<li><a href=https://zenn.dev/catnose99/articles/3d2f439e8ed161>絵文字をファビコンとして表示する簡単な方法</a> 仕組みは SVG をファビコンに指定できるので、テキストを SVG に埋め込めばいけるという話。個人的に、開発で favicon が vercel の三角形になりがちなのでこういう手軽さはよいと思った。</li>
+<li><a href=https://developer.hatenastaff.com/entry/2021/05/14/093000>GraphQL IDE の “GraphiQL” をカスタマイズして、開発ツールとして活用する</a> 読み方は"ぐらふぃくる"らしい。GraphQL のクライアントをカスタマイズしてデバッグ時に使う preset などをツールバーからぽちっとするだけで初期クエリを生成できるようにしている。</li>
+<li><a href=http://www.sooota.com/locate%E3%81%A8updatedb/>locate と updatedb</a> mlocate パッケージと updatedb コマンドを用いて、例えば docker-compose で up したまま restart:always にしてしまったがどのフォルダで立ち上げたかわからないときに、以下のように検索を掛けられる。find を何度も回すよりも一回 DB 作ってからの方が速い。updatedb は cron で回すとよい。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>updatedb <span class=c1># DBアップデート 時間かかる</span>
+locate -r <span class=s2>&#34;/.terraform</span>$<span class=s2>&#34;</span> <span class=c1># r - regex</span>
+locate -r <span class=s2>&#34;docker-compose*&#34;</span> <span class=c1># match docker-compose.dev.yml, ...</span>
+</code></pre></div><ul>
+<li><a href=https://blog.appsignal.com/2020/07/01/a-deep-dive-into-v8.html>A Deep Dive Into V8</a> V8 ではコンパイル、GC の過程、シングルスレッドがポイントになる。 v5.9(2017)では Ignition コンパイラが Turbofan になっている。動的言語は実行中にオブジェクトが書き換わるので、allocate する領域をどのくらいとればいいのか分からず困る。例示として HiddenClass の話が出た。</li>
+<li><a href=https://zenn.dev/voluntas/scraps/82b9e111f43ab3>WebRTC を今から学ぶ人に向けて</a> 用語の意味が分かってから勉強すると早い。トラブル解析や負荷試験、コーデックにも触れられている。</li>
+<li><a href=https://future-architect.github.io/articles/20201113/>LocalStack に向けて Terraform を実行する</a> <a href=https://github.com/localstack/localstack>LocalStack</a> という、AWS の環境のローカル環境テストとして使えるエミュレーターのようなものと terraform の組み合わせについての記事</li>
+<li><a href=https://shinyaigeek.dev/post/log-2020/>2020 年の振り返りと次やりたいこと</a> しにゃいさんの振り返り。開発でフロントエンドの再発明を行っている、babel/traverse で AST が扱えること(特に prefetch に関わりそうなので個人的にも CSS Animation に生かせそう)、WriteCodeEveryDay をしていることが参考になる。</li>
+<li><a href=https://qiita.com/hkak03key/items/a960b7523557f03bc098>IAM role における、混乱した代理問題についての説明</a> 混乱した代理問題という、arn を推測してサービスに登録することで信頼関係も含めて完了している設定を適用して権限を得る問題への ExternalID を利用した対策</li>
+<li><a href=https://github.com/banga/git-split-diffs>banga/git-split-diffs</a> git diff を GitHub style で terminal から見れる。</li>
+<li><a href=https://corp.classi.jp/news/2416/>より安全にご利用いただけるようになった Classi のご報告と今後の取り組みについて</a> インシデントの検知からその後の対策までが書かれている。メルカリなど見ていると、GitHub には侵入されるという前提で考えた方がよい。</li>
+<li><a href=https://konifar-zatsu.hatenadiary.jp/entry/2021/05/12/232722>「何か質問や意見ありますか」の後の無言対策</a> 出席をとります、と背景の変更、とテキストチャットを使え、が参考になる</li>
+<li><a href=https://www.school.ctc-g.co.jp/columns/nakai2/nakai2104.html>Google の新しい分散型 SDN コントローラー「Orion」（パート 1）</a> google のデータセンターに導入された分散型 SDN コントローラー Orion の紹介。Jupyter と B4 というネットワークシステムと、Orion のアーキテクチャの仕組みが説明されている。</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

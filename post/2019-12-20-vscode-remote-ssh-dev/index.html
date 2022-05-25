@@ -1,0 +1,105 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>この記事は [広島大学 IT エンジニアアドベントカレンダー] の 9 日目です。<br>
+私は大学に Windows 機と Linux(Ubuntu)機の 2 台の laptop を持っていっています。空きコマにさあコード書くぞ〜！と思ったときに開くのはいつも Ubuntu。Linux 機の方が貧弱なスペックなのですが、コード書くまでにかかる時間は Windows より Linux の方が速いのです。(私は Windows では仮想環境で Ubuntu を立ち上げてその中で開発するのでそれはそう)<br>
+しかし Windows でも快適に開発したい！というわけで、自分なりに快適だと思った環境をメモしておきます。<br>
+<a href=https://code.visualstudio.com/docs/remote/ssh>Remote Development using SSH</a>を見ると詳しくちゃんとしたことが書いてあるので、こちらも参考にしてください。</p>
+<h1 id=目標>目標</h1>
+<ul>
+<li>仮想環境で SVG を wget して、それを VSCode からファイルクリックすると見れる！という環境を構築する(なぜこれが目標なのかというと、<a href=https://twitter.com/es__135>@imiko</a> さんが仮想環境で生成した svg を楽に見たいと言っていたので)</li>
+</ul>
+<h1 id=環境>環境</h1>
+<p>以下の環境で確認しています。</p>
+<pre tabindex=0><code>Windows 10 Home
+Vagrant 2.2.6
+VirtualBox 6.0.14
+VSCode 1.41.0
+</code></pre><ul>
+<li>仮想環境は<code>bento/ubuntu-18.04</code>を使用しています。</li>
+</ul>
+<p><strong>ホストでインストールするもの</strong></p>
+<ul>
+<li>VirtualBox</li>
+<li>Vagrant</li>
+<li>VSCode</li>
+</ul>
+<p>VSCode で必要な Extension</p>
+<ul>
+<li>Remote-SSH<br>
+<img src=./p-1.png alt=Remote-SSH></li>
+</ul>
+<h1 id=手順>手順</h1>
+<p><strong>Vagrant から仮想環境の立ち上げ</strong><br>
+VSCode を立ち上げます。<br>
+<img src=./p-2.png alt=File><br>
+<code>Open Code</code>で Vagrantfile のあるフォルダを開き、<code>Ctrl+`</code>で VSCode 内でターミナルを開き、Windows のターミナルから<code>vagrant up</code>します。</p>
+<p><strong>SSH Configuration</strong><br>
+はじめてのときは SSH 接続するために config を書いておく必要があります。<br>
+<img src=p-3.png alt="SSH Config"><br>
+<code>Ctrl+Shift+p</code>で command palette を開き、<code>Remote-SSH: Open Configuration FIle...</code>を開きます。<br>
+次に、Windows のターミナルで<code>vagrant ssh-config</code>と打ち込みます(vagrant up した状態で、vagrantfile が存在するディレクトリで行ってください)<br>
+以下のような内容が出てくると思います。それを Remote-SSH で開いたファイル<code>C:\Users\$UserName\.ssh\config</code>にコピペします。<br>
+<img src=./p-4.png alt="Config File"><br>
+これで SSH の設定はできました。</p>
+<p><strong>SSH で仮想環境に接続する</strong><br>
+以下の 2 点が達成できているでしょうか。</p>
+<ul>
+<li><code>vagrant up</code>している</li>
+<li>SSH Config 周りが設定できている<br>
+それでは、SSH 接続していきましょう。<br>
+<img src=./p-5.png alt><br>
+SSH 接続できるアイコンがあるのでそれを押して、SSH TARGETS を選びます。今回は sandbox を選びました。<br>
+<img src=./p-6.png alt><br>
+sandbox を選択したときに出現する、右のアイコンをクリックしてください。VSCode の新しい Window がポップアップしたと思います。おそらく初めて接続した時はは RSA finger print についての警告が出てくると思うのですが Yes で OK です。<br>
+これで接続ができました。<code>Ctrl + `</code>でターミナルに接続すると、仮想環境のターミナルになっていると思います。<br>
+今回は<code>mkdir sandbox</code>して、Open Folder では<code>sandbox</code>を選択しました。<br>
+<img src=./p-7.png alt></li>
+</ul>
+<p><strong>SVG を表示する</strong><br>
+今回はテストなので、wget で SVG ファイルを引っ張ってきましょう。<a href=https://gist.github.com/AmeliaBR/193a8f36eb637af1684201821afd5f66>Testing SVG files in GitHub Gists</a>を利用しました。<br>
+仮想環境上のターミナルで、以下を実行します。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>wget https://gist.githubusercontent.com/AmeliaBR/193a8f36eb637af1684201821afd5f66/raw/2f695692701db7be18333926b41b7e9c15944d73/basic-marker.svg
+</code></pre></div><p><code>sandbox/</code>以下にファイルが保存されました。<br>
+VSCode の Extension を入れます。<a href="https://marketplace.visualstudio.com/items?itemName=cssho.vscode-svgviewer">SVG Viewer</a>を入れました。このとき、SSH で接続した仮想環境上で開いている VSCode でインストールすることが重要です。 Extension が<code>SSH:UBUNTU-Installed</code>のようになっていれば SSH 接続先でその Extension が使えます。詳しくは <a href=https://code.visualstudio.com/docs/remote/ssh#_managing-extensions>Managing Extensions</a>を見てください。<br>
+これでファイルを開いてから svg viewer の機能を使えば SVG が見れるようになりました。VSCode のファイル上で右クリックして SVG Viewer の機能を選択すればよいです。</p>
+<p><strong>終了時</strong><br>
+終わる時は SSH 接続を切って、<code>vagrant halt</code>を忘れずに。</p>
+<h1 id=tips>Tips</h1>
+<p><strong>ファイル管理はどうする？</strong><br>
+Windows では共有フォルダを作ってやると npm install とかでうまくいかないことが多かったので、今は共有フォルダは作っているけどそこはほしいファイルを<code>mv ./hoge ../host_directory/</code>して移すために使っています。開発は共有フォルダではやらずに、git で管理するという感じです。</p>
+<p><strong>ブラウザとかどうする？</strong><br>
+vagrantfile で<code>config.vm.network</code>あたりを設定してあげるとそれほど困りません。<br>
+あと、Nuxt.js で開発しているとき<code>localhost:3000</code>で立ち上げて Linux ターミナルのリンクをクリックしたら自動でホスト側のリンクに変換されて chrome で開いたのですがこの機能はなんですか&mldr;</p>
+<p><strong>ホスト → 仮想環境上にファイルを送りたい！</strong><br>
+エクスプローラを開いて VSCode の EXPLORER にドラッグアンドドロップでファイルを送信できます。なんだこの便利機能&mldr;</p>
+<h1 id=終わりに>終わりに</h1>
+<p>以上です。便利なので VSCode を使いましょう！<br>
+何か間違いや指摘などあれば、お手数ですが Twitter: <a href=https://twitter.com/kaito_tateyama>@kaito_tateyama</a>までお願いします。</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

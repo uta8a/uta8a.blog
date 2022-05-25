@@ -1,0 +1,391 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>InterKosenCTF2019 に mitsu さんと二人で、チーム StarrySky として参加しました。成績はチームで 13 位/91 人が正の得点、個人では 12 位でした。得点は、4332pts のうち 2944pts を入れました。</p>
+<p><img src=p-1.png alt=p-1></p>
+<p>勝手にライバルだと思っている おたまこうせん, Wani Hackase, 生活習慣崩壊ズ, Contrail には完敗です。今回 Contrail 強かったですね&mldr;</p>
+<p><img src=p-2.png alt=p-2></p>
+<p>Pwn と Web が課題ですね</p>
+<p><img src=p-3.png alt=p-3></p>
+<p>saferm と E-Sequel-Injection が通せたのは嬉しかったです</p>
+<p><img src=p-4.png alt=p-4></p>
+<p>うごくペンギンさんかわいいです</p>
+<h2 id=writeup>Writeup</h2>
+<ul>
+<li><a href=#welcome>Welcome</a></li>
+<li><a href=#kurukuru-shuffle>Kurukuru Shuffle</a></li>
+<li><a href=#uploader>uploader</a></li>
+<li><a href=#temple-of-time>Temple of Time</a></li>
+<li><a href=#lost-world>lost world</a></li>
+<li><a href=#fastbin-tutorial>fastbin tutorial</a></li>
+<li><a href=#pascal-homomorphicity>pascal homomorphicity</a></li>
+<li><a href=#saferm>saferm</a></li>
+<li><a href=#survey>Survey</a></li>
+<li><a href=#e-sequel-injection>E-Sequel-Injection</a></li>
+<li><a href=#basic_crackme>basic_crackme</a></li>
+</ul>
+<h3 id=welcome>Welcome</h3>
+<p>[200pts, 77solved, warmup, welcome]<br>
+Slack で flag がアナウンスされました<br>
+<code>KosenCTF{g3t_r34dy_f0r_InterKosenCTF_2019}</code></p>
+<h3 id=kurukuru-shuffle>Kurukuru Shuffle</h3>
+<p>[200pts, 53solved, easy, crypto]<br>
+<code>shuffle.py</code>を見ると、ランダムに<code>0</code>から<code>L-1</code>の数字を 3 つ作り、それをもとにして flag の 2 つの文字の swap を<code>L</code>回繰り返しています。ランダムが出てきたときは、全探索するか、ランダムな数値をいっぱいとってきて次が予測できないか、結果からのエスパーのどれかを考えるとよさそうなので、全探索を考えます。<br>
+<code>L=53</code>と<code>secret.py</code>から分かるので、$O(L^3)$をしても大丈夫です。<code>a</code>, <code>b</code>,<code>k</code>の値を全探索していきましょう。<br>
+また、<code>i</code>の値は<code>k->2k->3k->...->(L+1)k(mod L)</code>と変化し、最後の<code>(L+1)k</code>は使われないので、<code>Lk</code>からこれを逆順にたどればよいと分かります。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-py data-lang=py><span class=k>for</span> <span class=n>k</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span><span class=n>L</span><span class=p>):</span>
+    <span class=k>for</span> <span class=n>a</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=n>L</span><span class=p>):</span>
+        <span class=k>for</span> <span class=n>b</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=n>L</span><span class=p>):</span>
+            <span class=n>e</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=s2>&#34;1m__s4sk_s3np41m1r_836lly_cut3_34799u14}1osenCTF{5sKm&#34;</span><span class=p>)</span> <span class=c1># secret</span>
+            <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span>
+            <span class=k>for</span> <span class=n>s</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>L</span><span class=p>):</span>
+                <span class=n>i</span> <span class=o>=</span> <span class=p>((</span><span class=n>L</span><span class=o>-</span><span class=n>s</span><span class=p>)</span><span class=o>*</span><span class=n>k</span><span class=p>)</span> <span class=o>%</span> <span class=n>L</span>
+                <span class=n>s</span> <span class=o>=</span> <span class=p>(</span><span class=n>i</span> <span class=o>+</span> <span class=n>a</span><span class=p>)</span> <span class=o>%</span> <span class=n>L</span>
+                <span class=n>t</span> <span class=o>=</span> <span class=p>(</span><span class=n>i</span> <span class=o>+</span> <span class=n>b</span><span class=p>)</span> <span class=o>%</span> <span class=n>L</span>
+                <span class=n>e</span><span class=p>[</span><span class=n>s</span><span class=p>],</span> <span class=n>e</span><span class=p>[</span><span class=n>t</span><span class=p>]</span> <span class=o>=</span> <span class=n>e</span><span class=p>[</span><span class=n>t</span><span class=p>],</span> <span class=n>e</span><span class=p>[</span><span class=n>s</span><span class=p>]</span> <span class=c1># swap</span>
+
+            <span class=c1># encrypted = &#34;&#34;.join(encrypted)</span>
+            <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;&#34;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>e</span><span class=p>))</span>
+</code></pre></div><p>実際はこれでたくさんの候補がでてきてしまいます。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ python3 shuffle.py <span class=p>|</span> grep ^KosenCTF<span class=o>{</span>
+KosenCTF<span class=o>{</span>5s4m1m1_m4rk_s3np41_1s_s38l9y_cut3_34769l1u<span class=o>}</span>
+KosenCTF<span class=o>{</span>5s4m1m1_m4rk_s3np41_1s_s38l9y_cut3_34769l1u<span class=o>}</span>
+KosenCTF<span class=o>{</span>5s4m1m1_m4sk_s3np41_1s_r34l9y_cut3_38769l1u<span class=o>}</span>
+KosenCTF<span class=o>{</span>5s4m1m1_m4sk_s3np41_1s_r34l9y_cut3_38769l1u<span class=o>}</span>
+KosenCTF<span class=o>{</span>us4m1m1_m4sk_s3np41_1s_r34lly_cut3_38769915<span class=o>}</span>
+KosenCTF<span class=o>{</span>us4m1m1_m4sk_s3np41_1s_r34lly_cut3_38769915<span class=o>}</span>
+</code></pre></div><p>これらを順に submit していくと、当たりました。<br>
+<code>KosenCTF{us4m1m1_m4sk_s3np41_1s_r34lly_cut3_38769915}</code></p>
+<h3 id=uploader>uploader</h3>
+<p>[227pts, 34solved, warmup, web]<br>
+ソースコードが与えられているので読んでみると、以下の 2 点に気づきます</p>
+<p>1.SQLite なので、SQL Injection ができそう。特に search 2.<code>if (count($rows) == 1 && $rows[0][0] === $name && $rows[0][1] == $_GET['passcode'])</code>が、passcode のところで<code>==</code>が使われていて怪しい。</p>
+<p>ここで、2 番に時間を使ってしまったのですが間違いでした。<code>==</code>の両端がユーザー入力に起因するものであれば話が早いのですが、今回は片方が固定されているので難しいようです。例えば、passcode が<code>0e123</code>なら<code>0e123==0</code>が True になるのですが、今回は違いました。 1.を考えていきます。searchbox に<code>') -- </code>を入れてみるとうまく動いたので、<code>UNION</code>して passcode も一緒に抜き出せばよさそうです。<br>
+<code>') UNION SELECT passcode FROM files --</code>と searchbox に入力して、色々出てくるものを片っ端から入力していきましょう。今回はユーザーがアップロード可能なのでハズレもたくさんあります。<br>
+<code>"the_longer_the_stronger_than_more_complicated"</code>が<code>secret_file</code>の passcode になることが分かりました。これで<code>secret_file</code>がダウンロードできます。<br>
+<code>KosenCTF{y0u_sh0u1d_us3_th3_p1ac3h01d3r}</code></p>
+<h3 id=temple-of-time>Temple of Time</h3>
+<p>[285pts, 25solved, medium, forensics, web]<br>
+pcapng ファイルが与えられています。Network 問ですね！<br>
+wireshark で開くと、パケットの量が多いのでとりあえず一つ<code>TCP follows</code>します<br>
+すると、どうやら以下のような payload を送っていることが分かります。</p>
+<pre tabindex=0><code>/index.php?portal='OR(SELECT(IF(ORD(SUBSTR((SELECT+password+FROM+Users+WHERE+username='admin'),1,1))=57,SLEEP(1),'')))#
+</code></pre><p>Blind SQL Injection ですね。パスワードを復元しましょう。<br>
+&mldr;wireshark の使い方が分からないので以下のように<code>string| grep</code>して text ファイルに出力し、それを python で処理しました。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ strings 40142c592afd88a78682234e2d5cada9.pcapng <span class=p>|</span> grep GET &gt; text.txt
+</code></pre></div><p>python code</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>import</span> <span class=nn>urllib.parse</span>
+<span class=n>f</span> <span class=o>=</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;./text.txt&#39;</span><span class=p>,</span> <span class=s1>&#39;r&#39;</span><span class=p>)</span>
+<span class=n>string</span> <span class=o>=</span> <span class=n>f</span><span class=o>.</span><span class=n>readline</span><span class=p>()</span>
+<span class=kn>import</span> <span class=nn>re</span>
+<span class=n>ans</span> <span class=o>=</span> <span class=p>[</span><span class=mi>0</span><span class=p>]</span><span class=o>*</span><span class=mi>40</span>
+<span class=k>while</span> <span class=n>string</span><span class=p>:</span>
+    <span class=n>mod</span> <span class=o>=</span> <span class=n>string</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s2>&#34; &#34;</span><span class=p>)[</span><span class=mi>1</span><span class=p>]</span>
+    <span class=n>tex</span> <span class=o>=</span> <span class=n>urllib</span><span class=o>.</span><span class=n>parse</span><span class=o>.</span><span class=n>unquote</span><span class=p>(</span><span class=n>mod</span><span class=p>)</span>
+    <span class=c1># pattern = &#34;/index.php?portal=&#39;OR(SELECT(IF(ORD(SUBSTR((SELECT+password+FROM+Users+WHERE+username=&#39;admin&#39;),(\d+),1))=(\d+),SLEEP(1),&#39;&#39;)))&#34;</span>
+    <span class=n>pattern</span> <span class=o>=</span> <span class=s2>&#34;.*?(\d+).*?(\d+).*?(\d+).*?(\d+).*&#34;</span>
+    <span class=n>result</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>match</span><span class=p>(</span><span class=n>pattern</span><span class=p>,</span> <span class=n>tex</span><span class=p>)</span>
+    <span class=k>if</span> <span class=n>result</span><span class=p>:</span>
+        <span class=n>where</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>result</span><span class=o>.</span><span class=n>group</span><span class=p>(</span><span class=mi>1</span><span class=p>))</span>
+        <span class=n>charcode</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>result</span><span class=o>.</span><span class=n>group</span><span class=p>(</span><span class=mi>3</span><span class=p>))</span>
+        <span class=nb>print</span><span class=p>(</span><span class=n>where</span><span class=p>,</span> <span class=n>charcode</span><span class=p>)</span>
+        <span class=n>ans</span><span class=p>[</span><span class=n>where</span><span class=p>]</span> <span class=o>=</span> <span class=n>charcode</span>
+    <span class=n>string</span> <span class=o>=</span> <span class=n>f</span><span class=o>.</span><span class=n>readline</span><span class=p>()</span>
+<span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>40</span><span class=p>):</span>
+    <span class=nb>print</span><span class=p>(</span><span class=nb>chr</span><span class=p>(</span><span class=n>ans</span><span class=p>[</span><span class=n>i</span><span class=p>]),</span> <span class=n>end</span><span class=o>=</span><span class=s2>&#34;&#34;</span><span class=p>)</span>
+</code></pre></div><p>出力</p>
+<pre tabindex=0><code>...
+37 92
+37 93
+37 94
+37 95
+37 96
+37 123
+37 124
+37 125
+37 126
+KosenCTF{t1m3_b4s3d_4tt4ck_v31ls_1t}
+</code></pre><p>flag が得られました。<br>
+<code>KosenCTF{t1m3_b4s3d_4tt4ck_v31ls_1t}</code></p>
+<h3 id=lost-world>lost world</h3>
+<p>[303pts, 23solved, easy, forensics]<br>
+最初に VirtualBox で入ってみると<code>root</code>で入れなかったので、もしかしてと思って vdi 自体を<code>strings | grep</code>しました</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ strings lost_world.vdi<span class=p>|</span> grep KosenCTF<span class=o>{</span>
+Jul <span class=m>30</span> 21:54:58 interkosenctf kernel: <span class=o>[</span>  384.221654<span class=o>]</span> KosenCTF<span class=o>{</span>???????????????????????????????<span class=o>}</span>^
+Jul <span class=m>30</span> 21:56:03 interkosenctf kernel: <span class=o>[</span>    7.089636<span class=o>]</span> KosenCTF<span class=o>{</span>???????????????????????????????<span class=o>}</span>^
+Jul <span class=m>30</span> 22:02:00 interkosenctf kernel: <span class=o>[</span>    5.650095<span class=o>]</span> KosenCTF<span class=o>{</span>???????????????????????????????<span class=o>}</span>^
+Jul <span class=m>30</span> 21:54:58 interkosenctf kernel: <span class=o>[</span>  384.221654<span class=o>]</span> KosenCTF<span class=o>{</span>???????????????????????????????<span class=o>}</span>^
+Jul <span class=m>30</span> 21:56:03 interkosenctf kernel: <span class=o>[</span>    7.089636<span class=o>]</span> KosenCTF<span class=o>{</span>???????????????????????????????<span class=o>}</span>^
+Jul <span class=m>30</span> 22:02:00 interkosenctf kernel: <span class=o>[</span>    5.650095<span class=o>]</span> KosenCTF<span class=o>{</span>???????????????????????????????<span class=o>}</span>^
+Aug <span class=m>11</span> 12:26:37 interkosenctf kernel: <span class=o>[</span>    1.134291<span class=o>]</span> KosenCTF<span class=o>{</span>u_c4n_r3s3t_r00t_p4ssw0rd_1n_VM<span class=o>}</span>^
+Aug <span class=m>11</span> 12:26:37 interkosenctf kernel: <span class=o>[</span>    1.134291<span class=o>]</span> KosenCTF<span class=o>{</span>u_c4n_r3s3t_r00t_p4ssw0rd_1n_VM<span class=o>}</span>^
+<span class=nv>MESSAGE</span><span class=o>=</span>KosenCTF<span class=o>{</span>???????????????????????????????<span class=o>}</span>^
+<span class=nv>MESSAGE</span><span class=o>=</span>KosenCTF<span class=o>{</span>???????????????????????????????<span class=o>}</span>^
+<span class=nv>MESSAGE</span><span class=o>=</span>KosenCTF<span class=o>{</span>u_c4n_r3s3t_r00t_p4ssw0rd_1n_VM<span class=o>}</span>^
+</code></pre></div><p>一回起動したおかげで、strings で解けるようになってしまったみたい。<br>
+<code>KosenCTF{u_c4n_r3s3t_r00t_p4ssw0rd_1n_VM}</code></p>
+<h3 id=fastbin-tutorial>fastbin tutorial</h3>
+<p>[250pts, 30solved, easy, pwn]<br>
+面白い問題でした。が、適当に malloc と free を繰り返し read すると解けてしまった&mldr;偶然ガチャを引いてしまった気分なので復習したいです(手順も覚えてません、すみません&mldr;)<br>
+<code>KosenCTF{y0ur_n3xt_g0al_is_t0_und3rst4nd_fastbin_corruption_attack_m4yb3}</code></p>
+<h3 id=pascal-homomorphicity>pascal homomorphicity</h3>
+<p>[333pts, 20solved, hard, crypto]<br>
+まずは手元で与えられたものを動かして感覚を掴みます。よくみると、<code>pow</code>のとり方が変なことに気づきます。</p>
+<pre tabindex=0><code>c = pow(1 + n, key, n * n)
+</code></pre><p>今知りたいのは key です。二項定理で展開すると、 $k=key$ として $c=(1+n)^k=1+nk\mod n^2$ となります。ここで、<code>c-1</code>は key を因数に持つこと、<code>n</code>はとても大きな 2 つの素数の積であることを考えると、<code>c</code>を問題サーバから 2 つとってきて、その gcd を求めてやればよいとわかります(<code>p</code>,<code>q</code>がかぶる可能性がゼロではないので、実際には 3 つとって 3 パターン試しました)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>enc</span> <span class=o>=</span> <span class=mi>1117592785756945002738587405183374707997236278832876752382077257896599451757365415136677068649202271625728711821443802541774251719291043243174615118338499367764139108608978912484729674259016683702441635510210410592886340310951498663601956453368016849654044425358486660239829076023396143385365334100325762893863056704023424484236267267163330075803211115662510582831949315847282719696491488496688402066546770670414750388491616</span> <span class=c1># とってきた値</span>
+<span class=n>enc2</span> <span class=o>=</span> <span class=mi>1426474518666386316952373644886367601067639538435511328875578111313507804333236413595323851672437342906978654624082015584969147016118358685644525710591604212444576378649957985369742169965571282944581336873961524078849506868840212988217246723168750947170868834263585239768592166304488082428998836788690037084234273668740247284858651061564029780768978530663053893783468283981333638372026457086457504452676555823252793501250656</span> <span class=c1># とってきた値</span>
+<span class=k>def</span> <span class=nf>gcd</span><span class=p>(</span><span class=n>a</span><span class=p>,</span> <span class=n>b</span><span class=p>):</span>
+	<span class=k>while</span> <span class=n>b</span><span class=p>:</span>
+		<span class=n>a</span><span class=p>,</span> <span class=n>b</span> <span class=o>=</span> <span class=n>b</span><span class=p>,</span> <span class=n>a</span> <span class=o>%</span> <span class=n>b</span>
+	<span class=k>return</span> <span class=n>a</span>
+<span class=n>key</span> <span class=o>=</span> <span class=n>gcd</span><span class=p>(</span><span class=n>enc</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=n>enc2</span><span class=o>-</span><span class=mi>1</span><span class=p>)</span>
+<span class=n>ans</span> <span class=o>=</span> <span class=n>key</span><span class=o>.</span><span class=n>to_bytes</span><span class=p>(</span><span class=mi>200</span><span class=p>,</span><span class=s1>&#39;big&#39;</span><span class=p>)</span>
+<span class=nb>print</span><span class=p>(</span><span class=n>ans</span><span class=p>)</span>
+</code></pre></div><p>得られた結果は以下の通りです。gcd は高速なのでそれほど時間はかかりませんでした。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=sa>b</span><span class=s1>&#39;</span><span class=se>\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</span><span class=s1>KosenCTF</span><span class=si>{Th15_15_t00_we4k_p41ll1er_crypt05y5tem}</span><span class=s1>&#39;</span>
+</code></pre></div><p>flag が得られました。<br>
+flag から推察するに、<a href=https://ja.wikipedia.org/wiki/Paillier%E6%9A%97%E5%8F%B7>Paillier 暗号</a>なるものがあるそうです。flag を得る前に、mitsu さんが問題で扱われている暗号に加法準同型性があることを指摘していました。流石 mitsu さんだ&mldr;<br>
+<code>KosenCTF{Th15_15_t00_we4k_p41ll1er_crypt05y5tem}</code></p>
+<h3 id=saferm>saferm</h3>
+<p>[434pts, 13solved, medium, forensics, reversing]<br>
+ディスクイメージが与えられるので、調べてみます</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ file disk.img
+disk.img: DOS/MBR boot sector<span class=p>;</span> partition <span class=m>1</span> : <span class=nv>ID</span><span class=o>=</span>0x83, start-CHS <span class=o>(</span>0x0,0,2<span class=o>)</span>, end-CHS <span class=o>(</span>0x1,70,5<span class=o>)</span>, startsector 1, <span class=m>20479</span> sectors
+</code></pre></div><p>USB デバイスとのことなので、ファイルシステムが FAT かな？と思って <a href=https://github.com/Gregwar/fatcat>fatcat</a> を試しましたがうまく行かず。<br>
+そこで、7zip で無理やり解凍してみました。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ 7z x disk.img
+
+7-Zip <span class=o>[</span>64<span class=o>]</span> 16.02 : Copyright <span class=o>(</span>c<span class=o>)</span> 1999-2016 Igor Pavlov : 2016-05-21
+p7zip Version 16.02 <span class=o>(</span><span class=nv>locale</span><span class=o>=</span>en_US.UTF-8,Utf16<span class=o>=</span>on,HugeFiles<span class=o>=</span>on,64 bits,12 CPUs Intel<span class=o>(</span>R<span class=o>)</span> Core<span class=o>(</span>TM<span class=o>)</span> i7-8700K CPU @ 3.70GHz <span class=o>(</span>906EA<span class=o>)</span>,ASM,AES-NI<span class=o>)</span>
+
+Scanning the drive <span class=k>for</span> archives:
+<span class=m>1</span> file, <span class=m>10485760</span> bytes <span class=o>(</span><span class=m>10</span> MiB<span class=o>)</span>
+
+Extracting archive: disk.img
+--
+<span class=nv>Path</span> <span class=o>=</span> disk.img
+<span class=nv>Type</span> <span class=o>=</span> MBR
+Physical <span class=nv>Size</span> <span class=o>=</span> <span class=m>10485760</span>
+----
+<span class=nv>Path</span> <span class=o>=</span> 0.img
+<span class=nv>Size</span> <span class=o>=</span> <span class=m>10485248</span>
+File <span class=nv>System</span> <span class=o>=</span> Linux
+<span class=nv>Offset</span> <span class=o>=</span> <span class=m>512</span>
+<span class=nv>Primary</span> <span class=o>=</span> +
+Begin <span class=nv>CHS</span> <span class=o>=</span> 0-0-2
+End <span class=nv>CHS</span> <span class=o>=</span> 1-70-5
+--
+<span class=nv>Path</span> <span class=o>=</span> 0.img
+<span class=nv>Type</span> <span class=o>=</span> NTFS
+Physical <span class=nv>Size</span> <span class=o>=</span> <span class=m>10485248</span>
+File <span class=nv>System</span> <span class=o>=</span> NTFS 3.1
+Cluster <span class=nv>Size</span> <span class=o>=</span> <span class=m>4096</span>
+Sector <span class=nv>Size</span> <span class=o>=</span> <span class=m>512</span>
+Record <span class=nv>Size</span> <span class=o>=</span> <span class=m>1024</span>
+<span class=nv>Created</span> <span class=o>=</span> 2019-06-20 21:30:30
+<span class=nv>ID</span> <span class=o>=</span> <span class=m>5966558221663459341</span>
+
+Everything is Ok
+
+Folders: <span class=m>3</span>
+Files: <span class=m>14</span>
+Alternate Streams: <span class=m>2</span>
+Alternate Streams Size: <span class=m>262428</span>
+Size:       <span class=m>2319696</span>
+Compressed: <span class=m>10485760</span>
+</code></pre></div><p><code>File System = NTFS 3.1</code>が見えますね。どうやら NTFS のようなので、別のツールを探します。<br>
+探してみると、<a href=https://github.com/Lazza/RecuperaBit>RecuperaBit</a>が見つかりました。このツールを使って、<code>document.zip</code>というファイルが復元できました。<br>
+しかし、zip は開けません。7zip で展開した時の<code>saferm</code>というファイルに注目します。ためしに適当に<code>a.txt</code>というファイルを作って<code>saferm</code>を使ってみます。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ ltrace ./saferm a.txt
+fopen<span class=o>(</span><span class=s2>&#34;a.txt&#34;</span>, <span class=s2>&#34;rb+&#34;</span><span class=o>)</span>                                      <span class=o>=</span> 0x5653ddbd4260
+fopen<span class=o>(</span><span class=s2>&#34;/dev/urandom&#34;</span>, <span class=s2>&#34;rb&#34;</span><span class=o>)</span>                                <span class=o>=</span> 0x5653ddbd4490
+fread<span class=o>(</span>0x7fff8571ac98, 8, 1, 0x5653ddbd4490<span class=o>)</span>                <span class=o>=</span> <span class=m>1</span>
+fclose<span class=o>(</span>0x5653ddbd4490<span class=o>)</span>                                     <span class=o>=</span> <span class=m>0</span>
+fread<span class=o>(</span>0x7fff8571acd8, 1, 8, 0x5653ddbd4260<span class=o>)</span>                <span class=o>=</span> <span class=m>0</span>
+fclose<span class=o>(</span>0x5653ddbd4260<span class=o>)</span>                                     <span class=o>=</span> <span class=m>0</span>
+unlink<span class=o>(</span><span class=s2>&#34;a.txt&#34;</span><span class=o>)</span>                                            <span class=o>=</span> <span class=m>0</span>
++++ exited <span class=o>(</span>status 0<span class=o>)</span> +++
+</code></pre></div><p>unlink(削除処理)の前になにかしているようです。どうなっているのか知るために、<a href=https://github.com/radare/radare2>radare2</a>を用いて unlink 部分を<code>ff</code>で潰します。saferm を実行すると SEGV しますが、unlink 以降の流れは無視して良いので OK です。ltrace を見るに、8byte 区切りで何かが行われてそうなので、8 文字区切りでわかりやすくなるよう a.txt を作り、<code>$ ./saferm a.txt</code>します。</p>
+<pre tabindex=0><code>12345678876543219
+</code></pre><p>が、</p>
+<pre tabindex=0><code>����7,)����2) 9
+</code></pre><p>のように変化しました。<br>
+Ghidra で見てやると、以下のような関数<code>saferm</code>を発見します。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=err>​</span>
+<span class=kt>void</span> <span class=n>saferm</span><span class=p>(</span><span class=n>EVP_PKEY_CTX</span> <span class=o>*</span><span class=n>pEParm1</span><span class=p>)</span>
+<span class=err>​</span>
+<span class=p>{</span>
+  <span class=kt>int</span> <span class=n>iVar1</span><span class=p>;</span>
+  <span class=n>undefined4</span> <span class=n>extraout_var</span><span class=p>;</span>
+  <span class=n>EVP_PKEY</span> <span class=o>*</span><span class=n>pkey</span><span class=p>;</span>
+  <span class=n>EVP_PKEY_CTX</span> <span class=o>*</span><span class=n>ctx</span><span class=p>;</span>
+  <span class=kt>long</span> <span class=n>in_FS_OFFSET</span><span class=p>;</span>
+  <span class=n>ulong</span> <span class=n>local_30</span><span class=p>;</span>
+  <span class=n>FILE</span> <span class=o>*</span><span class=n>local_28</span><span class=p>;</span>
+  <span class=n>ulong</span> <span class=n>local_20</span><span class=p>;</span>
+  <span class=n>size_t</span> <span class=n>local_18</span><span class=p>;</span>
+  <span class=kt>long</span> <span class=n>local_10</span><span class=p>;</span>
+
+  <span class=n>local_10</span> <span class=o>=</span> <span class=o>*</span><span class=p>(</span><span class=kt>long</span> <span class=o>*</span><span class=p>)(</span><span class=n>in_FS_OFFSET</span> <span class=o>+</span> <span class=mh>0x28</span><span class=p>);</span>
+  <span class=n>pkey</span> <span class=o>=</span> <span class=p>(</span><span class=n>EVP_PKEY</span> <span class=o>*</span><span class=p>)</span><span class=o>&amp;</span><span class=n>DAT_00100af4</span><span class=p>;</span>
+  <span class=n>ctx</span> <span class=o>=</span> <span class=n>pEParm1</span><span class=p>;</span>
+  <span class=n>local_28</span> <span class=o>=</span> <span class=n>fopen</span><span class=p>((</span><span class=kt>char</span> <span class=o>*</span><span class=p>)</span><span class=n>pEParm1</span><span class=p>,</span><span class=s>&#34;rb+&#34;</span><span class=p>);</span>
+  <span class=k>if</span> <span class=p>(</span><span class=n>local_28</span> <span class=o>==</span> <span class=p>(</span><span class=n>FILE</span> <span class=o>*</span><span class=p>)</span><span class=mh>0x0</span><span class=p>)</span> <span class=p>{</span>
+    <span class=n>perror</span><span class=p>((</span><span class=kt>char</span> <span class=o>*</span><span class=p>)</span><span class=n>pEParm1</span><span class=p>);</span>
+  <span class=p>}</span>
+  <span class=k>else</span> <span class=p>{</span>
+    <span class=n>iVar1</span> <span class=o>=</span> <span class=n>keygen</span><span class=p>(</span><span class=n>ctx</span><span class=p>,</span><span class=n>pkey</span><span class=p>);</span>
+    <span class=n>local_20</span> <span class=o>=</span> <span class=n>CONCAT44</span><span class=p>(</span><span class=n>extraout_var</span><span class=p>,</span><span class=n>iVar1</span><span class=p>);</span>
+    <span class=k>while</span><span class=p>(</span> <span class=nb>true</span> <span class=p>)</span> <span class=p>{</span>
+      <span class=n>local_18</span> <span class=o>=</span> <span class=n>fread</span><span class=p>(</span><span class=o>&amp;</span><span class=n>local_30</span><span class=p>,</span><span class=mi>1</span><span class=p>,</span><span class=mi>8</span><span class=p>,</span><span class=n>local_28</span><span class=p>);</span>
+      <span class=k>if</span> <span class=p>(</span><span class=n>local_18</span> <span class=o>!=</span> <span class=mi>8</span><span class=p>)</span> <span class=k>break</span><span class=p>;</span>
+      <span class=n>local_30</span> <span class=o>=</span> <span class=n>local_30</span> <span class=o>^</span> <span class=n>local_20</span><span class=p>;</span>
+      <span class=n>fseek</span><span class=p>(</span><span class=n>local_28</span><span class=p>,</span><span class=o>-</span><span class=mi>8</span><span class=p>,</span><span class=mi>1</span><span class=p>);</span>
+      <span class=n>fwrite</span><span class=p>(</span><span class=o>&amp;</span><span class=n>local_30</span><span class=p>,</span><span class=mi>8</span><span class=p>,</span><span class=mi>1</span><span class=p>,</span><span class=n>local_28</span><span class=p>);</span>
+    <span class=p>}</span>
+    <span class=n>fclose</span><span class=p>(</span><span class=n>local_28</span><span class=p>);</span>
+    <span class=n>iVar1</span> <span class=o>=</span> <span class=n>unlink</span><span class=p>((</span><span class=kt>char</span> <span class=o>*</span><span class=p>)</span><span class=n>pEParm1</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>iVar1</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+      <span class=n>perror</span><span class=p>((</span><span class=kt>char</span> <span class=o>*</span><span class=p>)</span><span class=n>pEParm1</span><span class=p>);</span>
+    <span class=p>}</span>
+  <span class=p>}</span>
+  <span class=k>if</span> <span class=p>(</span><span class=n>local_10</span> <span class=o>!=</span> <span class=o>*</span><span class=p>(</span><span class=kt>long</span> <span class=o>*</span><span class=p>)(</span><span class=n>in_FS_OFFSET</span> <span class=o>+</span> <span class=mh>0x28</span><span class=p>))</span> <span class=p>{</span>
+                    <span class=cm>/* WARNING: Subroutine does not return */</span>
+    <span class=n>__stack_chk_fail</span><span class=p>();</span>
+  <span class=p>}</span>
+  <span class=k>return</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div><p>本質的には</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>while</span><span class=p>(</span> <span class=nb>true</span> <span class=p>)</span> <span class=p>{</span>
+      <span class=n>local_18</span> <span class=o>=</span> <span class=n>fread</span><span class=p>(</span><span class=o>&amp;</span><span class=n>local_30</span><span class=p>,</span><span class=mi>1</span><span class=p>,</span><span class=mi>8</span><span class=p>,</span><span class=n>local_28</span><span class=p>);</span>
+      <span class=k>if</span> <span class=p>(</span><span class=n>local_18</span> <span class=o>!=</span> <span class=mi>8</span><span class=p>)</span> <span class=k>break</span><span class=p>;</span>
+      <span class=n>local_30</span> <span class=o>=</span> <span class=n>local_30</span> <span class=o>^</span> <span class=n>local_20</span><span class=p>;</span>
+      <span class=n>fseek</span><span class=p>(</span><span class=n>local_28</span><span class=p>,</span><span class=o>-</span><span class=mi>8</span><span class=p>,</span><span class=mi>1</span><span class=p>);</span>
+      <span class=n>fwrite</span><span class=p>(</span><span class=o>&amp;</span><span class=n>local_30</span><span class=p>,</span><span class=mi>8</span><span class=p>,</span><span class=mi>1</span><span class=p>,</span><span class=n>local_28</span><span class=p>);</span>
+    <span class=p>}</span>
+</code></pre></div><p>ここが大事で、要はある定数 local_20(=<code>C</code>とおく)と、消したいファイルから 8byte とってきたものを XOR して元のファイルを書き換えているという処理がされています。<br>
+この定数がわかれば、<code>X xor C xor C = X</code>より、元の zip が復元できそうです。<br>
+定数はランダムなので全探索を考えましたが、計算量は<code>256^8</code>と厳しいので、推測できないか考えます。<br>
+いくつかの種類のファイルで zip を作り前の 8byte を見たところ、</p>
+<pre tabindex=0><code>50 4b 03 04 14 00 08 00
+</code></pre><p>となっていたので、これになるような定数を探すことにしました。前の 8byte だけ見ればよくて、定数<code>C</code>は</p>
+<pre tabindex=0><code>C = [46, 87, 173, 46, 255, 200, 194, 73]
+</code></pre><p>となります。これを用いて 8byte ずつ読み込んで XOR して新しいファイルに書き込むスクリプトを書きましたが、それでもうまくいきません。<code>hexdump -C edit.zip</code>とみてやると、<code>locument</code>などの文字が見えたのでこれが<code>document</code>となるように<code>C</code>を修正しました。(以下のスクリプトの<code>xor_vec</code>にあたります)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>xor_vec</span> <span class=o>=</span> <span class=p>[</span><span class=mi>46</span><span class=p>,</span> <span class=mi>87</span><span class=p>,</span> <span class=mi>173</span><span class=p>,</span> <span class=mi>46</span><span class=p>,</span> <span class=mi>255</span><span class=p>,</span> <span class=mi>200</span><span class=p>,</span> <span class=mi>202</span><span class=p>,</span> <span class=mi>73</span><span class=p>]</span>
+<span class=kn>import</span> <span class=nn>struct</span>
+<span class=n>f</span> <span class=o>=</span> <span class=nb>open</span><span class=p>(</span><span class=s2>&#34;document.zip&#34;</span><span class=p>,</span> <span class=s2>&#34;rb&#34;</span><span class=p>)</span>
+<span class=n>x</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=n>f</span><span class=o>.</span><span class=n>read</span><span class=p>())</span>
+<span class=n>outdata</span> <span class=o>=</span> <span class=nb>bytearray</span><span class=p>([])</span>
+<span class=nb>print</span><span class=p>(</span><span class=n>x</span><span class=p>)</span>
+<span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>x</span><span class=p>)</span><span class=o>//</span><span class=mi>8</span><span class=p>):</span>
+    <span class=n>part</span> <span class=o>=</span> <span class=n>x</span><span class=p>[</span><span class=mi>8</span><span class=o>*</span><span class=n>i</span><span class=p>:</span><span class=mi>8</span><span class=o>*</span><span class=n>i</span><span class=o>+</span><span class=mi>8</span><span class=p>]</span>
+    <span class=n>xo</span> <span class=o>=</span> <span class=p>[</span><span class=n>a</span><span class=o>^</span><span class=n>b</span> <span class=k>for</span> <span class=p>(</span><span class=n>a</span><span class=p>,</span><span class=n>b</span><span class=p>)</span> <span class=ow>in</span> <span class=nb>zip</span><span class=p>(</span><span class=n>xor_vec</span><span class=p>,</span><span class=n>part</span><span class=p>)]</span>
+    <span class=nb>print</span><span class=p>([</span><span class=nb>chr</span><span class=p>(</span><span class=n>a</span><span class=p>)</span> <span class=k>for</span> <span class=n>a</span> <span class=ow>in</span> <span class=n>xo</span><span class=p>])</span>
+    <span class=n>outdata</span><span class=o>.</span><span class=n>extend</span><span class=p>(</span><span class=n>xo</span><span class=p>)</span>
+<span class=n>outdata</span><span class=o>.</span><span class=n>extend</span><span class=p>(</span><span class=n>x</span><span class=p>[</span><span class=mi>8</span><span class=o>*</span><span class=n>i</span><span class=o>+</span><span class=mi>8</span><span class=p>:])</span>
+<span class=n>f</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
+<span class=n>outfile</span> <span class=o>=</span> <span class=nb>open</span><span class=p>(</span><span class=s2>&#34;outfile.zip&#34;</span><span class=p>,</span> <span class=s2>&#34;wb&#34;</span><span class=p>)</span>
+<span class=n>outfile</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>outdata</span><span class=p>)</span>
+<span class=n>outfile</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
+</code></pre></div><p>zip を解凍すると、ねこちゃんがいる pdf が出てきました。<br>
+<code>KosenCTF{p00r_shr3dd3r}</code></p>
+<h3 id=survey>Survey</h3>
+<p>[212pts, 37solved, warmup, survey]<br>
+Survey が時間によらないとアナウンスされていたので、ゆっくり埋めることができました。終わった後だと埋める気にならないので、競技中にアンケートをフェアに行うのはとても良いシステムだと思います。<br>
+<code>KosenCTF{th4nk_y0u_f0r_pl4y1ng_InterKosenCTF_2019}</code></p>
+<h3 id=e-sequel-injection>E-Sequel-Injection</h3>
+<p>[500pts, 10solved, hard, web]<br>
+個人的に好きな分野です。いくつかの単語が使用禁止されているときに、それを Bypass してください。という jail escape 系と解釈しています。(自分の中では)<br>
+まず、方針を考えると、admin としてログインするのが最終目標なので、<br>
+1.admin の password の leak->username でリークさせられないだろうか？<br>
+2.admin として、後ろでなんとかする<br>
+の 2 つが思い浮かびました。<br>
+次に、与えられたソースコードをよく眺めます。</p>
+<pre tabindex=0><code>$pattern = '/(\s|UNION|OR|=|TRUE|FALSE|&gt;|&lt;|IS|LIKE|BETWEEN|REGEXP|--|#|;|\/|\*|\|)/i';
+</code></pre><p>ここで禁止される単語がわかりますね。OR が潰されているので passw"or"d もダメです。というわけで、1.の方針はやばそうです。<br>
+password だけでなんとかしてみます。<a href=https://medium.com/@gregIT/ringzer0team-ctf-sqli-challenges-part-1-6ceff556f4a8>SQLi についての記事</a>を見ると、比較系は以下のようになっています</p>
+<pre tabindex=0><code>= (comparison), &lt;=&gt;, &gt;=, &gt;, &lt;=, &lt;, &lt;&gt;, !=, IS, LIKE, REGEXP, IN
+BETWEEN, CASE, WHEN, THEN, ELSE
+NOT
+AND, &amp;&amp;
+XOR
+OR, ||
+= (assignment), :=
+</code></pre><p><code>IN</code>, <code>NOT</code>あたりが使えそうですね。<br>
+実際にいろいろ打ち込んでいきます。</p>
+<p><code>' or 1=1 #</code> 定番。スペースとシャープとイコールと OR で引っかかります。<br>
+<code>'or(1=1)#</code> スペースなしで出来ました<br>
+<code>'IN('Tokyo')#</code> #だけでできるようになりました<br>
+<code>'IN('Tokyo')order by 'Tokyo'</code> or が入っています<br>
+<code>'IN('Tokyo')and!'0'</code> これで通りました。 -> <code>SELECT username from users where username='admin' and password=''IN('Tokyo')and!'0'</code><br>
+流れとしては、まずは禁止文字を使って、徐々に禁止文字の種類を減らすように頑張っていくとよさそうです。<br>
+<code>KosenCTF{Smash_the_holy_barrier_and_follow_me_in_the_covenant_of_blood_and_blood}</code></p>
+<h1 id=最後に>最後に</h1>
+<p>もっともっと精進して、一つでも多くの flag を速く通せるようにがんばりたいです。悔しいです。<br>
+作問者はすごい人々だなあと思いました。ツールゲーではなく、頭をひねるものが多くてとても楽しかったです。ありがとうございました。</p>
+<p>::: message notice<br>
+以降は、2021/10/05 に追記しました。<br>
+:::</p>
+<h1 id=復習>復習</h1>
+<p>復習をします。</p>
+<h2 id=basic_crackme>basic_crackme</h2>
+<p>ghidra でデコンパイルして <code>main</code> 関数を見る。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=k>while</span> <span class=p>(</span><span class=n>sVar1</span> <span class=o>=</span> <span class=n>strlen</span><span class=p>((</span><span class=kt>char</span> <span class=o>*</span><span class=p>)</span><span class=n>param_2</span><span class=p>[</span><span class=mi>1</span><span class=p>]),</span> <span class=p>(</span><span class=n>ulong</span><span class=p>)(</span><span class=kt>long</span><span class=p>)</span><span class=n>local_cc</span> <span class=o>&lt;</span> <span class=n>sVar1</span><span class=p>)</span> <span class=p>{</span>
+<span class=n>local_d0</span> <span class=o>=</span> <span class=n>local_d0</span> <span class=o>|</span>
+            <span class=p>((((</span><span class=kt>int</span><span class=p>)</span><span class=o>*</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=p>)((</span><span class=kt>long</span><span class=p>)</span><span class=n>local_cc</span> <span class=o>+</span> <span class=n>param_2</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>&amp;</span> <span class=mh>0xfU</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=mi>4</span> <span class=o>|</span>
+            <span class=p>(</span><span class=kt>int</span><span class=p>)(</span><span class=o>*</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=p>)((</span><span class=kt>long</span><span class=p>)</span><span class=n>local_cc</span> <span class=o>+</span> <span class=n>param_2</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>&gt;&gt;</span> <span class=mi>4</span><span class=p>))</span> <span class=o>+</span> <span class=n>local_cc</span><span class=p>)</span> <span class=o>-</span>
+            <span class=n>local_c8</span><span class=p>[</span><span class=n>local_cc</span><span class=p>];</span>
+<span class=n>local_cc</span> <span class=o>=</span> <span class=n>local_cc</span> <span class=o>+</span> <span class=mi>1</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div><p><code>param_2[1]</code> は <code>argv[1]</code> なので、入力値の長さ分だけ while ループを回して正当性チェックをしている。実際、prefix の <code>Kosen</code> を入れると以下のように正解とみなされる。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ ./crackme Kosen
+Yes. This is the your flag :<span class=o>)</span>
+</code></pre></div><p>よって、前から文字を確定させていけば OK。 $len\times 256(utf8)$ だけループを回せばよい。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>import</span> <span class=nn>subprocess</span>
+<span class=n>flag</span> <span class=o>=</span> <span class=sa>b</span><span class=s2>&#34;&#34;</span>
+<span class=k>for</span> <span class=n>j</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>39</span><span class=p>):</span>
+    <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>20</span><span class=p>,</span> <span class=mi>256</span><span class=p>):</span>
+        <span class=n>tmpflag</span> <span class=o>=</span> <span class=n>flag</span> <span class=o>+</span> <span class=n>i</span><span class=o>.</span><span class=n>to_bytes</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=s1>&#39;big&#39;</span><span class=p>)</span>
+        <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;tmpflag&#34;</span><span class=p>,</span> <span class=n>tmpflag</span><span class=o>.</span><span class=n>decode</span><span class=p>())</span>
+        <span class=n>out</span> <span class=o>=</span> <span class=n>subprocess</span><span class=o>.</span><span class=n>run</span><span class=p>([</span><span class=s1>&#39;./crackme&#39;</span><span class=p>,</span> <span class=n>tmpflag</span><span class=o>.</span><span class=n>decode</span><span class=p>()],</span> <span class=n>check</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>stdout</span><span class=o>=</span><span class=n>subprocess</span><span class=o>.</span><span class=n>PIPE</span><span class=p>)</span><span class=o>.</span><span class=n>stdout</span>
+        <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;out&#34;</span><span class=p>,</span> <span class=n>out</span><span class=p>)</span>
+        <span class=k>if</span> <span class=sa>b</span><span class=s1>&#39;Yes&#39;</span> <span class=ow>in</span> <span class=n>out</span><span class=p>:</span>
+            <span class=nb>print</span><span class=p>(</span><span class=n>flag</span><span class=p>,</span> <span class=s2>&#34;char at &#34;</span><span class=p>,</span> <span class=n>j</span><span class=p>)</span>
+            <span class=n>flag</span> <span class=o>=</span> <span class=n>tmpflag</span>
+            <span class=k>break</span>
+<span class=c1># KosenCTF{w3lc0m3_t0_y0-k0-s0_r3v3rs1ng}</span>
+</code></pre></div><p><code>KosenCTF{w3lc0m3_t0_y0-k0-s0_r3v3rs1ng}</code></p>
+<h2 id=heading></h2>
+<h2 id=ref>ref</h2>
+<ul>
+<li>問題 link <a href=https://github.com/theoremoon/InterKosenCTF2019-challenges-public>theoremoon/InterKosenCTF2019-challenges-public</a></li>
+<li></li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

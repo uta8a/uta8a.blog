@@ -1,0 +1,515 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><h1 id=note>note</h1>
+<p>まずは解いたやつを書いておく。</p>
+<h1 id=目次>目次</h1>
+<p><a href=#welcome>Welcome</a><br>
+<a href=#survey>Survey</a><br>
+<a href=#matsushima2>matsushima2</a><br>
+<a href=#limited>limited</a><br>
+<a href=#babysort>babysort</a><br>
+<a href=#harmagedon>harmagedon</a><br>
+<a href=#in-question>in question</a><br>
+<a href=#ciphertexts>ciphertexts</a><br>
+<a href=#trilemma>trilemma</a><br>
+<a href=#authme>authme</a><br>
+<a href=#bitcrypto>bitcrypto</a><br>
+<a href=#padding-oracle>padding oracle</a><br>
+<a href=#fables-of-aesop>Fables of aeSOP</a><br>
+<a href=#no-pressure>No pressure</a><br>
+<a href=#stratum>stratum</a><br>
+<a href=#tip-toe>Tip Toe</a><br>
+<a href=#miniblog>miniblog</a><br>
+<a href=#readme>readme</a><br>
+<a href=#pash>pash</a><br>
+<a href=#just-sqli>just sqli</a><br>
+<a href=#ochazuke>ochazuke</a><br>
+<a href=#confusing>confusing</a><br>
+<a href=#padrsa>padrsa</a><br>
+<a href=#graphviz>graphviz++</a><br>
+<a href=#mazeu>maze</a></p>
+<p>(解いたもの)</p>
+<h1 id=welcome>Welcome</h1>
+<pre tabindex=0><code>Welcome to InterKosenCTF 2020! All announcement, support, and the welcome flag are available in our Discord.
+</code></pre><p>discord の#announcement に flag が貼ってあった。<br>
+<img src=./p-1.png alt=Welcome></p>
+<pre tabindex=0><code>KosenCTF{w31c0m3_and_13ts_3nj0y_the_party!!}
+</code></pre><h1 id=survey>Survey</h1>
+<pre tabindex=0><code>Please give us your feedback here.
+</code></pre><p>アンケートに答えると flag が手に入る。解いた問題が少ないとまともなフィードバックが送れなくて悲しみになるので強くなりたい。</p>
+<pre tabindex=0><code>KosenCTF{w4s_th1s_ch4ll3ng3_h4rd_4_u?}
+</code></pre><h1 id=matsushima2>matsushima2</h1>
+<pre tabindex=0><code>Do you like poker? I like blackjack! Let's play it here.
+
+matsushima2_a8f90b2a9cff5f0aa8d62010385ffc0c.tar.gz
+</code></pre><p><img src=./p-2.png alt=matsushima2></p>
+<p>blackjack で遊べる。カードがふるつきさん、ptr-yudai さん、yoshiking さんになっていてかわいい。<br>
+おそらく matsushima2 の意味は SECCON 2018 国内決勝 で出題された松島が元になってそう。<a href=https://st98.github.io/diary/posts/2018-12-24-seccon-2018-domestic-finals.html#%E6%9D%BE%E5%B3%B6>参考</a></p>
+<p>サーバ側のソースコード(main.py)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span><span class=p>,</span> <span class=n>send_file</span><span class=p>,</span> <span class=n>request</span><span class=p>,</span> <span class=n>make_response</span><span class=p>,</span> <span class=n>jsonify</span><span class=p>,</span> <span class=n>abort</span>
+<span class=kn>import</span> <span class=nn>random</span>
+<span class=kn>import</span> <span class=nn>jwt</span>
+<span class=kn>import</span> <span class=nn>secret</span>
+
+<span class=n>app</span> <span class=o>=</span> <span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+<span class=n>key</span> <span class=o>=</span> <span class=n>secret</span><span class=o>.</span><span class=n>key</span>
+
+
+<span class=k>def</span> <span class=nf>blackjack</span><span class=p>(</span><span class=n>cards</span><span class=p>):</span>
+    <span class=n>score</span> <span class=o>=</span> <span class=mi>0</span>
+    <span class=n>aces</span> <span class=o>=</span> <span class=p>[]</span>
+    <span class=k>for</span> <span class=n>card</span> <span class=ow>in</span> <span class=n>cards</span><span class=p>:</span>
+        <span class=n>card2</span> <span class=o>=</span> <span class=n>card</span> <span class=o>%</span> <span class=mi>13</span> <span class=o>+</span> <span class=mi>1</span>
+        <span class=k>if</span> <span class=n>card2</span> <span class=o>==</span> <span class=mi>1</span><span class=p>:</span>
+            <span class=n>aces</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>card2</span><span class=p>)</span>
+        <span class=k>elif</span> <span class=n>card2</span> <span class=o>&gt;=</span> <span class=mi>10</span><span class=p>:</span>
+            <span class=n>score</span> <span class=o>+=</span> <span class=mi>10</span>
+        <span class=k>else</span><span class=p>:</span>
+            <span class=n>score</span> <span class=o>+=</span> <span class=n>card2</span>
+
+    <span class=k>for</span> <span class=n>a</span> <span class=ow>in</span> <span class=n>aces</span><span class=p>:</span>
+        <span class=k>if</span> <span class=n>score</span> <span class=o>+</span> <span class=mi>11</span> <span class=o>&lt;=</span> <span class=mi>21</span><span class=p>:</span>
+            <span class=n>score</span> <span class=o>+=</span> <span class=mi>11</span>
+        <span class=k>else</span><span class=p>:</span>
+            <span class=n>score</span> <span class=o>+=</span> <span class=mi>1</span>
+
+    <span class=k>if</span> <span class=n>score</span> <span class=o>&gt;</span> <span class=mi>21</span><span class=p>:</span>
+        <span class=k>return</span> <span class=o>-</span><span class=mi>1</span>
+    <span class=k>return</span> <span class=n>score</span>
+
+
+<span class=nd>@app</span><span class=o>.</span><span class=n>route</span><span class=p>(</span><span class=s2>&#34;/&#34;</span><span class=p>)</span>
+<span class=k>def</span> <span class=nf>index</span><span class=p>():</span>
+    <span class=k>return</span> <span class=n>send_file</span><span class=p>(</span><span class=s2>&#34;index.html&#34;</span><span class=p>)</span>
+
+
+<span class=nd>@app</span><span class=o>.</span><span class=n>route</span><span class=p>(</span><span class=s2>&#34;/card/&lt;int:card_id&gt;.png&#34;</span><span class=p>)</span>
+<span class=k>def</span> <span class=nf>card</span><span class=p>(</span><span class=n>card_id</span><span class=p>):</span>
+    <span class=k>return</span> <span class=n>send_file</span><span class=p>(</span><span class=s1>&#39;images/</span><span class=si>{}</span><span class=s1>.png&#39;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=n>card_id</span><span class=p>))</span>
+
+
+<span class=nd>@app</span><span class=o>.</span><span class=n>route</span><span class=p>(</span><span class=s2>&#34;/initialize&#34;</span><span class=p>,</span> <span class=n>methods</span><span class=o>=</span><span class=p>[</span><span class=s2>&#34;POST&#34;</span><span class=p>])</span>
+<span class=k>def</span> <span class=nf>initialize</span><span class=p>():</span>
+    <span class=n>cards</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=nb>range</span><span class=p>(</span><span class=mi>13</span> <span class=o>*</span> <span class=mi>4</span><span class=p>))</span>
+    <span class=n>random</span><span class=o>.</span><span class=n>shuffle</span><span class=p>(</span><span class=n>cards</span><span class=p>)</span>
+
+    <span class=n>player_cards</span> <span class=o>=</span> <span class=p>[</span><span class=n>cards</span><span class=p>[</span><span class=mi>0</span><span class=p>]]</span>
+    <span class=n>dealer_cards</span> <span class=o>=</span> <span class=p>[</span><span class=n>cards</span><span class=p>[</span><span class=mi>1</span><span class=p>]]</span>
+    <span class=n>player_score</span> <span class=o>=</span> <span class=n>blackjack</span><span class=p>(</span><span class=n>player_cards</span><span class=p>)</span>
+    <span class=n>dealer_score</span> <span class=o>=</span> <span class=n>blackjack</span><span class=p>(</span><span class=n>dealer_cards</span><span class=p>)</span>
+    <span class=n>state</span> <span class=o>=</span> <span class=p>{</span>
+        <span class=s1>&#39;player&#39;</span><span class=p>:</span> <span class=n>player_cards</span><span class=p>,</span>
+        <span class=s1>&#39;dealer&#39;</span><span class=p>:</span> <span class=n>dealer_cards</span><span class=p>,</span>
+        <span class=s1>&#39;chip&#39;</span><span class=p>:</span> <span class=mi>100</span><span class=p>,</span>
+        <span class=s1>&#39;player_score&#39;</span><span class=p>:</span> <span class=n>player_score</span><span class=p>,</span>
+        <span class=s1>&#39;dealer_score&#39;</span><span class=p>:</span> <span class=n>dealer_score</span><span class=p>,</span>
+    <span class=p>}</span>
+
+    <span class=n>response</span> <span class=o>=</span> <span class=n>make_response</span><span class=p>(</span><span class=n>jsonify</span><span class=p>(</span><span class=n>state</span><span class=p>))</span>
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>cards</span><span class=p>[</span><span class=mi>2</span><span class=p>:]</span>
+    <span class=n>response</span><span class=o>.</span><span class=n>set_cookie</span><span class=p>(</span><span class=s1>&#39;matsushima&#39;</span><span class=p>,</span> <span class=n>jwt</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=n>state</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>algorithm</span><span class=o>=</span><span class=s1>&#39;HS256&#39;</span><span class=p>),</span> <span class=n>httponly</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>samesite</span><span class=o>=</span><span class=s1>&#39;strict&#39;</span><span class=p>)</span>
+    <span class=k>return</span> <span class=n>response</span>
+
+
+<span class=nd>@app</span><span class=o>.</span><span class=n>route</span><span class=p>(</span><span class=s2>&#34;/hit&#34;</span><span class=p>,</span> <span class=n>methods</span><span class=o>=</span><span class=p>[</span><span class=s2>&#34;POST&#34;</span><span class=p>])</span>
+<span class=k>def</span> <span class=nf>hit</span><span class=p>():</span>
+    <span class=n>state</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>cookies</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;matsushima&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>)</span>
+    <span class=k>if</span> <span class=n>state</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=n>state</span> <span class=o>=</span> <span class=n>jwt</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=n>state</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>algorithms</span><span class=o>=</span><span class=p>[</span><span class=s1>&#39;HS256&#39;</span><span class=p>])</span>
+    <span class=k>if</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>]</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=n>next_card</span> <span class=o>=</span> <span class=n>random</span><span class=o>.</span><span class=n>randrange</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>]))</span>
+    <span class=n>card</span> <span class=o>=</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>][</span><span class=n>next_card</span><span class=p>]</span>
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>][:</span><span class=n>next_card</span><span class=p>]</span> <span class=o>+</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>][</span><span class=n>next_card</span><span class=o>+</span><span class=mi>1</span><span class=p>:]</span>
+
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player&#39;</span><span class=p>]</span> <span class=o>+</span> <span class=p>[</span><span class=n>card</span><span class=p>]</span>
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player_score&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>blackjack</span><span class=p>(</span><span class=n>state</span><span class=p>[</span><span class=s1>&#39;player&#39;</span><span class=p>])</span>
+    <span class=k>if</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player_score&#39;</span><span class=p>]</span> <span class=o>&lt;</span> <span class=mi>0</span><span class=p>:</span>
+        <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=mi>0</span>
+
+    <span class=n>response</span> <span class=o>=</span> <span class=n>make_response</span><span class=p>(</span><span class=n>jsonify</span><span class=p>({</span>
+        <span class=s1>&#39;player&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;dealer&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;chip&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;player_score&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player_score&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;dealer_score&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>],</span>
+    <span class=p>}))</span>
+
+    <span class=n>response</span><span class=o>.</span><span class=n>set_cookie</span><span class=p>(</span><span class=s1>&#39;matsushima&#39;</span><span class=p>,</span> <span class=n>jwt</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=n>state</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>algorithm</span><span class=o>=</span><span class=s1>&#39;HS256&#39;</span><span class=p>),</span> <span class=n>httponly</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>samesite</span><span class=o>=</span><span class=s1>&#39;strict&#39;</span><span class=p>)</span>
+    <span class=k>return</span> <span class=n>response</span>
+
+
+<span class=nd>@app</span><span class=o>.</span><span class=n>route</span><span class=p>(</span><span class=s2>&#34;/stand&#34;</span><span class=p>,</span> <span class=n>methods</span><span class=o>=</span><span class=p>[</span><span class=s2>&#34;POST&#34;</span><span class=p>])</span>
+<span class=k>def</span> <span class=nf>stand</span><span class=p>():</span>
+    <span class=n>state</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>cookies</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;matsushima&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>)</span>
+    <span class=k>if</span> <span class=n>state</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=n>state</span> <span class=o>=</span> <span class=n>jwt</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=n>state</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>algorithms</span><span class=o>=</span><span class=p>[</span><span class=s1>&#39;HS256&#39;</span><span class=p>])</span>
+    <span class=k>if</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>]</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=k>while</span> <span class=kc>True</span><span class=p>:</span>
+        <span class=n>next_card</span> <span class=o>=</span> <span class=n>random</span><span class=o>.</span><span class=n>randrange</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>]))</span>
+        <span class=n>card</span> <span class=o>=</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>][</span><span class=n>next_card</span><span class=p>]</span>
+        <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>][:</span><span class=n>next_card</span><span class=p>]</span> <span class=o>+</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>][</span><span class=n>next_card</span><span class=o>+</span><span class=mi>1</span><span class=p>:]</span>
+
+        <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>]</span> <span class=o>+</span> <span class=p>[</span><span class=n>card</span><span class=p>]</span>
+        <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>blackjack</span><span class=p>(</span><span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>])</span>
+        <span class=k>if</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>]</span> <span class=o>&lt;</span> <span class=mi>0</span> <span class=ow>or</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>]</span> <span class=o>&gt;=</span> <span class=mi>17</span><span class=p>:</span>
+            <span class=k>break</span>
+
+    <span class=k>if</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>]</span> <span class=o>&lt;</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player_score&#39;</span><span class=p>]:</span>
+        <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>]</span> <span class=o>*</span> <span class=mi>2</span>
+    <span class=k>else</span><span class=p>:</span>
+        <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=mi>0</span>
+
+    <span class=n>response</span> <span class=o>=</span> <span class=n>make_response</span><span class=p>(</span><span class=n>jsonify</span><span class=p>({</span>
+        <span class=s1>&#39;player&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;dealer&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;chip&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;player_score&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player_score&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;dealer_score&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>],</span>
+    <span class=p>}))</span>
+
+    <span class=n>response</span><span class=o>.</span><span class=n>set_cookie</span><span class=p>(</span><span class=s1>&#39;matsushima&#39;</span><span class=p>,</span> <span class=n>jwt</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=n>state</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>algorithm</span><span class=o>=</span><span class=s1>&#39;HS256&#39;</span><span class=p>),</span> <span class=n>httponly</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>samesite</span><span class=o>=</span><span class=s1>&#39;strict&#39;</span><span class=p>)</span>
+    <span class=k>return</span> <span class=n>response</span>
+
+
+<span class=nd>@app</span><span class=o>.</span><span class=n>route</span><span class=p>(</span><span class=s2>&#34;/nextgame&#34;</span><span class=p>,</span> <span class=n>methods</span><span class=o>=</span><span class=p>[</span><span class=s2>&#34;POST&#34;</span><span class=p>])</span>
+<span class=k>def</span> <span class=nf>nextgame</span><span class=p>():</span>
+    <span class=n>state</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>cookies</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;matsushima&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>)</span>
+    <span class=k>if</span> <span class=n>state</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=n>state</span> <span class=o>=</span> <span class=n>jwt</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=n>state</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>algorithms</span><span class=o>=</span><span class=p>[</span><span class=s1>&#39;HS256&#39;</span><span class=p>])</span>
+    <span class=k>if</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>]</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>])</span> <span class=o>&lt;</span> <span class=mi>2</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=k>if</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>]</span> <span class=o>&gt;=</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player_score&#39;</span><span class=p>]:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=n>cards</span> <span class=o>=</span> <span class=nb>list</span><span class=p>(</span><span class=nb>range</span><span class=p>(</span><span class=mi>13</span> <span class=o>*</span> <span class=mi>4</span><span class=p>))</span>
+    <span class=n>random</span><span class=o>.</span><span class=n>shuffle</span><span class=p>(</span><span class=n>cards</span><span class=p>)</span>
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=p>[</span><span class=n>cards</span><span class=p>[</span><span class=mi>0</span><span class=p>]]</span>
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=p>[</span><span class=n>cards</span><span class=p>[</span><span class=mi>1</span><span class=p>]]</span>
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;cards&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>cards</span><span class=p>[</span><span class=mi>2</span><span class=p>:]</span>
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player_score&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>blackjack</span><span class=p>(</span><span class=n>state</span><span class=p>[</span><span class=s1>&#39;player&#39;</span><span class=p>])</span>
+    <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>blackjack</span><span class=p>(</span><span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>])</span>
+
+    <span class=n>response</span> <span class=o>=</span> <span class=n>make_response</span><span class=p>(</span><span class=n>jsonify</span><span class=p>({</span>
+        <span class=s1>&#39;player&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;dealer&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;chip&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;player_score&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;player_score&#39;</span><span class=p>],</span>
+        <span class=s1>&#39;dealer_score&#39;</span><span class=p>:</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;dealer_score&#39;</span><span class=p>],</span>
+    <span class=p>}))</span>
+
+    <span class=n>response</span><span class=o>.</span><span class=n>set_cookie</span><span class=p>(</span><span class=s1>&#39;matsushima&#39;</span><span class=p>,</span> <span class=n>jwt</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=n>state</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>algorithm</span><span class=o>=</span><span class=s1>&#39;HS256&#39;</span><span class=p>),</span> <span class=n>httponly</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>samesite</span><span class=o>=</span><span class=s1>&#39;strict&#39;</span><span class=p>)</span>
+    <span class=k>return</span> <span class=n>response</span>
+
+
+<span class=nd>@app</span><span class=o>.</span><span class=n>route</span><span class=p>(</span><span class=s1>&#39;/flag&#39;</span><span class=p>)</span>
+<span class=k>def</span> <span class=nf>flag</span><span class=p>():</span>
+    <span class=n>state</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>cookies</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;matsushima&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>)</span>
+    <span class=k>if</span> <span class=n>state</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+    <span class=n>state</span> <span class=o>=</span> <span class=n>jwt</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=n>state</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>algorithms</span><span class=o>=</span><span class=p>[</span><span class=s1>&#39;HS256&#39;</span><span class=p>])</span>
+    <span class=k>if</span> <span class=n>state</span><span class=p>[</span><span class=s1>&#39;chip&#39;</span><span class=p>]</span> <span class=o>&gt;=</span> <span class=mi>999999</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>jsonify</span><span class=p>({</span>
+            <span class=s1>&#39;flag&#39;</span><span class=p>:</span> <span class=n>secret</span><span class=o>.</span><span class=n>flag</span><span class=p>,</span>
+        <span class=p>})</span>
+    <span class=k>else</span><span class=p>:</span>
+        <span class=k>return</span> <span class=n>abort</span><span class=p>(</span><span class=mi>400</span><span class=p>)</span>
+
+
+<span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+    <span class=kn>from</span> <span class=nn>gevent</span> <span class=kn>import</span> <span class=n>monkey</span>
+    <span class=n>monkey</span><span class=o>.</span><span class=n>patch_all</span><span class=p>()</span>
+
+    <span class=kn>from</span> <span class=nn>gevent.pywsgi</span> <span class=kn>import</span> <span class=n>WSGIServer</span>
+
+    <span class=n>http_server</span> <span class=o>=</span> <span class=n>WSGIServer</span><span class=p>((</span><span class=s1>&#39;0.0.0.0&#39;</span><span class=p>,</span> <span class=mi>5000</span><span class=p>),</span> <span class=n>app</span><span class=p>)</span>
+    <span class=n>http_server</span><span class=o>.</span><span class=n>serve_forever</span><span class=p>()</span>
+
+</code></pre></div><p>コードを読むと、初期値 100chips, 勝てば倍になっていき、999999chips を超えると flag が手に入る仕組み。<br>
+2 つ方針を考えた。1 つは、jwt の脆弱性を利用するもの。alg で None とか、間違って secret が手に入っちゃうとか、jwt を発行するときに値を好き放題入れられるとかを考えたけどうまくいかなかった。理由としては、すべてサーバ側で処理していることが挙げられる。2 つめは、ブラックジャックで次に来るカードをすべて予測して勝利するもの。(乱数に脆弱性のある暗号問でよくあるやつ)さて、jwt の中身は、以下のようになっている。(jwt.io を用いた)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=p>{</span>
+  <span class=s2>&#34;player&#34;</span><span class=o>:</span> <span class=p>[</span>
+    <span class=mi>1</span>
+  <span class=p>],</span>
+  <span class=s2>&#34;dealer&#34;</span><span class=o>:</span> <span class=p>[</span>
+    <span class=mi>7</span>
+  <span class=p>],</span>
+  <span class=s2>&#34;chip&#34;</span><span class=o>:</span> <span class=mi>200</span><span class=p>,</span>
+  <span class=s2>&#34;player_score&#34;</span><span class=o>:</span> <span class=mi>2</span><span class=p>,</span>
+  <span class=s2>&#34;dealer_score&#34;</span><span class=o>:</span> <span class=mi>8</span><span class=p>,</span>
+  <span class=s2>&#34;cards&#34;</span><span class=o>:</span> <span class=p>[</span>
+    <span class=mi>45</span><span class=p>,</span>
+    <span class=mi>24</span><span class=p>,</span>
+    <span class=mi>40</span><span class=p>,</span>
+    <span class=mi>15</span><span class=p>,</span>
+    <span class=mi>18</span><span class=p>,</span>
+    <span class=mi>21</span><span class=p>,</span>
+    <span class=mi>6</span><span class=p>,</span>
+    <span class=mi>42</span><span class=p>,</span>
+    <span class=mi>49</span><span class=p>,</span>
+    <span class=mi>46</span><span class=p>,</span>
+    <span class=mi>5</span><span class=p>,</span>
+    <span class=mi>11</span><span class=p>,</span>
+    <span class=mi>44</span><span class=p>,</span>
+    <span class=mi>33</span><span class=p>,</span>
+    <span class=mi>47</span><span class=p>,</span>
+    <span class=mi>32</span><span class=p>,</span>
+    <span class=mi>22</span><span class=p>,</span>
+    <span class=mi>25</span><span class=p>,</span>
+    <span class=mi>38</span><span class=p>,</span>
+    <span class=mi>41</span><span class=p>,</span>
+    <span class=mi>28</span><span class=p>,</span>
+    <span class=mi>23</span><span class=p>,</span>
+    <span class=mi>39</span><span class=p>,</span>
+    <span class=mi>13</span><span class=p>,</span>
+    <span class=mi>16</span><span class=p>,</span>
+    <span class=mi>27</span><span class=p>,</span>
+    <span class=mi>2</span><span class=p>,</span>
+    <span class=mi>48</span><span class=p>,</span>
+    <span class=mi>26</span><span class=p>,</span>
+    <span class=mi>4</span><span class=p>,</span>
+    <span class=mi>14</span><span class=p>,</span>
+    <span class=mi>3</span><span class=p>,</span>
+    <span class=mi>17</span><span class=p>,</span>
+    <span class=mi>19</span><span class=p>,</span>
+    <span class=mi>36</span><span class=p>,</span>
+    <span class=mi>50</span><span class=p>,</span>
+    <span class=mi>0</span><span class=p>,</span>
+    <span class=mi>31</span><span class=p>,</span>
+    <span class=mi>43</span><span class=p>,</span>
+    <span class=mi>12</span><span class=p>,</span>
+    <span class=mi>34</span><span class=p>,</span>
+    <span class=mi>30</span><span class=p>,</span>
+    <span class=mi>9</span><span class=p>,</span>
+    <span class=mi>37</span><span class=p>,</span>
+    <span class=mi>51</span><span class=p>,</span>
+    <span class=mi>8</span><span class=p>,</span>
+    <span class=mi>10</span><span class=p>,</span>
+    <span class=mi>29</span><span class=p>,</span>
+    <span class=mi>35</span><span class=p>,</span>
+    <span class=mi>20</span>
+  <span class=p>]</span>
+<span class=p>}</span>
+</code></pre></div><p>cards が書いてあるじゃん！！2 つめの方針いける！！と思ったが、<code>/stand</code>や<code>/hit</code>の処理を見るとわかるように結局 randrange しているので予測はできない。<br>
+うんうん悩んでいたら、そもそも cookie だけでしかやりとりしていないことに気づいた。これは jwt はブラックボックスのままで、負けたら手前の状態の cookie を保存しておいてそれをもう一度セットすれば負ける前の状態に戻れるのでは？→ できた！死に戻りできる！(アニメの見すぎ)<br>
+というわけで勝ったら next game を押し、cookie をメモしておいて負けたら cookie をセットして&mldr;という形で手作業でやっていった。14 回勝てば目標額を超えるので、手作業でも間に合う。cookie の変更は chrome devtools > applications からやった。</p>
+<p><img src=./p-3.png alt=matsushima2></p>
+<pre tabindex=0><code>KosenCTF{r3m3mb3r_m475u5him4}
+</code></pre><p>こういうときサッと自動化できたら強いんだろうな&mldr;</p>
+<h1 id=limited>limited</h1>
+<pre tabindex=0><code>Our website had been attacked by someone. Did the attacker successfully steal the admin's secret?
+
+limited_2a6f6c5f14589179b1ce3e73937cae45.tar.gz
+</code></pre><p>pcap ファイルが渡されて、それを見ていく問題。こういうのって、pcap ファイルのみで完結する場合と、その中で指定された IP のサーバが生きててそこと通信する場合の 2 つがあると思うんだけど、今回は pcap ファイルのみで完結するものだった。<br>
+Network 問は HTTP Stream を抜き出して、どんなやりとりがなされたかが分かればあとはプログラミングコンテストになりがちな気がするので工夫が大変そう。かといって、CTF ではないけど<a href=https://jovi0608.hatenablog.com/entry/2020/06/13/104905>求む！TLS1.3 の再接続を完全に理解した方(Challenge CVE-2020-13777)</a>みたいなやつだとえげつなくて解けないのでうーんという感じ。でも Network 問でこれからも HTTP Stream 抜き出してホイみたいな問題が出続けるとも限らないので、ちゃんと暗号化された通信の勉強もしないとなぁ&mldr;うう<br>
+本題に入ります。<br>
+wireshark を用いていくつかのパケットで follow HTTP stream して中身をみていくと、 <code>GET /search.php?keyword=&search_max=%28SELECT+unicode%28substr%28secret%2C+1%2C+1%29%29+FROM+account+WHERE+name%3D%22admin%22%29+%25+13 HTTP/1.1</code> みたいなクエリがたくさんみつかります。これは SQL injection をしているなと思ったので、これらを個別に処理したくなり、wireshark の左上の方のボタンを押して、それぞれの HTTP Stream をすべてファイルにしました。</p>
+<p><img src=./p-4.png alt=limited></p>
+<p>search.php, クエリが関係なさそうないくつかいらないファイルを消して以下のコードを書きました。(<code>00main.py</code>)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>import</span> <span class=nn>glob</span>
+<span class=kn>from</span> <span class=nn>urllib.parse</span> <span class=kn>import</span> <span class=n>parse_qs</span>
+<span class=kn>import</span> <span class=nn>re</span>
+<span class=n>a</span> <span class=o>=</span> <span class=n>glob</span><span class=o>.</span><span class=n>glob</span><span class=p>(</span><span class=s2>&#34;search*&#34;</span><span class=p>)</span>
+<span class=nb>print</span><span class=p>(</span><span class=n>a</span><span class=p>)</span>
+<span class=n>arr</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=n>secret</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=k>for</span> <span class=n>path</span> <span class=ow>in</span> <span class=n>a</span><span class=p>:</span>
+    <span class=n>p</span> <span class=o>=</span> <span class=s2>&#34;http://example.com?&#34;</span> <span class=o>+</span> <span class=n>path</span>
+    <span class=n>q</span> <span class=o>=</span> <span class=n>parse_qs</span><span class=p>(</span><span class=n>p</span><span class=p>)</span>
+    <span class=k>if</span> <span class=ow>not</span> <span class=s1>&#39;search_max&#39;</span> <span class=ow>in</span> <span class=n>q</span><span class=o>.</span><span class=n>keys</span><span class=p>():</span>
+        <span class=k>continue</span>
+    <span class=n>qq</span> <span class=o>=</span> <span class=n>q</span><span class=p>[</span><span class=s1>&#39;search_max&#39;</span><span class=p>][</span><span class=mi>0</span><span class=p>]</span> <span class=c1>#regex</span>
+    <span class=c1># print(qq)</span>
+    <span class=n>m</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>search</span><span class=p>(</span><span class=sa>r</span><span class=s1>&#39;secret, (\d{1,2}),&#39;</span><span class=p>,</span> <span class=n>qq</span><span class=p>)</span>
+    <span class=n>mm</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>search</span><span class=p>(</span><span class=sa>r</span><span class=s1>&#39;% (\d{1,2})&#39;</span><span class=p>,</span> <span class=n>qq</span><span class=p>)</span>
+    <span class=n>A</span> <span class=o>=</span> <span class=n>m</span><span class=o>.</span><span class=n>groups</span><span class=p>()[</span><span class=mi>0</span><span class=p>]</span>
+    <span class=n>B</span> <span class=o>=</span> <span class=n>mm</span><span class=o>.</span><span class=n>groups</span><span class=p>()[</span><span class=mi>0</span><span class=p>]</span>
+    <span class=n>b</span> <span class=o>=</span> <span class=nb>open</span><span class=p>(</span><span class=n>path</span><span class=p>,</span> <span class=s2>&#34;r&#34;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>()</span> <span class=c1>#regex</span>
+    <span class=n>n</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>findall</span><span class=p>(</span><span class=sa>r</span><span class=s1>&#39;php\?id=(\d{1,2})&#39;</span><span class=p>,</span> <span class=n>b</span><span class=p>)</span>
+    <span class=n>C</span> <span class=o>=</span> <span class=mi>0</span> <span class=k>if</span> <span class=n>n</span> <span class=o>==</span> <span class=p>[]</span> <span class=k>else</span> <span class=nb>max</span><span class=p>([</span><span class=nb>int</span><span class=p>(</span><span class=n>i</span><span class=p>)</span> <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=n>n</span><span class=p>])</span>
+    <span class=n>arr</span><span class=o>.</span><span class=n>append</span><span class=p>([</span><span class=nb>int</span><span class=p>(</span><span class=n>A</span><span class=p>),</span><span class=nb>int</span><span class=p>(</span><span class=n>B</span><span class=p>),</span><span class=n>C</span><span class=p>])</span>
+<span class=c1># secret get</span>
+<span class=n>arr</span><span class=o>.</span><span class=n>sort</span><span class=p>(</span><span class=n>key</span><span class=o>=</span><span class=k>lambda</span> <span class=n>x</span><span class=p>:</span><span class=n>x</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span>
+<span class=nb>print</span><span class=p>(</span><span class=n>arr</span><span class=p>)</span>
+<span class=n>index</span> <span class=o>=</span> <span class=mi>0</span>
+<span class=n>prob</span> <span class=o>=</span> <span class=p>[</span><span class=mi>65</span><span class=p>]</span>
+<span class=k>for</span> <span class=n>elem</span> <span class=ow>in</span> <span class=n>arr</span><span class=p>:</span>
+    <span class=n>A</span> <span class=o>=</span> <span class=n>elem</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span>
+    <span class=n>B</span> <span class=o>=</span> <span class=n>elem</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span>
+    <span class=n>C</span> <span class=o>=</span> <span class=n>elem</span><span class=p>[</span><span class=mi>2</span><span class=p>]</span>
+
+    <span class=k>if</span> <span class=n>index</span> <span class=o>!=</span> <span class=n>A</span><span class=p>:</span>
+        <span class=c1># init</span>
+        <span class=n>index</span> <span class=o>+=</span> <span class=mi>1</span>
+        <span class=n>secret</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>prob</span><span class=p>)</span>
+        <span class=n>prob</span> <span class=o>=</span> <span class=p>[]</span>
+        <span class=n>j</span> <span class=o>=</span> <span class=mi>0</span>
+        <span class=k>while</span> <span class=n>B</span><span class=o>*</span><span class=n>j</span><span class=o>+</span><span class=n>C</span> <span class=o>&lt;</span> <span class=mi>123</span><span class=p>:</span>
+            <span class=n>prob</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>B</span><span class=o>*</span><span class=n>j</span> <span class=o>+</span> <span class=n>C</span><span class=p>)</span>
+            <span class=n>j</span><span class=o>+=</span><span class=mi>1</span>
+    <span class=k>else</span><span class=p>:</span>
+        <span class=n>rem</span> <span class=o>=</span> <span class=p>[]</span>
+        <span class=k>for</span> <span class=n>k</span> <span class=ow>in</span> <span class=n>prob</span><span class=p>:</span>
+            <span class=k>if</span> <span class=n>k</span><span class=o>%</span><span class=n>B</span> <span class=o>!=</span> <span class=n>C</span><span class=p>:</span>
+                <span class=n>rem</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>k</span><span class=p>)</span>
+        <span class=k>for</span> <span class=n>ii</span> <span class=ow>in</span> <span class=n>rem</span><span class=p>:</span>
+            <span class=n>prob</span><span class=o>.</span><span class=n>remove</span><span class=p>(</span><span class=n>ii</span><span class=p>)</span>
+<span class=nb>print</span><span class=p>(</span><span class=n>secret</span><span class=p>)</span>
+<span class=k>for</span> <span class=n>sec</span> <span class=ow>in</span> <span class=n>secret</span><span class=p>:</span>
+    <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=n>sec</span><span class=p>)</span> <span class=o>==</span> <span class=mi>1</span><span class=p>:</span>
+        <span class=nb>print</span><span class=p>(</span><span class=nb>chr</span><span class=p>(</span><span class=n>sec</span><span class=p>[</span><span class=mi>0</span><span class=p>]),</span> <span class=n>end</span><span class=o>=</span><span class=s2>&#34;&#34;</span><span class=p>)</span>
+<span class=c1># KosenCTFu_c4n_us3_CRT_f0r_LIMIT_1nj3ct10n_p01nt</span>
+<span class=c1># KosenCTF{u_c4n_us3_CRT_f0r_LIMIT_1nj3ct10n_p01nt}</span>
+</code></pre></div><p>それぞれのクエリでは、secret の A 番目の文字を X としたとき、<br>
+<code>ord(X)%B == C</code>・・・(1)<br>
+となるような A,B,C が得られます。A は 1~50 まで動くので、各 A に対する X が分かれば flag が得られます。複数の式(1)が与えられるので CRT(中華剰余定理)でもいいのですが、範囲が狭いので最初の式で候補を絞って、次の式でその候補から除外していくという方法をとっています。<br>
+これで flag が得られました。</p>
+<pre tabindex=0><code>KosenCTF{u_c4n_us3_CRT_f0r_LIMIT_1nj3ct10n_p01nt}
+</code></pre><p>(後追い)</p>
+<h1 id=babysort>babysort</h1>
+<h1 id=harmagedon>harmagedon</h1>
+<h1 id=in-question>in question</h1>
+<h1 id=ciphertexts>ciphertexts</h1>
+<h1 id=trilemma>trilemma</h1>
+<h1 id=authme>authme</h1>
+<h1 id=bitcrypto>bitcrypto</h1>
+<h1 id=padding-oracle>padding oracle</h1>
+<h1 id=fables-of-aesop>Fables of aeSOP</h1>
+<h1 id=no-pressure>No pressure</h1>
+<pre tabindex=0><code>nc misc.kosenctf.com 10002
+
+No pressure_1cbec3179ffae85c628143284fef23c5.tar.gz
+</code></pre><p>与えられたソースコードは以下のようになっています</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>from</span> <span class=nn>Crypto.Cipher</span> <span class=kn>import</span> <span class=n>ARC4</span>
+<span class=kn>from</span> <span class=nn>hashlib</span> <span class=kn>import</span> <span class=n>sha256</span>
+<span class=kn>from</span> <span class=nn>base64</span> <span class=kn>import</span> <span class=n>b64encode</span>
+<span class=kn>import</span> <span class=nn>zlib</span>
+<span class=kn>import</span> <span class=nn>os</span>
+
+<span class=n>flag</span> <span class=o>=</span> <span class=nb>open</span><span class=p>(</span><span class=s2>&#34;./flag.txt&#34;</span><span class=p>,</span> <span class=s2>&#34;rb&#34;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+
+<span class=n>nonce</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>urandom</span><span class=p>(</span><span class=mi>32</span><span class=p>)</span>
+<span class=k>while</span> <span class=kc>True</span><span class=p>:</span>
+    <span class=n>m</span> <span class=o>=</span> <span class=nb>input</span><span class=p>(</span><span class=s2>&#34;message: &#34;</span><span class=p>)</span>
+    <span class=n>arc4</span> <span class=o>=</span> <span class=n>ARC4</span><span class=o>.</span><span class=n>new</span><span class=p>(</span><span class=n>sha256</span><span class=p>(</span><span class=n>nonce</span> <span class=o>+</span> <span class=n>m</span><span class=o>.</span><span class=n>encode</span><span class=p>())</span><span class=o>.</span><span class=n>digest</span><span class=p>())</span>
+    <span class=n>c</span> <span class=o>=</span> <span class=n>arc4</span><span class=o>.</span><span class=n>encrypt</span><span class=p>(</span><span class=n>zlib</span><span class=o>.</span><span class=n>compress</span><span class=p>(</span><span class=n>flag</span> <span class=o>+</span> <span class=n>m</span><span class=o>.</span><span class=n>encode</span><span class=p>()))</span>
+    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;encrypted! :&#34;</span><span class=p>,</span> <span class=n>b64encode</span><span class=p>(</span><span class=n>c</span><span class=p>)</span><span class=o>.</span><span class=n>decode</span><span class=p>())</span>
+</code></pre></div><p>&mldr;Crypto?とりあえず poetry で pycrypto をいれるなどしました。ARC4 ってなんだろうと思って調べてみたところ、RC4 だと商標にひっかかる？らしく、Alleged-RC4 ということで、実質 RC4 です。<br>
+さて、RC4 はストリーム暗号なので、padding oracle 系のが刺さるのかな、2 文字目は特定できるという話を聞いたこともあるな、といろいろやっていたが全く当たらないので、zlib になにか仕掛けがあるんじゃないか、特に LZ77,ハフマン符号だと flag と似た文字列を message に置けば短くなるはずなので&mldr;と思いましたが特にわからなかったです。<br>
+答えを見ます。 <a href=https://yoshiking.hatenablog.jp/entry/2020/09/07/101829>yoshiking さんの作問者 writeup</a><br>
+zlib でした。ストリーム暗号なので暗号前と後で長さが不変、それはそう&mldr;解けたじゃんつらい&mldr;<br>
+<a href=https://blog.albina.cc/2020/09/interkosenctf-2020-writeup.html>Laika さんの Writeup</a> を参考に書いた(というかほぼコピー)<br>
+どんな処理をしているかというと、encrypt が帰ってきたら b64decode して比較できるようにしておいて、短い長さが来たらありうる文字を更新するという感じ。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=kn>from</span> <span class=nn>pwn</span> <span class=kn>import</span> <span class=o>*</span>
+<span class=kn>from</span> <span class=nn>base64</span> <span class=kn>import</span> <span class=n>b64decode</span>
+<span class=kn>from</span> <span class=nn>string</span> <span class=kn>import</span> <span class=n>ascii_letters</span><span class=p>,</span> <span class=n>digits</span><span class=p>,</span> <span class=n>punctuation</span>
+
+<span class=c1>### --- サーバが閉じているようなので手元で検証しました ---</span>
+<span class=c1># s = remote(&#39;misc.kosenctf.com&#39;, 10002)</span>
+<span class=n>s</span> <span class=o>=</span> <span class=n>process</span><span class=p>([</span><span class=s1>&#39;poetry&#39;</span><span class=p>,</span> <span class=s1>&#39;run&#39;</span><span class=p>,</span> <span class=s1>&#39;python3&#39;</span><span class=p>,</span> <span class=s1>&#39;main.py&#39;</span><span class=p>])</span>
+
+<span class=n>ch</span> <span class=o>=</span> <span class=n>ascii_letters</span> <span class=o>+</span> <span class=n>digits</span> <span class=o>+</span> <span class=n>punctuation</span>
+<span class=n>flag</span> <span class=o>=</span> <span class=s1>&#39;KosenCTF{&#39;</span>
+
+<span class=k>def</span> <span class=nf>encrypt</span><span class=p>(</span><span class=n>message</span><span class=p>):</span>
+    <span class=n>s</span><span class=o>.</span><span class=n>recvuntil</span><span class=p>(</span><span class=s1>&#39;message: &#39;</span><span class=p>)</span>
+    <span class=n>s</span><span class=o>.</span><span class=n>sendline</span><span class=p>(</span><span class=n>message</span><span class=p>)</span>
+    <span class=n>encrypted</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>recvline</span><span class=p>()</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;:&#39;</span><span class=p>)[</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span><span class=o>.</span><span class=n>strip</span><span class=p>()</span>
+    <span class=n>encrypted</span> <span class=o>=</span> <span class=n>b64decode</span><span class=p>(</span><span class=n>encrypted</span><span class=p>)</span>
+    <span class=k>return</span> <span class=n>encrypted</span>
+
+<span class=k>while</span> <span class=kc>True</span><span class=p>:</span>
+    <span class=n>candidate</span> <span class=o>=</span> <span class=kc>None</span>
+    <span class=n>shortest</span><span class=p>,</span> <span class=n>longest</span> <span class=o>=</span> <span class=mi>1000</span><span class=p>,</span> <span class=o>-</span><span class=mi>1</span>
+    <span class=k>for</span> <span class=n>c</span> <span class=ow>in</span> <span class=n>ch</span><span class=p>:</span>
+        <span class=n>check</span> <span class=o>=</span> <span class=n>flag</span> <span class=o>+</span> <span class=n>c</span>
+        <span class=n>length</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>encrypt</span><span class=p>(</span><span class=n>check</span><span class=p>))</span>
+        <span class=k>if</span> <span class=n>length</span> <span class=o>&lt;</span> <span class=n>shortest</span><span class=p>:</span>
+            <span class=n>shortest</span> <span class=o>=</span> <span class=n>length</span>
+            <span class=n>candidate</span> <span class=o>=</span> <span class=n>c</span>
+        <span class=n>longest</span> <span class=o>=</span> <span class=nb>max</span><span class=p>(</span><span class=n>longest</span><span class=p>,</span> <span class=n>length</span><span class=p>)</span>
+    <span class=k>if</span> <span class=n>shortest</span> <span class=o>==</span> <span class=n>longest</span><span class=p>:</span>
+        <span class=k>break</span>
+    <span class=n>flag</span> <span class=o>+=</span> <span class=n>candidate</span>
+    <span class=nb>print</span><span class=p>(</span><span class=n>flag</span><span class=p>)</span>
+<span class=nb>print</span><span class=p>(</span><span class=s1>&#39;Result: &#39;</span><span class=p>,</span> <span class=n>flag</span><span class=p>)</span>
+</code></pre></div><p>動かした様子は以下の通り(手元なので dummy flag です)</p>
+<pre tabindex=0><code>$ poetry run python3 pwny.py
+[+] Starting local process '/home/uta8a/.poetry/bin/poetry': pid 22642
+KosenCTF{h
+KosenCTF{ho
+KosenCTF{hog
+KosenCTF{hoge
+KosenCTF{hoge_
+KosenCTF{hoge_p
+KosenCTF{hoge_pi
+KosenCTF{hoge_piy
+KosenCTF{hoge_piyo
+KosenCTF{hoge_piyo_
+KosenCTF{hoge_piyo_f
+KosenCTF{hoge_piyo_fu
+KosenCTF{hoge_piyo_fug
+KosenCTF{hoge_piyo_fuga
+KosenCTF{hoge_piyo_fuga}
+KosenCTF{hoge_piyo_fuga}K
+KosenCTF{hoge_piyo_fuga}Ko
+KosenCTF{hoge_piyo_fuga}Kos
+KosenCTF{hoge_piyo_fuga}Kose
+KosenCTF{hoge_piyo_fuga}Kosen
+KosenCTF{hoge_piyo_fuga}KosenC
+KosenCTF{hoge_piyo_fuga}KosenCT
+KosenCTF{hoge_piyo_fuga}KosenCTF
+</code></pre><p>手元での確認なので flag はなし。</p>
+<h1 id=stratum>stratum</h1>
+<h1 id=tip-toe>Tip Toe</h1>
+<h1 id=miniblog>miniblog</h1>
+<h1 id=readme>readme</h1>
+<h1 id=pash>pash</h1>
+<h1 id=just-sqli>just sqli</h1>
+<h1 id=ochazuke>ochazuke</h1>
+<h1 id=confusing>confusing</h1>
+<h1 id=padrsa>padrsa</h1>
+<h1 id=graphviz>graphviz++</h1>
+<h1 id=maze>maze</h1>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

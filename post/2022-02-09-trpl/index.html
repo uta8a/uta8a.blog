@@ -1,0 +1,112 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p><a href=https://doc.rust-jp.rs/book-ja/title-page.html>The Rust Programming Language 日本語版</a> を読み終えました。Rust 2018 Edition に該当します。</p>
+<h1 id=概要>概要</h1>
+<p>以下のトピックについて学ぶ。</p>
+<ul>
+<li>インストール</li>
+<li>基本概念 (宣言、if/for、関数など)</li>
+<li>所有権</li>
+<li>構造体、Enum</li>
+<li>クレートやモジュールなどのコード分割</li>
+<li>コレクション(<code>Vec</code>、<code>HashMap</code>)</li>
+<li>エラー処理(<code>Result</code>)</li>
+<li>抽象度の高いもの: トレイト、ジェネリック型、ライフタイム</li>
+<li>テスト</li>
+<li>関数型言語由来の機能: イテレータ、クロージャ</li>
+<li>Cargo, crates.io</li>
+<li>スマートポインタ: <code>Box&lt;T></code> <code>Rc&lt;T></code> <code>RefCell&lt;T></code></li>
+<li>並行性: <code>mpsc</code> <code>Mutex&lt;T></code> <code>Arc&lt;T></code> <code>Send</code> <code>Sync</code></li>
+<li>オブジェクト指向のデザインパターン(ステートパターン)が必ずしも最善ではないことを示す</li>
+<li>パターンマッチ</li>
+<li><code>unsafe</code></li>
+<li>マクロ</li>
+<li>付録: 予約語一覧、記号一覧、導出可能なトレイト一覧、Rust の開発の周辺</li>
+</ul>
+<p>プロジェクトとしてそれまで学んだことを手を動かして学べるのは、2 章の数当てゲーム、12 章の grep のサブセットを書く CLI、20 章のマルチスレッド Web サーバの 3 つ。</p>
+<p>この本の良さは、丁寧に skip する事柄は今は説明しないがこの章で説明する、ときちんと示しているところ。また、抽象的な説明 → 例という流れが難しい概念には必ず入っており、例を通して理解が進む構成になっています。</p>
+<p>他のプログラミング言語の経験のない初心者にいきなり勧めるなら個人的には minigrep の 12 章まで、もしかしたら 7 章くらいまでの場合もあるかも。あと、丁寧なため分量が多く、物量的に厳しい人もいるかもと思いました。Reference 的に使っても良さそうです。</p>
+<h1 id=できるようになったこと理解したこと>できるようになったこと/理解したこと</h1>
+<ul>
+<li>Rust のよさを答えられるようになった。書く速度と実際の実行速度と安定を全て両立する意味で、速度と安定を売りにしている。</li>
+<li>フィールド初期化省略、構造体更新記法など便利なものが色々あるので不便に感じたら調べてみるとよい。</li>
+<li>構造体の種類が説明できる。</li>
+<li><code>{:?}</code> だけでなく <code>{:#?}</code> もある(pretty print)</li>
+<li><code>match</code> と <code>if let</code> はほぼ同義だが、 <code>if let</code> は網羅性がないことに注意。</li>
+<li>パッケージ、クレート、モジュール、パスの違いが説明できる。</li>
+<li>相対パスか絶対パスどちらを使うかの判断基準が答えられる。</li>
+<li>コンパイル時にサイズがわかっていることが重要。これはスタックに置くためで、この辺に <code>Box&lt;T></code> やトレイトオブジェクトが関わってくる</li>
+<li><code>panic!</code> と <code>Result</code> の使い分けの基準が答えられる</li>
+<li><code>Deref</code> <code>Drop</code> トレイトの挙動について説明できる</li>
+<li>内部可変性パターンについて説明できる</li>
+<li><code>RefCell</code> の使い所の一つを説明できる</li>
+<li>メモリ安全、には循環参照のようなメモリリークが含まれていて、弾けない</li>
+<li>状態と振る舞いを型としてコード化すると、Rust っぽいいいコードになる(OOP オブジェクト指向 の章)</li>
+<li>パターンとしてありうるものをいくつか挙げられる</li>
+<li>マクロの種類を説明できる</li>
+</ul>
+<h1 id=本を読んでいる途中気づいたこと>本を読んでいる途中気づいたこと</h1>
+<ul>
+<li>すでに git で管理されたディレクトリ内で <code>cargo new</code> すると <code>.gitignore</code> が生成されずにあわや <code>target/</code> が commit されてしまいそうになる。毎回 <code>.gitignore</code> をコピペしていたが new の引数でなんとかならないもんかな</li>
+<li>参照外し型強制は、暗黙のうちに行われる他言語での型変換のような不都合が何か起きたりしないのだろうか？と心配になった</li>
+<li><code>assert_eq!</code> のような assert 系は右左どちらに Expected を書いてどちらに Result を書くべき？これはコード規約で縛るべきなんだろうか</li>
+<li>使われていない <code>use</code> を消すコマンドが欲しい。終わりに一括でしゅっと消したい</li>
+<li>test module? tests module?複数系なのかどうなのかディレクトリ名にも関わるところで混乱していた</li>
+<li>14.3 で、add-one という名前のクレートがあったので、命名的に underscore 区切りだと思っていたから(確かどちらでもいいはずだけど)驚いた。英語の本家の方も確認しておきたい。</li>
+<li><code>drop</code> でネットワークなどを記述するときはプログラマが <code>drop</code> に責任を持つので、あるステートマシン的なものに対し <code>drop</code> を自動生成するみたいな方法ができると嬉しそう。(<code>drop</code> の中身を自動生成できないだろうか？)</li>
+<li>循環参照を検知することはできないだろうか？</li>
+<li><a href=https://doc.rust-jp.rs/book-ja/ch16-02-message-passing.html>ここ</a>Golang のドキュメントへのリンクがリダイレクトされる？本家を調べてみて違ってたら jp の方に PR 送ってもいいかもしれない</li>
+<li>Cons の無限検知のところで、無限の検知はどうやるんだろう？調べたい。</li>
+<li>参照外し型強制の、参照外しは型が合うまで何回も行うのだろうか？回数上限はあるのだろうか？</li>
+<li><code>dyn</code> で怒られることが多く、<code>dyn</code> を調べておきたい。</li>
+</ul>
+<h1 id=今後やりたいこと>今後やりたいこと</h1>
+<ul>
+<li><code>cargo update</code> の挙動がいまいち分からなかったので理解したい。</li>
+<li>test を書いてリファクタリングする構成の教材資料を作ってサークルでハンズオン試してみたい</li>
+<li><code>unwind</code> のスタックのエラー時の動きを理解したい。</li>
+<li>借用チェッカーの問題集で格付けチェック A か B かみたいな形式のがあったら楽しそう</li>
+<li><a href=https://doc.rust-jp.rs/book-ja/ch13-04-performance.html>ループ vs イテレータのパフォーマンス比較</a>の検証記事とか出してみたいな。組み込みでの場合とかに意味があるので、組み込み Rust での検証がしたい。</li>
+<li>あるものを Export したい時に、どこに pub をつけなきゃいけないか教えてくれる仕組みを作りたい</li>
+<li>依存関係のライセンス一覧を出してくれる仕組みを作りたい。バイナリにバンドルするとか必要なはずなので、その辺り調べて仕組みに取り入れられると良さそう。</li>
+<li>document 全部読むをしておいたほうが良さそうなもの: <code>Option</code> <a href=https://doc.rust-lang.org/std/prelude/index.html#other-preludes><code>prelude</code></a> <code>collect</code></li>
+<li>RFC から所望の単語周辺の検索をかけるものが欲しい</li>
+<li>バイナリサイズを CI で追跡する仕組みを作りたい。</li>
+<li>C++でのスレッドの扱いを理論面から勉強したい</li>
+<li>unsafe が依存に含まれているかチェックする CI</li>
+<li>C コンパイラを Rust で書く。ある程度の分量の、まともなコードを書く体験を積みたい。</li>
+</ul>
+<h1 id=感想>感想</h1>
+<p>この本は 2022/01/22 - 2022/02/09 にかけて、30 回以上に分けて合計 20 時間 44 分かけて読み終えました。(めちゃ回数分けているのは休憩をこまめに入れたから) M1 Mac を用いてサンプルコードを手元で動かしたのですが特に困ったことはなかったです。</p>
+<p>日本語版ではなく<a href=https://doc.rust-lang.org/stable/book/>本家</a>を読みたかったが、読む速度を考えて日本語版を選択しました。翻訳してくださっている方々に感謝。</p>
+<p>これまで私と Rust との関わりは、自分用に CLI ツールを書いたり、OSS を読んだりする程度でした。TRPL は 2019 年に少し読んで、4 章の所有権を読んで Rust が分かった気になり、以降、5 章の構造体からは読まずに必要になったらつまみ読みするくらいでした。</p>
+<p>しかし今回、通しで読んでみると色々と発見があったり、ライブラリでよく見るあれはそういう意味だったのねと納得することもあって楽しかったです。TRPL を初手で読むのは私にはハードルが高かったのですが、いくつかライブラリを使ってみた後に読み返すと発見があり、ライブラリを使ってそれっぽいコードを書けるが初心者から脱した気になれない自分にはかなりいいタイミングで読めた気がします。</p>
+<p>今後やりたいことにも書いたが、これからまともなコードを書いて一人前の rustacean になれるよう修練を積みたいです。</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><ul>
+<li>Chatwork の <a href=https://twitter.com/guvalif>高瀬 和之さん</a> による 世界一やさしい圏論勉強会 に行ってきました(オンライン)</li>
+<li><a href=https://chatwork.connpass.com/event/196423/>connpass へのリンク</a> を見ると分かるように、授業ではなく対話を通じて理解を深めるスタイルで、実際に単純な例やこれはどうなの？という素朴な疑問に答えていて質問しやすい雰囲気でした。</li>
+<li>内容はスライドを見れば分かるので、なるべく素朴な疑問を中心に書いていきます。</li>
+</ul>
+<h2 id=-概要># 概要</h2>
+<ul>
+<li><a href=https://www.slideshare.net/100005930379759/scala-scala>Scala 初心者が米田の補題を Scala で考えてみた</a>のスライドの p.15 の途中まで行きました。</li>
+</ul>
+<h2 id=-軽いまとめ>## 軽いまとめ</h2>
+<ul>
+<li>圏論は、点と矢印に意味を持たせて話を展開する。点: 対象、矢印: 射 と呼ぶ。(有向グラフをイメージするとわかりやすい。)</li>
+<li>圏となる条件: 合成射の存在 (これは公理)</li>
+<li>合成射の存在から、Hom(A,B)の要素 f が一つでも存在するならば、Hom(X,A)の任意の要素 a について、Hom(X,B)のある要素 b が存在して、<code>b=f○a</code>となる。</li>
+<li>矢印ではなく集合として扱えるのは大事で、集合の考え方が米田の補題の理解で重要な役割を果たす。</li>
+</ul>
+<h2 id=-登場した質問たち>## 登場した質問たち</h2>
+<ul>
+<li>Q. A -> B へ複数やじるしがあってもいいのか？
+<ul>
+<li>A. OK。なくてもいい。A->B への矢印の集まりを Hom 集合と呼び、Hom(A,B)と表現する。矢印がない場合、Hom(A,B)は空集合になる</li>
+</ul>
+</li>
+<li>Q. Hom 集合は集合で制限されるのか？
+<ul>
+<li>A. 集合以外も考えられて圏を作れるかもしれないが解析は困難になるので、今回は集合とする。locally small という専門用語が登場した。</li>
+<li>自分で調べてみたら、locally small は圏の大きさを表す言葉で、要は Hom 集合として集合で制限する場合、圏の種類を局所的に小さいと分類付けているみたいだった(自信なし)</li>
+</ul>
+</li>
+<li>Q. 可換はイメージ的に結合じゃないの？
+<ul>
+<li>A. 可換図式という圏論の言葉があって、確かに結合っぽく見えるけど言葉的にはこれは可換です。結合もまた別の概念として圏論の世界に存在する。</li>
+</ul>
+</li>
+<li>Q. <code>,</code>って意味的にはどうなるの？
+<ul>
+<li>A. 日本語の文の区切りと同じ捉えでよい。ただ、順番を入れ替えると意味が変わる例があり、全称量化と存在量化で調べてみよう！</li>
+</ul>
+</li>
+<li>Q. Scala の<code>Function1[A,B]</code>が Hom(A,B)に対応するの？
+<ul>
+<li>A. 正しい。ただ、数学の話とプログラムの世界の話で埋め込めるかどうかは数学的に強い条件なので注意が必要。</li>
+<li>自分で考えると、プログラムの世界で表現可能な関数の集合より数学の世界の集合の方がやばい例が作れそうな気がして、広い世界から狭い世界への適用という意味で埋め込みという言葉を使っているのかなと思った(ここでの埋め込みは専門用語っぽい)</li>
+</ul>
+</li>
+<li>Q. Hom(Unit, Unit)は、Unit -> Int, Int -> Uint を作ればひとつではないのでは？
+<ul>
+<li>A.副作用がない場合に限って話をすると、結局 Int を経由する場合も<code>() -> ()</code>になるのでひとつと言える。</li>
+<li>副作用のない前提(print とかしない前提)は結構大事で、この副作用のない世界だと圏論が使えて嬉しくてそれと現実世界の折り合いをつけるために Monad が役に立つらしい。Monad よくわからないもの代表だったけどちょっと親近感がわきました。</li>
+</ul>
+</li>
+</ul>
+<h2 id=-自分の理解と疑問>## 自分の理解と疑問</h2>
+<ul>
+<li>定義によると思うが、射が等しいと判定する条件がいまいちのみこめてない。Int を経由して Unit の話と、中身の実装の違いは考えない話から、今回は射の定義域と終域が同じなら同じ射とみなすということなのだろうか？というか射って写像っぽいしそうなる気がする。</li>
+<li>最後のステートメントは、Hom(X,A)と Hom(X,B)に対応がつくところが嬉しい感じがする。</li>
+<li>プログラムの例で <code>∀a</code> は <code>[A](λ: A): A</code> というのが出てきてここが分からなかった。数学サイドは分かるけど、プログラムの例が分からない。 → これについて Twitter で しけちあ, Siketyan さん に教えてもらって納得しました。</li>
+</ul>
+<blockquote>
+<p>∀a の話，プログラミング的には例えば Rust だと <code>fn foo&lt;T>(arg: T) -> T</code> みたいな関数は任意の型 T に対して定義できます．∀a ∈ A の場合 <code>fn foo&lt;T: A>(arg: T) -> T</code> とすると型 T がトレイト A を実装している = A として扱える型の集合の一つ と解釈できるかなと思います</p>
+</blockquote>
+<ul>
+<li>つまり、本質的に <code>&lt;T: A></code> 部分が重要で、引数の型と返り値の型が T であることは本質ではない。ということでした。プログラミングの世界だと色々くっついてくるところが分からなくなる原因だということがはっきりしました(Rust で書いてもらったおかげで、自分に馴染みのあるフィールドに来て検討を行う速度があがって助かった)</li>
+</ul>
+<h2 id=-感想># 感想</h2>
+<ul>
+<li>僕は高校時代に数学が好きで慣れていて、内容自体でつまづくことはなかったです。しかし、個人的な悩みとして「数学が分かった気になって基礎をおろそかにしてしまう」というのがあり、きちんと納得するためには素朴な疑問を思いつく訓練が必要だと思って参加しました。結果的に、しりとりの圏や型と関数の圏の簡単な例を通じてあたまをひねって素朴な疑問を思いつく訓練や、定義や公理のような簡単な出発点から考えを展開して検討する訓練ができてよかったです。</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

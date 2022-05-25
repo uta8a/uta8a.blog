@@ -1,0 +1,254 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p><a href=https://github.com/uta8a/uta8alib>uta8alib</a>という競技プログラミング用ライブラリの環境構築について書きます。<br>
+今回環境を作るに当たって、<a href=https://github.com/ngtkana>ngtkana さん</a>の<a href=https://github.com/ngtkana/ngtlib>ngtlib</a>を参考にした部分が大きいです。ありがとうございました。</p>
+<h1 id=やりたいこと>やりたいこと</h1>
+<ul>
+<li>C++と Rust で競プロをする</li>
+<li><code>example/main.rs</code>のように、ファイル名を<code>main.[rs|cpp|hpp]</code>で統一したい</li>
+<li>test を行い、CI で check する</li>
+<li>ライブラリのコピペを行いたいので、コードとテストは別ファイルにしたい(特に Rust)</li>
+<li>あとで document(html)を生成することを考えて、コメントを各ファイルとテストに書けるようにしておく</li>
+<li>git submodule を使ってみる(C++テストフレームワーク Catch2 の使用)</li>
+</ul>
+<p><strong>今後の展望</strong></p>
+<ul>
+<li>status badge を GitHub につける</li>
+<li><a href=https://online-judge-tools.readthedocs.io/en/master/run-ci-on-your-library.ja.html>How to run CI on your library for competitive programming</a>を参考に、今後 Verify を導入して CI を回す</li>
+<li>Git-Flow を参考に、feature ブランチでライブラリ単体を開発して C++と Rust が揃ったら develop ブランチに統合、master にまとめてマージするときに CI を走らせる</li>
+<li>snippet の導入。コードからコメントを抜いたものを snippet ファイルとして自動生成したい。(VSCode, neovim(dein.vim, UltiSnip))</li>
+<li>ライブラリの種類を増やす(たくさん問題を解きましょう)</li>
+</ul>
+<h1 id=開発の流れ>開発の流れ</h1>
+<ul>
+<li><a href=#%E3%82%84%E3%82%8A%E3%81%9F%E3%81%84%E3%81%93%E3%81%A8>やりたいこと</a></li>
+<li><a href=#%E9%96%8B%E7%99%BA%E3%81%AE%E6%B5%81%E3%82%8C>開発の流れ</a>
+<ul>
+<li><a href=#%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E6%A7%8B%E6%88%90%E3%82%92%E6%B1%BA%E3%82%81%E3%82%8B>ディレクトリ構成を決める</a></li>
+<li><a href=#%E8%87%AA%E5%88%86%E7%94%A8%E3%81%AE%E7%AB%B6%E3%83%97%E3%83%AD-cli-%E3%83%84%E3%83%BC%E3%83%ABchan-%E3%82%92%E4%BD%BF%E3%81%86>自分用の競プロ CLI ツール、chan を使う</a></li>
+<li><a href=#git-submodule-%E3%82%92%E4%BD%BF%E3%81%86>git submodule を使う</a></li>
+<li><a href=#rust-%E3%81%AE%E3%83%86%E3%82%B9%E3%83%88%E6%96%B9%E6%B3%95%E3%82%92%E8%80%83%E3%81%88%E3%82%8B>Rust のテスト方法を考える</a></li>
+<li><a href=#c%E3%81%AE%E3%83%86%E3%82%B9%E3%83%88%E6%96%B9%E6%B3%95%E3%82%92%E8%80%83%E3%81%88%E3%82%8B>C++のテスト方法を考える</a></li>
+<li><a href=#git-%E3%81%AE%E9%96%8B%E7%99%BA%E6%89%8B%E9%A0%86%E3%82%92%E8%A6%8B%E7%9B%B4%E3%81%99>Git の開発手順を見直す</a></li>
+<li><a href=#ci-%E3%81%A7%E3%83%86%E3%82%B9%E3%83%88%E3%82%92%E5%9B%9E%E3%81%99>CI でテストを回す</a></li>
+<li><a href=#status-badge-%E3%82%92-github-%E3%81%AB%E3%81%A4%E3%81%91%E3%82%8B>status badge を GitHub につける</a></li>
+<li><a href=#license-%E3%82%92%E5%8A%A0%E3%81%88%E3%82%8B>LICENSE を加える</a></li>
+</ul>
+</li>
+<li><a href=#%E4%BB%8A%E5%BE%8C%E3%81%AE%E5%B1%95%E6%9C%9B>今後の展望</a>
+<ul>
+<li><a href=#logo-%E3%82%92%E4%BD%9C%E3%81%A3%E3%81%A6%E3%82%84%E3%82%8B%E6%B0%97%E3%82%92%E9%AB%98%E3%82%81%E3%82%8B>Logo を作ってやる気を高める</a></li>
+<li><a href=#verify-%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B>Verify してみる</a></li>
+<li><a href=#snippet-%E3%81%AE%E5%B0%8E%E5%85%A5>snippet の導入</a></li>
+<li><a href=#%E7%AB%B6%E3%83%97%E3%83%AD%E3%81%A7%E4%BD%BF%E3%81%86%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF%E3%81%AE%E9%81%B8%E5%AE%9A>競プロで使うエディタの選定</a></li>
+<li><a href=#%E3%81%A9%E3%81%93%E3%81%A7%E3%82%82%E7%AB%B6%E3%83%97%E3%83%AD%E3%81%A7%E3%81%8D%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%82%B7%E3%82%A7%E3%83%AB%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%82%92%E6%9B%B8%E3%81%8F>どこでも競プロできるようにシェルスクリプトを書く</a></li>
+<li><a href=#%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%81%AE%E7%A8%AE%E9%A1%9E%E3%82%92%E3%81%A9%E3%81%86%E3%82%84%E3%81%A3%E3%81%A6%E5%A2%97%E3%82%84%E3%81%99%E3%81%8B%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0%E3%82%92%E5%AD%A6%E3%81%B6>ライブラリの種類をどうやって増やすか(アルゴリズムを学ぶ)</a></li>
+</ul>
+</li>
+<li><a href=#%E3%81%93%E3%81%AE%E8%A8%98%E4%BA%8B%E3%82%92%E6%9B%B8%E3%81%8F%E3%81%AB%E5%BD%93%E3%81%9F%E3%81%A3%E3%81%A6>この記事を書くに当たって</a></li>
+<li><a href=#%E7%B5%82%E3%82%8F%E3%82%8A%E3%81%AB>終わりに</a></li>
+</ul>
+<h2 id=ディレクトリ構成を決める>ディレクトリ構成を決める</h2>
+<p>ディレクトリ構成は以下のようになっています。<br>
+src の下に cpp と rust があり、その下にディレクトリが存在していて<code>example</code>などがライブラリの名前になります。コードはそのディレクトリの中の<code>main.[rs|hpp]</code>に書きます。<br>
+test はテストコードです。src と同様の構成になっています。</p>
+<pre tabindex=0><code>❯ tree -I 'Catch2|chan|cpp-test|rust-test'
+.
+├── CMakeLists.txt
+├── Dockerfile
+├── libtest.sh
+├── README.md
+├── src
+│   ├── cpp
+│   │   ├── example
+│   │   │   └── main.hpp
+│   │   └── include
+│   │       └── lib.hpp
+│   └── rust
+│       └── example
+│           └── main.rs
+├── test
+│   ├── cpp
+│   │   ├── CMakeLists.txt
+│   │   ├── example
+│   │   │   └── main.cpp
+│   │   └── main.cpp
+│   └── rust
+│       └── example
+│           └── main.rs
+└── todo.md
+</code></pre><p>重視したことは、少しくらい深さのある構成になっても自分が好きな方を選ぶということです。<code>lib-name.hpp</code>というような名前のファイルをフラットに<code>src</code>直下に置く方も多いですが、僕は<code>lib-name/main.hpp</code>の方が好きなのでこうしました。好みの問題ですね。<br>
+深さができて GitHub で見るには面倒、という弱点のために、document を自動生成してブラウザで見る、というようにしたいです。コードブロックの右上にコピペボタンを用意すれば捗りそうです。</p>
+<h2 id=自分用の競プロ-cli-ツールchan-を使う>自分用の競プロ CLI ツール、chan を使う</h2>
+<p>競プロをするときは焦りがちなので、使うコマンドは最小限にしたいです。あと、打ちやすいほうがいい。僕は<code>chan</code>というコマンドでコンパイルして実行ファイル生成を行っていましたが、このコマンドにライブラリのテンプレート作成機能をもたせることにしました。</p>
+<pre tabindex=0><code>chan main.rs # rustc main.rsが走る
+chan main.cpp # g++ が走る
+/path/to/uta8alib$ chan generate cpp example # exampleという名前のフォルダで、C++のsrcとtestのテンプレートファイル作成。C++の場合、include/lib.hppにパスを追加する。
+</code></pre><p>引数の数で判別しています。単純な機能ですが、Rust で 4 時間くらいかけて書いて、Python3 とかの方がこういうのは向いてるなぁと感じました。外部 crate は使いませんでしたが、<a href=https://github.com/clap-rs/clap><code>clap-rs</code></a>を使うと高機能にできそうです。ソースコードの本体は<a href=https://github.com/uta8a/chan/blob/171f0719af55ed7542cee27fb2ae4b11e98483d8/src/main.rs>こちら</a>です。<br>
+重視したことは、色付きで出力させることです。はじめ Option なしでは色がなく、読みづらく感じていました。調べたところ、強制的に coloring を ON にする Option をつければよいと分かりました。Rust は <code>rustc --color=always</code> を、C++は <code>g++ -fdiagnostics-color=always</code> を指定しています。</p>
+<h2 id=git-submodule-を使う>git submodule を使う</h2>
+<p><a href=https://github.com/ngtkana/ngtlib>ngtlib</a>を見て git submodule に興味が湧いていました。また、競プロに関わることは普段はなるべくひとつにまとめておきたいものです。というわけで chan を submodule として uta8alib に取り込みます。</p>
+<p><strong>やること</strong></p>
+<ul>
+<li><a href=https://github.com/uta8a/chan/tree/master><code>chan</code></a>を GitHub に上げます。</li>
+<li><code>uta8alib$ git submodule add git@github.com:uta8a/chan.git chan</code>で submodule を追加</li>
+<li>ここで、<code>add repo directory</code>の repo と directory に気をつけましょう。</li>
+<li>.gitmodules が自動生成されるので確認</li>
+</ul>
+<pre tabindex=0><code>[submodule &quot;chan&quot;]
+	path = chan
+	url = git@github.com:uta8a/chan.git
+</code></pre><ul>
+<li>こんな感じなら OK</li>
+<li>あとは chan に入って<code>cargo build --release</code>でバイナリを作り、alias で<code>chan</code>を使えるようにしておく。</li>
+</ul>
+<p><strong>読むべき</strong></p>
+<ul>
+<li><a href=https://git-scm.com/docs/git-submodule>git 公式</a> submodule の後に<code>--help</code>を入れて打っておよい。</li>
+</ul>
+<p><strong>困った時のコマンド</strong></p>
+<ul>
+<li>git clone してきたら submodule がない！
+<ul>
+<li><code>git submodule update --init --recursive</code></li>
+</ul>
+</li>
+<li>submodule が更新された。新しくしたい。
+<ul>
+<li><code>git submodule foreach git pull origin master</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>注意</strong></p>
+<ul>
+<li><code>.gitmodules</code>を書いて<code>git submodule pull</code>みたいなことをやりたいが、それはできない。<code>add</code>で追加して、<code>.gitmodules</code>は生成物と捉えたほうがよい。</li>
+</ul>
+<h2 id=rust-のテスト方法を考える>Rust のテスト方法を考える</h2>
+<p>今回、cargo で外部 crate を入れるつもりはなかったので、cargo を使わないディレクトリ構成をしていました。しかしテストをするには cargo がよいです。そこで、テストのときに<code>cargo new</code>して<code>cargo test</code>するという方法に決めました。<br>
+<a href=https://github.com/uta8a/uta8alib/blob/master/libtest.sh><code>libtest.sh</code></a>の <code># rust test</code> の箇所を見ると分かるのですが、cat で src と test のファイルを結合したものを<code>cargo new</code>で生成したディレクトリの中に入れて、<code>lib.rs</code>に追記しています。<br>
+<code>cargo</code>を完全にテストツールとして使っていて強引な気がしますがうまく行っています。一つのファイルにまとめているので private method test ができ、わざわざ <code>pub</code> をつけずにライブラリを書くことが出来ます。</p>
+<h2 id=cのテスト方法を考える>C++のテスト方法を考える</h2>
+<p><a href=#git-submodule%E3%82%92%E4%BD%BF%E3%81%86>git submodule を使う</a>と同じ手順で<a href=https://github.com/catchorg/Catch2>Catch2</a>を導入しました。</p>
+<p><strong>やること</strong></p>
+<ul>
+<li>google test や catch2 など、C++テストフレームワークを検討する</li>
+<li>catch2 の使い方を調べる</li>
+<li>cmake を理解する</li>
+<li>test を書く</li>
+<li>CMakeLists.txt を書く</li>
+<li>make を通す</li>
+</ul>
+<p>細かく分けるとこんな感じでした。テストフレームワークの選定については<a href=https://ja.wikipedia.org/wiki/%E3%83%A6%E3%83%8B%E3%83%83%E3%83%88%E3%83%86%E3%82%B9%E3%83%88%E3%83%BB%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E4%B8%80%E8%A6%A7#C++>wikipedia のユニットテストフレームワークの記事の C++の欄</a>を参考にしました。</p>
+<blockquote>
+<p>ヘッダ・ファイルのみからなり、外部に依存しない。(wikipedia の記事より引用)</p>
+</blockquote>
+<p>たくさんあるので google test と Catch2 しか見れませんでしたが、違いがいまいち分からなかったので<a href=https://github.com/ngtkana/ngtlib>ngtlib</a>でも使われている Catch2 を選択しました。<br>
+CMakeLists.tst については<a href=https://github.com/ngtkana/ngtlib>ngtlib</a>を参考にしたいのであまり理解できていません。以下の記事が参考になりました。</p>
+<p><strong>参考</strong></p>
+<ul>
+<li><a href=https://qiita.com/shohirose/items/45fb49c6b429e8b204ac>CMake の使い方</a>
+<ul>
+<li>簡単なところから説明されているので分かりやすいです</li>
+</ul>
+</li>
+<li><a href=https://www.jonki.net/entry/2016/06/15/220029>cmake で googletest できる環境を作ってみる</a>
+<ul>
+<li><code>ctest --verbose</code>を使うとデバッグが捗ります</li>
+</ul>
+</li>
+<li><a href=https://www.task-notes.com/entry/20150214/1423882800>シェルスクリプトで相対パスと絶対パスを取得する</a>
+<ul>
+<li><code>pwd</code>とシェルスクリプトに書く時の注意点です</li>
+</ul>
+</li>
+</ul>
+<p>make が通った時は嬉しかったです。</p>
+<h2 id=git-の開発手順を見直す>Git の開発手順を見直す</h2>
+<p>ここまでずっと master に push してきましたが、そろそろ CI を導入するとなると、master にプルリク送ったときのみ CI が回るようにしたいです。現在は develop と master の 2 つですが、ライブラリを作る時は<code>feature-xxx</code>というブランチを作り、Rust と C++が揃った段階で develop に取り込み、master へマージして CI 回すという形にしたいです。</p>
+<p><strong>参考</strong></p>
+<ul>
+<li><a href=https://qiita.com/KosukeSone/items/514dd24828b485c69a05>Git-flow って何？</a></li>
+</ul>
+<h2 id=ci-でテストを回す>CI でテストを回す</h2>
+<p>以前 GitHub Actions を使ったことがあったので、今回は Circle CI を使ってみました。結論の<code>config.yml</code>は<a href=https://github.com/uta8a/uta8alib/blob/master/.circleci/config.yml>こちら</a>です。</p>
+<pre tabindex=0><code>version: 2.0
+
+jobs:
+  build_and_test:
+    docker:
+      - image: uta8a/circleci-rust-cmake:0.0.1
+    environment:
+      USER: uta8a
+    working_directory: ~/work
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./libtest.sh
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build_and_test:
+          filters:
+            branches:
+              only: master
+</code></pre><p><strong>注意</strong></p>
+<ul>
+<li>現在 version 2.1 まで指定できますが、local の circleci CLI ツールが 2.0 までしか対応していないので 2.0 を指定します。</li>
+<li>docker で 2 つ image を指定しようとしたら最初の一つしか反映されませんでした。無料枠であることが関係していそうですが原因は分かりませんでした。
+<ul>
+<li>そのため、DockerHub に自分で作ったイメージを上げました。<a href=https://hub.docker.com/r/uta8a/circleci-rust-cmake>DockerHub へのリンク</a></li>
+<li>これは、<code>circleci/rust</code>をベースにして<a href=https://hub.docker.com/r/rikorose/gcc-cmake/><code>rikorose/gcc-make</code></a>を参考に書き足しています。gcc は 8 で、cmake は 3.15 でした。</li>
+</ul>
+</li>
+<li><code>cargo</code>を docker で使おうとすると<code>$USER</code>が足りないというエラーが出ます。そのため、environment で USER を指定します。</li>
+<li>git submodule を使っている場合は、checkout 後に submodule も引っ張ってくるようコマンドを指定します。</li>
+<li>branch は master のみに設定します</li>
+<li>workflows の version は、全体の version が 2.1 のときは記述がいらないのですが、2.0 では必須です。</li>
+<li>circleci のデバッグ作業はローカルの CLI ツールを用いましょう。<code>circleci config validate</code>で yaml が正しいかどうか判定でき、<code>circleci local execute --job build_and_test</code>で特定の job を実際に回せます(docker を使います)</li>
+</ul>
+<h2 id=status-badge-を-github-につける>status badge を GitHub につける</h2>
+<p><a href=https://circleci.com/docs/2.0/status-badges/>公式の document</a>を読むと簡単に導入できます。Different Style の方が好みだったのでそうしました。</p>
+<h2 id=license-を加える>LICENSE を加える</h2>
+<p>加えました。MIT。</p>
+<h1 id=今後の展望>今後の展望</h1>
+<h2 id=logo-を作ってやる気を高める>Logo を作ってやる気を高める</h2>
+<h2 id=verify-してみる>Verify してみる</h2>
+<h2 id=snippet-の導入>snippet の導入</h2>
+<h2 id=競プロで使うエディタの選定>競プロで使うエディタの選定</h2>
+<h2 id=どこでも競プロできるようにシェルスクリプトを書く>どこでも競プロできるようにシェルスクリプトを書く</h2>
+<h2 id=ライブラリの種類をどうやって増やすかアルゴリズムを学ぶ>ライブラリの種類をどうやって増やすか(アルゴリズムを学ぶ)</h2>
+<h1 id=この記事を書くに当たって>この記事を書くに当たって</h1>
+<p><code>[article](#toc)</code> で見出しへの anchor link が張れるのですが、これは一癖あって、hugo で生成されたものの id をみながらそれと一致するようにやっていくとよいです。例えば、 <code>##C++でのテスト方法を考える</code> は <code>#c--でのテスト方法を考える</code> に変化します。</p>
+<h1 id=終わりに>終わりに</h1>
+<p>今回環境構築がメインでもう力尽きそうですがここからがスタートラインです。今年は競プロのレートに興味を持たずに、アルゴリズムに興味を持つことを目標にしていきたいです。</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

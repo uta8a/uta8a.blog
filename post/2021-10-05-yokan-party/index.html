@@ -1,0 +1,100 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><h1 id=yokan-party>Yokan Party</h1>
+<h2 id=link>link</h2>
+<ul>
+<li>problem - <a href=https://atcoder.jp/contests/typical90/tasks/typical90_a>https://atcoder.jp/contests/typical90/tasks/typical90_a</a></li>
+<li>editorial - <a href=https://github.com/E869120/kyopro_educational_90/blob/main/editorial/001.jpg>https://github.com/E869120/kyopro_educational_90/blob/main/editorial/001.jpg</a></li>
+</ul>
+<h2 id=問題概要>問題概要</h2>
+<p>長さ $L$ に対し予め切れ目 $A_i$ が与えられている。この切れ目 $N$ 個から $K$ 個をうまく選ぶことで、連続する長さの最小値を最大化する。</p>
+<h2 id=考察>考察</h2>
+<p>普通にやると $\binom n k$ になり $O(n!)$ の雰囲気が出るので明らかに無理。<br>
+方針としては、以下を思いついた。</p>
+<ul>
+<li>dp - $L$ から切れ目をひとつ確定させて $L-A_j$ で切れ目を $K-1$ 個選ぶ問題に小さくできる</li>
+<li>diff を考える - 見た目がしゃくとりや累積和っぽい</li>
+<li>最小値の最大化っぽい - 調べたら二分探索が鉄板らしい</li>
+</ul>
+<h2 id=解答>解答</h2>
+<p>解けずに解説を読んだ。二分探索らしい。まだ慣れていないので疑似コードを思い浮かべる。<br>
+コードを書く。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=k>fn</span> <span class=nf>check</span><span class=p>()</span><span class=w> </span>-&gt; <span class=kt>bool</span> <span class=p>{</span><span class=w>
+</span><span class=w>  </span><span class=kc>true</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=k>fn</span> <span class=nf>binary_search</span><span class=p>()</span><span class=w> </span>-&gt; <span class=kt>usize</span> <span class=p>{</span><span class=w>
+</span><span class=w>  </span><span class=mi>0</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></div><p>のように適当に用意して埋めていった。<br>
+過程でめぐる式二分探索を用いるとバグりにくいことを知った。下のグループの最大値が low(left), 上のグループの最小値が high(right)になるので、今回は小さい値たちの中で一番大きいものを選びたいので low を返せばよい。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=k>fn</span> <span class=nf>check</span><span class=p>(</span><span class=n>a</span>: <span class=kp>&amp;</span><span class=p>[</span><span class=kt>usize</span><span class=p>],</span><span class=w> </span><span class=n>m</span>: <span class=kt>usize</span><span class=p>,</span><span class=w> </span><span class=n>key</span>: <span class=kt>usize</span><span class=p>)</span><span class=w> </span>-&gt; <span class=kt>bool</span> <span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>k</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mi>0</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>tmp</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mi>0</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=k>for</span><span class=w> </span><span class=n>aa</span><span class=w> </span><span class=k>in</span><span class=w> </span><span class=n>a</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=n>aa</span><span class=w> </span><span class=o>-</span><span class=w> </span><span class=n>tmp</span><span class=w> </span><span class=o>&gt;=</span><span class=w> </span><span class=n>m</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>            </span><span class=n>tmp</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=o>*</span><span class=n>aa</span><span class=p>;</span><span class=w>
+</span><span class=w>            </span><span class=n>k</span><span class=w> </span><span class=o>+=</span><span class=w> </span><span class=mi>1</span><span class=p>;</span><span class=w>
+</span><span class=w>        </span><span class=p>}</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w>    </span><span class=n>k</span><span class=w> </span><span class=o>&gt;=</span><span class=w> </span><span class=n>key</span><span class=w> </span><span class=c1>// trueならもっとmを大きくしてもいい余裕がある
+</span><span class=c1></span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=k>fn</span> <span class=nf>binary_search</span><span class=p>(</span><span class=n>a</span>: <span class=nb>Vec</span><span class=o>&lt;</span><span class=kt>usize</span><span class=o>&gt;</span><span class=p>,</span><span class=w> </span><span class=n>key</span>: <span class=kt>usize</span><span class=p>,</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>low</span>: <span class=kt>usize</span><span class=p>,</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>high</span>: <span class=kt>usize</span><span class=p>)</span><span class=w> </span>-&gt; <span class=kt>usize</span> <span class=p>{</span><span class=w>
+</span><span class=w>  </span><span class=k>while</span><span class=w> </span><span class=n>high</span><span class=w> </span><span class=o>-</span><span class=w> </span><span class=n>low</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=mi>1</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>mid</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>low</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=p>(</span><span class=n>high</span><span class=w> </span><span class=o>-</span><span class=w> </span><span class=n>low</span><span class=p>)</span><span class=w> </span><span class=o>/</span><span class=w> </span><span class=mi>2</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=n>check</span><span class=p>(</span><span class=o>&amp;</span><span class=n>a</span><span class=p>,</span><span class=w> </span><span class=n>mid</span><span class=p>,</span><span class=w> </span><span class=n>key</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>      </span><span class=n>low</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>mid</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=k>else</span><span class=p>{</span><span class=w>
+</span><span class=w>      </span><span class=n>high</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>mid</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w>  </span><span class=p>}</span><span class=w>
+</span><span class=w>  </span><span class=n>low</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=k>fn</span> <span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=n>input</span><span class=o>!</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>      </span><span class=n>n</span>: <span class=kt>usize</span><span class=p>,</span><span class=w>
+</span><span class=w>      </span><span class=n>l</span>: <span class=kt>usize</span><span class=p>,</span><span class=w>
+</span><span class=w>      </span><span class=n>k</span>: <span class=kt>usize</span><span class=p>,</span><span class=w>
+</span><span class=w>      </span><span class=n>a</span>: <span class=p>[</span><span class=kt>usize</span><span class=p>;</span><span class=n>n</span><span class=p>],</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>k</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>k</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=mi>1</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>a</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>a</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=n>a</span><span class=p>.</span><span class=n>push</span><span class=p>(</span><span class=n>l</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=fm>dbg!</span><span class=p>(</span><span class=o>&amp;</span><span class=n>a</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>ans</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>binary_search</span><span class=p>(</span><span class=n>a</span><span class=p>,</span><span class=w> </span><span class=n>k</span><span class=p>,</span><span class=w> </span><span class=mi>0</span><span class=p>,</span><span class=w> </span><span class=n>l</span><span class=p>);</span><span class=w>
+</span><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;{}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>ans</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></div><p>indent がずれている。rustfmt で indent space 2 にするやつ整備しておかないとな〜<br>
+よくみたら dbg 消し忘れている&mldr; Oh&mldr;</p>
+<p><a href=https://atcoder.jp/contests/typical90/submissions/26365878>提出コード</a></p>
+<h2 id=ref>ref</h2>
+<ul>
+<li><a href=https://qiita.com/drken/items/97e37dd6143e33a64c8c>めぐる式二分探索</a></li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><ul>
+<li>F#って言語機能が強くて、Haskell のような、言語処理系界のスーパーカーに見えます。(個人の感想です。)</li>
+<li>今回は「F#の言語機能を使うためにコードを書く」という本末転倒の目標を掲げて、初心者が F#をおそるおそる触ってみる記事です。間違いや、「こうすればもっと面白いよ！」といった指摘やアドバイスがもしあれば、 <a href=https://twitter.com/kaito_tateyama>Twitter: @kaito_tateyama</a> へリプライか DM で連絡いただけると嬉しいです。</li>
+</ul>
+<h1 id=fの導入>F#の導入</h1>
+<ul>
+<li>必要なものは以下の通りです。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>dotnet # .NET Core CLI
+fantomas # formatter
+</code></pre></div><ul>
+<li>インストール方法です。まず dotnet を入れていきます。Ubuntu だと <a href=https://docs.microsoft.com/en-us/dotnet/core/install/linux-debian>https://docs.microsoft.com/en-us/dotnet/core/install/linux-debian</a> を見ておくとよさそうです。</li>
+<li>今回は言語機能が知りたいだけなので、現時点での最新である dotnet 5.0(preview)を入れます。(私が使っている OS は Ubuntu20.04 です)</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ dotnet-sdk.dotnet --version
+5.0.100-rc.2.20479.15
+<span class=c1># https://github.com/dotnet/core/blob/master/release-notes/5.0/preview/5.0.0-rc.2-install-instructions.md</span>
+</code></pre></div><ul>
+<li>次に formatter を入れます</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ dotnet-sdk.dotnet tool install -g fantomas-tool
+$ fantomas Program.fs <span class=c1># format</span>
+</code></pre></div><ul>
+<li>F#ではプロジェクトという単位を作り、その中にファイルをいくつかおいて実行します。(ファイル単体でスクリプトのようにも扱えるらしい？)</li>
+<li>new, run といったコマンドを覚えるのが面倒なので Makefile を作っています。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=nv>arg</span> <span class=o>=</span> <span class=s2>&#34;default&#34;</span>
+<span class=nv>target</span> <span class=o>=</span> <span class=s2>&#34;Program.fs&#34;</span>
+<span class=nf>new</span><span class=o>:</span>
+	@dotnet-sdk.dotnet new console -lang<span class=o>=</span><span class=s2>&#34;F#&#34;</span> -o ./<span class=si>${</span><span class=nv>arg</span><span class=si>}</span>
+	@cp .gitignore ./<span class=si>${</span><span class=nv>arg</span><span class=si>}</span>/.gitignore
+<span class=nf>run</span><span class=o>:</span>
+	@dotnet-sdk.dotnet run --project ./<span class=si>${</span><span class=nv>arg</span><span class=si>}</span>
+<span class=nf>fmt</span><span class=o>:</span>
+	@fantomas ./<span class=si>${</span><span class=nv>target</span><span class=si>}</span>
+</code></pre></div><ul>
+<li>以下のようにしていきます</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ make <span class=nv>arg</span><span class=o>=</span>Name new <span class=c1># make project</span>
+$ make <span class=nv>arg</span><span class=o>=</span>Name run <span class=c1># run project</span>
+$ make <span class=nv>target</span><span class=o>=</span>Name/Program.fs fmt <span class=c1># format project</span>
+</code></pre></div><ul>
+<li>以下を実行すると、ハローワールドできると思います</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>make <span class=nv>arg</span><span class=o>=</span>minilang new
+make <span class=nv>arg</span><span class=o>=</span>minilang run
+<span class=c1># Hello world from F#</span>
+</code></pre></div><h1 id=ディレクトリ構成>ディレクトリ構成</h1>
+<ul>
+<li>ディレクトリ構成を見ていきます。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>minilang/
+├── bin/
+├── minilang.fsproj
+├── obj/
+├── Program.fs
+├── .gitignore
+└── README.md
+</code></pre></div><ul>
+<li>bin/と obj/は gitignore します。</li>
+<li>Program.fs がスタート地点になります。(ファイルの中を見ると、<code>[&lt;EntryPoint>]</code>があります。ここが開始地点です)</li>
+</ul>
+<h1 id=ファイルの中身を出力する>ファイルの中身を出力する</h1>
+<ul>
+<li>ここでの目標は「Either を使う」ということです。</li>
+</ul>
+<h1 id=testそろそろテスト駆動にしたい>test?そろそろテスト駆動にしたい</h1>
+<ul>
+<li>ここでテストのためのパッケージを入れる必要があるので、Makefile を見直して、テストが入っているプロジェクトが生成されるようにしようと思います。</li>
+</ul>
+<h1 id=その他>その他</h1>
+<ul>
+<li>Ionide</li>
+</ul>
+<pre tabindex=0><code>$ code --install-extension ionide.ionide-fsharp
+</code></pre><ul>
+<li><a href=https://github.com/OmniSharp/omnisharp-vscode/issues/3077#issuecomment-498880626>https://github.com/OmniSharp/omnisharp-vscode/issues/3077#issuecomment-498880626</a></li>
+</ul>
+<pre tabindex=0><code>$ sudo ln -sv /snap/dotnet-sdk/current/dotnet /usr/local/bin/dotnet
+</code></pre><ul>
+<li>もし apt で 3.1 入れてたらそれは消す。</li>
+<li>上 2 つで dotnet コマンド(dotnet5.0)を ionide が認識できるようになり、補完や静的チェックが効くようになる。</li>
+<li>paket</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>dotnet-sdk.dotnet tool -g install paket
+</code></pre></div><ul>
+<li>paket は今回はだめだった。</li>
+</ul>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

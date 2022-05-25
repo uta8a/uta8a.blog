@@ -1,0 +1,97 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>チーム StarrySky は正の点数を得た 78 チーム中、2126 点を獲得して 4 位でした。うち僕は 504 点を獲得しました。<br>
+僕が解いた Lets_Connct、Persistence、alice&rsquo;s password についての Writeup です。</p>
+<p><img src=./p-1.png alt></p>
+<h1 id=lets_connctmisc>Lets_Connct[misc]</h1>
+<p>nc でつなぐよう指示があるのでつなぎ、flag の中身を見ます。</p>
+<pre tabindex=0><code>❯ nc &lt;問題サーバ&gt; 2999
+bash: cannot set terminal process group (-1): Inappropriate ioctl for device
+bash: no job control in this shell
+bash-4.4$ ls
+ls
+bash
+bin
+dev
+flag
+lib
+lib32
+lib64
+bash-4.4$ echo &quot;$(&lt;flag)&quot;
+echo &quot;$(&lt;flag)&quot;
+Flag has moved to 3000 port on 172.17.0.10.
+</code></pre><p>別の場所に flag が移されたようです。nc でつなごうとしますが nc はないと言われてしまいます。</p>
+<pre tabindex=0><code>bash-4.4$ nc 172.17.0.10 3000
+nc 172.17.0.10 3000
+bash: nc: command not found
+</code></pre><p>そこで、<code>bash nc alternative</code>と検索をかけると、以下の記事がヒットします<br>
+<a href=https://stackoverflow.com/questions/20661320/alternative-to-cat-out-of-a-bash-script>https://stackoverflow.com/questions/20661320/alternative-to-cat-out-of-a-bash-script</a><br>
+<a href=https://github.com/solusipse/fiche#useful-aliases>https://github.com/solusipse/fiche#useful-aliases</a><br>
+cat がないのでそのまま使うことができません。よく分からないのですが、以下のような手順で flag を得ました。</p>
+<pre tabindex=0><code>bash-4.4$ exec 3&lt;&gt;/dev/tcp/172.17.0.10/3000
+exec 3&lt;&gt;/dev/tcp/172.17.0.10/3000
+bash-4.4$ while read -t 5 line &lt;&amp;3; do
+    echo &quot;$line&quot;
+    (( Lines++ ))
+donewhile read -t 5 line &lt;&amp;3; do
+&gt;     echo &quot;$line&quot;
+&gt;     (( Lines++ ))
+&gt;
+done
+ctrctf{b4sh_1s_a_mul7ifuncti0n_sh3ll}
+</code></pre><p>flag: <code>ctrctf{b4sh_1s_a_mul7ifuncti0n_sh3ll}</code></p>
+<h1 id=persistenceforensics>Persistence[forensics]</h1>
+<p>forensics_persistence.arn というファイルが渡されます。mitsu さんから Autorun で開けると聞いたのでこれはハッキングラボの作り方という本でやったやつだ！！(進研ゼミ感)でテンションを上げました。VM で動かしている Windows10 で<a href=https://docs.microsoft.com/ja-jp/sysinternals/downloads/sysinternals-suite>Sysinternals Suite</a>をダウンロードして、Autorun64.exe を使っていきます。今回は、素の状態で一度 Autorun を動かし origin.arn を生成してから forensics_persistence.arn と比較を行いました。<a href=https://www.atmarkit.co.jp/ait/articles/1407/28/news021.html>こちらの記事</a>が参考になります。比較すると緑色のところが差分になるので、そこを見ていくと Evil という項目があり、flag が書いてありました。<br>
+flag: <code>ctrctf{P3rs1st3nc3_5ch3dul3d_Ta3ks}</code></p>
+<h1 id=alices-passwordforensics>alice&rsquo;s password[forensics]</h1>
+<p>Volatility の使い方が試されます。そもそもインストールチャレンジで失敗したのでインストール方法を書いておきます。<br>
+<a href=https://github.com/volatilityfoundation/volatility>https://github.com/volatilityfoundation/volatility</a> にアクセスしてダウンロードします。vol.py が本体なので、<code>python path/to/vol.py -f &lt;file> imageinfo</code>のように使うことができます。mimikatz のような外部プラグインのダウンロードの仕方が分からなかった&mldr;(plugins/以下に入れればいけるやろと思ったらうまくいかない)<br>
+<code>python path/to/vol.py</code>を<code>vol</code>と alias した状態で以下のようにコマンドを打ちました。参考にしたのは<a href=https://www.andreafortuna.org/2017/11/15/how-to-retrieve-users-passwords-from-a-windows-memory-dump-using-volatility/>この記事</a>と<a href=https://github.com/volatilityfoundation/volatility/wiki/Command-Reference>公式の Wiki</a>です</p>
+<pre tabindex=0><code>vol -f memdump.mem imageinfo
+vol -f memdump.mem hivelist
+# 0xfffff8a0063fa010 sam
+# 0xfffff8a000024010 system
+#
+vol -f memdump.mem --profile=Win7SP1x64 hashdump -y 0xfffff8a000024010 -s 0xfffff8a0063fa010 &gt; hashes.txt
+</code></pre><p>これで hash が手に入ります。</p>
+<pre tabindex=0><code>Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Aqua:1000:aad3b435b51404eeaad3b435b51404ee:813ea107eccdab91a1b9c15b67693cb4:::
+Alice:1001:aad3b435b51404eeaad3b435b51404ee:19bf8c07d19ea196464115e443854654:::
+</code></pre><p><code>19bf8c07d19ea196464115e443854654</code>を<a href=https://crackstation.net/>https://crackstation.net/</a>にかけると<code>i&lt;3orange.</code>と解読されるので、これの md5hash が ZIP のパスワードになります。(うまくいかなかったので最後の md5 から mitsu さんにやってもらった)<br>
+flag: <code>ctrctf{Y0u_c4n_dump_4nd_cr4ck_hash!}</code></p>
+<h1 id=解けなかった問題>解けなかった問題</h1>
+<h1 id=once_again>once_again</h1>
+<h1 id=hacking-battler>Hacking Battler</h1>
+<h1 id=legacyblog>LegacyBlog</h1>
+<h1 id=終わりに>終わりに</h1>
+<p>毎度思うけど段階が一個しかない簡単なものしか解けてない。2020 年は勉強して本質が解けるようになりたいです。あと毎回そうだけど今回も mitsu さんが無双していた。<br>
+Contrail の皆さん、年末年始お疲れさまでした。楽しかったです。</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

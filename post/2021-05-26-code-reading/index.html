@@ -1,0 +1,136 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>人のコードを読んでいいところを学んでいこうと思います。traP の traQ, NeoShowcase, camphor-の relaym あたりは読んでいきたいです。<br>
+今回は、色々見て回って<a href=https://github.com/mazrean/separated-webshell>mazrean/separated-webshell</a>がよさそうだと感じたので読みます。</p>
+<h1 id=-前提条件># 前提条件</h1>
+<ul>
+<li>repository: <a href=https://github.com/mazrean/separated-webshell>https://github.com/mazrean/separated-webshell</a></li>
+<li>2021/05/26 時点での<code>main</code>ブランチの最新を対象とします。(commit hash: <code>5c3e14c32cc5582e9768467f02d22217ac1b6759</code>)</li>
+<li>ソースコードの解説というより、僕が知らなかったことを解説するみたいな方針でブログに残します(ソースコードの解説は製作者にしかできないので)</li>
+</ul>
+<h1 id=-コードを読む># コードを読む</h1>
+<h2 id=-概要>## 概要</h2>
+<p>おそらく、<a href=https://trap.jp/post/1303/>CPCTF を支えたインフラ</a>で紹介されている、Webshell の中で動いている ssh-separator がこれに当たると思われます。CTF で使うために、SSH した先を各コンテナに振り分けているようです。<br>
+記事では、</p>
+<blockquote>
+<p>また、日付は決まっていませんが Webshell についてのブログ記事も出る予定なのでお楽しみに！</p>
+</blockquote>
+<p>とあるので、traP ブログで解説が出るのを楽しみにしています。</p>
+<h2 id=-cicd>## CI/CD</h2>
+<p>GitHub Actions を使用していて、Lint を走らせて報告させる<code>main.yml</code>, tag を打ったときに release する<code>release.yml</code>の 2 つが走ります。</p>
+<h2 id=mainyml><code>main.yml</code></h2>
+<p>mod, build, lint の 3 つの Job が実行されます。</p>
+<blockquote>
+<p>A workflow run is made up of one or more jobs. Jobs run in parallel by default. To run jobs sequentially, you can define dependencies on other jobs using the jobs.&lt;job_id>.needs keyword.<br>
+<strong>ref.</strong> <a href=https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions>https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions</a></p>
+</blockquote>
+<p>なので、これらの Job は mod が実行された後、<code>needs</code>が書かれている build, lint が並列に動作します。</p>
+<h3 id=actionscachev2>actions/cache@v2</h3>
+<p>再利用できる依存関係などのファイルをキャッシュするために使う。このリポジトリでは、mod で go の外部ライブラリをキャッシュさせた後、build, lint で使用している。<br>
+使い方は、Go の場合は<a href=https://github.com/actions/cache/blob/main/examples.md#go---modules>actions/cache の Go の example</a>を見て、<a href=https://docs.github.com/ja/actions/guides/caching-dependencies-to-speed-up-workflows>GitHub Docs > 依存関係をキャッシュしてワークフローのスピードを上げる</a>を見ておけばよさそう。</p>
+<h3 id=actionsupload-artifactv2>actions/upload-artifact@v2</h3>
+<p>CI 上でテストの結果を HTML に出力してどこかに持っていきたいときや、生成物をダウンロードしたいときに GitHub 側に一時的に保存することができる Action。<br>
+<a href=https://docs.github.com/ja/actions/guides/storing-workflow-data-as-artifacts>GitHub Docs > ワークフロー データを成果物として保存する</a>や、<a href=https://github.com/actions/upload-artifact>actions/upload-artifact</a>を見ておけばよさそう。<br>
+成果物は、GitHub の Actions タブから個別のページに行くと誰でもダウンロード可能。なので、credential は artifact に含めてはいけない。</p>
+<h3 id=システムパスの追加>システムパスの追加</h3>
+<p><a href=https://docs.github.com/ja/actions/reference/workflow-commands-for-github-actions#adding-a-system-path>https://docs.github.com/ja/actions/reference/workflow-commands-for-github-actions#adding-a-system-path</a><br>
+ここにあるように、<code>$GITHUB_PATH</code>に追記すると PATH を追加できる。</p>
+<h3 id=reviewdog>reviewdog</h3>
+<p><a href=https://github.com/reviewdog/reviewdog>reviewdog</a>は様々な言語、linter に対応している結果をプルリクに通知してくれるツール</p>
+<h3 id=golangci-lint>golangci-lint</h3>
+<p><a href=https://github.com/golangci/golangci-lint>golangci-lint</a>は linter 集。あくまで linter 集なので、どの linter を使っているのか？という話が重要そう。<br>
+このリポジトリでは、<a href=https://github.com/mazrean/separated-webshell/blob/main/.golangci.yml>.golangci.yml</a>で決められているので見ていく。<br>
+合わせて、<a href=https://zenn.dev/sanpo_shiho/articles/09d1da9af91998>Go 公式の linter、Golint が非推奨になった</a>と<a href=https://golangci-lint.run/usage/linters/#enabled-by-default-linters>golangci-lint Enabled By Default Linters</a>を読んだ。</p>
+<ul>
+<li>golangci-lint でデフォルトで ON になっているもの: govet, errcheck, staticcheck, unused, gosimple, structcheck, varcheck, ineffassign, deadcode, typecheck</li>
+<li>deprecated: golint</li>
+<li>golangci-lint でデフォルトで OFF になっているもの: gofmt</li>
+</ul>
+<p>このあたりは開発者の好みもありそう。<br>
+その他眺めてたら、以下 2 つが面白そうだと感じた。</p>
+<ul>
+<li><a href=https://github.com/client9/misspell>misspell</a>: 変数名英語のスペルミスチェック(ただし最終リリースが 2018 年)</li>
+<li><a href=https://github.com/sanposhiho/wastedassign>wastedassign</a>: 意味のない代入を報告</li>
+</ul>
+<h2 id=releaseyml><code>release.yml</code></h2>
+<h3 id=git-tag-と-github-actions-発火>git tag と GitHub Actions 発火</h3>
+<p>このリポジトリでは、<code>on.push.tags</code>と<code>on.push.branches-ignore</code>を用いて tag を打った時のみそこに対して Actions を実行するようになっている。<br>
+ここで GitHub Docs を見てみると、</p>
+<blockquote>
+<p># Push events to v1.0, v1.1, and v1.9 tags<br>
+<strong>ref:</strong> <a href=https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-including-branches-and-tags>https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-including-branches-and-tags</a></p>
+</blockquote>
+<p>とあったので、もしかして 1 桁の v9 までで、2 桁の v12 とかって打てないのか&mldr;？と思って挙動を調べた。<br>
+以下のようにして調べた。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>git tags -a <span class=s1>&#39;v1&#39;</span> -m <span class=s1>&#39;ok&#39;</span>
+git push --tags
+git push
+</code></pre></div><ul>
+<li>tag は remote に明示的に push する必要がある</li>
+</ul>
+<p><code>git push --tags</code> ですべての local のタグを remote に push できる。<br>
+remote の tag は GitHub の release 項目から確認できる</p>
+<ul>
+<li><code>v*</code> は <code>v100</code> や <code>vABC</code> にもマッチする</li>
+</ul>
+<p>2 桁以上や文字でも大丈夫。</p>
+<ul>
+<li><code>v*.*.*</code> は <code>v4</code> にマッチしない。<code>v1.0.0</code> や <code>vX.Y.Z</code> にはマッチする。</li>
+<li><code>v..</code> を試そうとすると、local で <code>fatal: 'v..' is not a valid tag name.</code> となって打てない</li>
+<li>先に <code>git push --tags</code> すると、release に反映されるが main ブランチにはコミットが存在せず、該当コミットを release から見に行くと以下のようにどこのブランチにも属してないですと言われる。でも CI は回る。</li>
+</ul>
+<p><img src=p-1.png alt=p-1></p>
+<ul>
+<li>relase での tag の表示の順番は tag 名でソートされる。以下は 1 分前の最新のコミットの v4 が表示上は下に行っている様子</li>
+</ul>
+<p><img src=p-2.png alt=p-2></p>
+<p>結論としては、制限しないなら <code>v*</code> でよくて、制限かけたいなら <code>tags-ignore</code> も用いて制限かけていくのがよさそう。<br>
+バージョン付け手動 Only は大変そうで、Actions に載せて手動と自動まぜるみたいなことできたらいいのかな。</p>
+<h3 id=build-kit>Build Kit</h3>
+<p><a href=https://matsuand.github.io/docs.docker.jp.onthefly/develop/develop-images/build_enhancements/>https://matsuand.github.io/docs.docker.jp.onthefly/develop/develop-images/build_enhancements/</a><br>
+<a href=https://www.slideshare.net/AkihiroSuda/buildkit>https://www.slideshare.net/AkihiroSuda/buildkit</a><br>
+これらの記事を読んだ。Dockerfile の各ステージを並列実行することで高速化できたり、root 権限なしで実行できたりするらしい。</p>
+<h3 id=ghcr-と-github-packages>ghcr と github packages</h3>
+<p>個人的に Docker Image を保存したいとき、private なら課金が必要になる可能性があるが GCR(Google Container Registry)など、public なら Docker Hub を検討していたが、2020 年 11 月から Docker Hub の無料プランは pull 制限がかかるようになり使いづらくなって移行先として GitHub Packages や ghcr(GitHub Container Registry)の利用を検討するようになった。<br>
+Docker Image は save/load で tar.gz に固めて VPS に直接送って展開することもできるが、継続的に CI/CD をしていくと面倒になってくるので、Registry を使う方がよいケースも多い。</p>
+<p>ghcr は public beta。以下の記事が詳しい。現在は Personal Access Token が必要で、<code>secrets.GITHUB_TOKEN</code>でできる Packages に比べると少し手間がかかる。<br>
+<a href=https://www.kaizenprogrammer.com/entry/2020/09/03/060236>https://www.kaizenprogrammer.com/entry/2020/09/03/060236</a></p>
+<h2 id=-使っているライブラリ>## 使っているライブラリ</h2>
+<p>(draft: コード本体を読まないと使い方わからないものも多いので、後回し)</p>
+<h2 id=-コード本体>## コード本体</h2>
+<p>(draft: DI やクリーンアーキへの理解が必要そうなので、かなり時間かかりそう)</p>
+<h1 id=-まとめ># まとめ</h1>
+<p><a href=https://docs.github.com/ja/actions>https://docs.github.com/ja/actions</a><br>
+これすべて目を通しておいたほうがよさそう。</p>
+<h1 id=-最後に># 最後に</h1>
+<p>やっぱり強い人の手頃な大きさのリポジトリを読んで公式ドキュメントと照らし合わせて勉強していくの参考になる〜<br>
+公開してくれていることに感謝です 🙏<br>
+(draft)</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

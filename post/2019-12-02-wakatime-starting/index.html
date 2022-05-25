@@ -1,0 +1,74 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>この記事は [広島大学 IT エンジニアアドベントカレンダー] の 4 日目です。<br>
+僕は OSS 界隈で活躍している人の GitHub を見るのが好きです。contribution の数も、有名な OSS へ送った issue や pull request の数も僕とは桁違いで、こうなれたらなあと思います。また、そういった方々は中規模のプロジェクトを作っていることが多いので、プロジェクトのディレクトリ構成とか、どのツールを使っているのか？といった状況を学べます。また、コードを書いて生活する人にとって、GitHub は仕事場のひとつのようなものだと思います。その人の仕事場へのこだわりのようなものを pinned や profile, 所属団体から感じるのは楽しいことで、眺めるだけで時間があっという間に過ぎていきます。<br>
+さて、そんな感じでフロントエンド周りの方々を調べていると ([egoist さん]) の pinned に不思議なものを見つけました。</p>
+<p><img src=./p-1.png alt></p>
+<p>(写真は 2019-12-02 時点のもの)<br>
+Weekly development breakdown という項目で、どうやら 1 週間に書いたコードの時間となんの言語で書いたかが示されているようです。<br>
+僕もこれやってみたい！というわけで、この記事では、この表を pinned に表示することを目標としてやっていきましょう。</p>
+<h1 id=仕組み>仕組み</h1>
+<p>この表は <a href=https://github.com/matchai/waka-box>waka-box</a> を使っています。自分のエディタにプラグインを入れておくと一週間のうち何時間コードを書いたか、を示してくれる、&ldquo;WakaTime"という Web サービスがあり、その API を利用して、gist に表を作っています。<br>
+例えば僕の場合、VSCode に Extension で <a href=https://wakatime.com/vs-code>WakaTime</a> を入れています。API を利用するための secret key を入れたら後は何もせずコードを書けば大丈夫です。</p>
+<h1 id=waka-box-の導入><a href=https://github.com/matchai/waka-box>waka-box</a> の導入</h1>
+<p>基本的に <a href=https://github.com/matchai/waka-box>waka-box</a> の README に従えばできます。自分が詰まったところを捕捉しながら書きます。</p>
+<h2 id=準備>準備</h2>
+<ol>
+<li>gist を作る(GitHub) -> gist の URL をメモしておく このときの gist は description 以外上書きされるので、gist の中身はなんでもよいです。</li>
+<li>gist だけにチェックを入れた token を発行(GitHub) -> メモしておく</li>
+<li>WakaTime のアカウントを作る(wakatime)</li>
+<li>wakatime の secret key を手に入れる -> メモしておく<br>
+今 3 つメモしたと思います。1 の gist の URL は公開してもよく、**2,4 は公開してはいけません！**取り扱いに注意しましょう。</li>
+</ol>
+<h2 id=waka-box-を入れる><a href=https://github.com/matchai/waka-box>waka-box</a> を入れる</h2>
+<p><a href=https://github.com/matchai/waka-box>https://github.com/matchai/waka-box</a> を自分の GitHub へと fork します。<br>
+準備で手に入れた 3 つの値を入れていきます。gist の id は <code>.github/workflows/schedule.yml</code> にすでにある値を書き換えます。<br>
+gist token と wakatime secret key は</p>
+<p><img src=./p-2.png alt></p>
+<p>Settings の</p>
+<p><img src=./p-3.png alt></p>
+<p>Secrets に書き込みます。2 つの値を書き込むと上の図のようになります。<br>
+そして、gist を pinned に置きます。完成です！</p>
+<h2 id=動作確認>動作確認</h2>
+<h3 id=github-actions>GitHub Actions</h3>
+<p>GitHub Actions で WakaTime API から情報をとってきて gist に書き込みを行うので、きちんと Actions が動いているか確かめる必要があります。</p>
+<p><img src=./p-4.png alt></p>
+<p>上の図のように、Workflows に表示があれば OK です。10 分ほど待つと、gist が変化するはずです</p>
+<h3 id=gist-に反映されない>gist に反映されない！</h3>
+<p>API からデータをとってくるときは**前日から 7 日間のデータをとってきているようです。**僕の場合は、最初 gist に何も書き込まれずファイルが消滅して、次の日 00:00 以降最初の Action でデータが反映されました。</p>
+<h3 id=action-が動かない>Action が動かない！</h3>
+<p>2019/12/20 時点では、waka-box を clone した後に、<code>.github/workflows/schedule.yml</code> を一旦削除し、commit して github へ push した後に再度同じ内容の <code>.github/workflows/schedule.yml</code> を作り直さないと Action が動かないようです。</p>
+<p>参考(私の commit log です)<br>
+delete <a href=https://github.com/uta8a/waka-box/commit/64e351d872941cca0b92245929e10a5b20fb2f34>https://github.com/uta8a/waka-box/commit/64e351d872941cca0b92245929e10a5b20fb2f34</a><br>
+re-add <a href=https://github.com/uta8a/waka-box/commit/079eb1d7d425b4f45b5cfc7aca89c6e1ac4e2a66>https://github.com/uta8a/waka-box/commit/079eb1d7d425b4f45b5cfc7aca89c6e1ac4e2a66</a></p>
+<h1 id=終わりに>終わりに</h1>
+<p>以上です！意外とコードを書いているつもりでも書いていなかったりするので、目安にして精進していきたい&mldr;！</p>
+<p><img src=./p-5.png alt></p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>

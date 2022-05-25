@@ -1,0 +1,147 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.ebf953826ec39760c462d7fdf952404c734dabd6003b608b954f4693f77d2b3f.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><p>競技プログラミングを再開しようとして、Rust でディレクトリをつくるのがめんどくさいことに気づきました。 <code>mkdir -p</code> のような CLI ツールを作ったときに学んだメモです。</p>
+<h2 id=structopthttpsgithubcomtexitoistructopt-で引数パース><a href=https://github.com/TeXitoi/structopt>StructOpt</a> で引数パース</h2>
+<p>Rust のコマンドライン引数パーサというと、<a href=https://github.com/clap-rs/clap>clap</a>が有名だが、最近は StructOpt もよく見かけるのでこちらを使った。今調べたところ、StructOpt は clap v2.33 に依存しているらしい。<br>
+以下のように、コマンドライン引数を struct へ変換する。引数から struct のメンバへの変換時の validation は、parse する関数を指定できて、今回は <code>parse_mydir_rule</code> という関数を作ってそれを指定している。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust:main.rs data-lang=rust:main.rs><span class=cp>#[derive(StructOpt, Debug)]</span><span class=w>
+</span><span class=w></span><span class=cp>#[structopt(name = </span><span class=s>&#34;pdir&#34;</span><span class=cp>)]</span><span class=w>
+</span><span class=w></span><span class=k>struct</span> <span class=nc>Opt</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=cp>#[structopt(short)]</span><span class=w>
+</span><span class=w>    </span><span class=n>atcoder</span>: <span class=kt>bool</span><span class=p>,</span><span class=w>
+</span><span class=w>    </span><span class=sd>/// Each directory
+</span><span class=sd></span><span class=w>    </span><span class=cp>#[structopt(name = </span><span class=s>&#34;DIR&#34;</span><span class=cp>, parse(try_from_str = parse_mydir_rule))]</span><span class=w>
+</span><span class=w>    </span><span class=n>dirs</span>: <span class=nb>Vec</span><span class=o>&lt;</span><span class=nb>String</span><span class=o>&gt;</span><span class=p>,</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span><span class=w></span><span class=k>fn</span> <span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>opt</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Opt</span>::<span class=n>from_args</span><span class=p>();</span><span class=w>
+</span><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;{:#?}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>opt</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></div><h2 id=oncecellhttpsgithubcommatkladonce_cell-で初期化処理><a href=https://github.com/matklad/once_cell>OnceCell</a> で初期化処理</h2>
+<p>初期化処理を行い static な global 変数を作る方法として、 <a href=https://github.com/rust-lang-nursery/lazy-static.rs>lazy_static</a> が有名だが、最近は OnceCell も使われている。<br>
+今回は、ファイル名を数字アルファベット大文字小文字、ハイフン、アンダーバー、ドットのみに制限したかったので regex クレートを使ったが、このとき毎回 Regex を生成しているのかよく分からず、初期化したとき一度だけ計算するようにしたくて使った。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust:main.rs data-lang=rust:main.rs><span class=k>use</span><span class=w> </span><span class=n>regex</span>::<span class=n>Regex</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=k>use</span><span class=w> </span><span class=n>once_cell</span>::<span class=n>sync</span>::<span class=n>Lazy</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>static</span><span class=w> </span><span class=n>DIR_REGEX</span>: <span class=nc>Lazy</span><span class=o>&lt;</span><span class=n>Regex</span><span class=o>&gt;</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Lazy</span>::<span class=n>new</span><span class=p>(</span><span class=o>||</span><span class=w> </span><span class=n>Regex</span>::<span class=n>new</span><span class=p>(</span><span class=s>&#34;[a-zA-Z0-9-_\\.]+&#34;</span><span class=p>).</span><span class=n>unwrap</span><span class=p>());</span><span class=w>
+</span></code></pre></div><h2 id=cargo-workspaceshttpsdocrust-jprsbook-jach14-03-cargo-workspaceshtml-で管理する><a href=https://doc.rust-jp.rs/book-ja/ch14-03-cargo-workspaces.html>cargo workspaces</a> で管理する</h2>
+<p>競技プログラミングでは rustc コマンドで直接やっていたが、VSCode との相性や cargo に乗っかりたい気持ちから各 A~F 問題をそれぞれ <code>main.rs</code> で書きたいと考え、workspaces を使うことにした。<br>
+今回使った特徴は、workspace 全体を設定するディレクトリから各ディレクトリの <code>main.rs</code> が実行できる機能です。<br>
+以下のようなディレクトリ構成で、 <code>atcoder/abcXYZ/</code> で <code>cargo run -p a</code> とすると、 <code>a</code> ディレクトリで <code>cargo run</code> したのと同じことができて、 <code>target</code> ディレクトリは <code>abcXYZ/</code> ディレクトリにしか生成されません。<br>
+また、run は <code>r</code> のエイリアスがあるので、Makefile などで <code>make a</code> として <code>cargo r -p a</code> のようにすることも可能です。<br>
+今回作成した pdir では、 <code>pdir atcoder abcXYZ -a</code> というコマンドで <code>atcoder/abcXYZ/a/, ...</code>が生成されるようにしています。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>atcoder/abcXYZ/
+├── a
+│   ├── Cargo.toml
+│   └── src
+│       └── main.rs
+├── b
+│   ├── Cargo.toml
+│   └── src
+│       └── main.rs
+├── c
+│   ├── Cargo.toml
+│   └── src
+│       └── main.rs
+├── Cargo.lock
+├── Cargo.toml <span class=c1># workspaces</span>
+├── d
+│   ├── Cargo.toml
+│   └── src
+│       └── main.rs
+├── e
+│   ├── Cargo.toml
+│   └── src
+│       └── main.rs
+├── f
+│   ├── Cargo.toml
+│   └── src
+│       └── main.rs
+└── target
+</code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-toml:Cargo.toml data-lang=toml:Cargo.toml><span class=p>[</span><span class=nx>workspace</span><span class=p>]</span>
+<span class=nx>members</span> <span class=p>=</span> <span class=p>[</span>
+    <span class=s2>&#34;a&#34;</span><span class=p>,</span>
+    <span class=s2>&#34;b&#34;</span><span class=p>,</span>
+    <span class=s2>&#34;c&#34;</span><span class=p>,</span>
+    <span class=s2>&#34;d&#34;</span><span class=p>,</span>
+    <span class=s2>&#34;e&#34;</span><span class=p>,</span>
+    <span class=s2>&#34;f&#34;</span><span class=p>,</span>
+<span class=p>]</span>
+</code></pre></div><h2 id=文字列の-concat-は-join-を使おう>文字列の concat は join を使おう</h2>
+<p>文字列の連結は、引数のスペース区切りの単語を <code>/</code> で連結するようにした。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=kd>let</span><span class=w> </span><span class=n>path</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>opt</span><span class=p>.</span><span class=n>dirs</span><span class=p>.</span><span class=n>join</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>);</span><span class=w>
+</span><span class=w></span><span class=kd>let</span><span class=w> </span><span class=n>path</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>path</span><span class=p>.</span><span class=n>as_str</span><span class=p>();</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=p>[</span><span class=n>path</span><span class=p>,</span><span class=w> </span><span class=s>&#34;Cargo.toml&#34;</span><span class=p>].</span><span class=n>join</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>);</span><span class=w> </span><span class=c1>// a/b/c/Cargo.toml
+</span></code></pre></div><h2 id=文字列の扱いが難しい>文字列の扱いが難しい</h2>
+<p>上の join のところで、以下のようにするとだめになりました。やりたいことは、String だと使い回せないので&str にして使いまわそうということです。<br>
+エラーメッセージもまだ借用きちんと理解できてなくて分からない感じなので、いい方法があれば知りたいです。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=kd>let</span><span class=w> </span><span class=n>path</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>opt</span><span class=p>.</span><span class=n>dirs</span><span class=p>.</span><span class=n>join</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>).</span><span class=n>as_str</span><span class=p>();</span><span class=w>
+</span></code></pre></div><p>最小の再現コードです<br>
+<a href="https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=9b7aa9be5339c8c3b1c8373fefa8700f">https://play.rust-lang.org/?version=stable&mode=debug&edition=2018&gist=9b7aa9be5339c8c3b1c8373fefa8700f</a></p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>error[E0716]: temporary value dropped while borrowed
+ --&gt; src/main.rs:4:14
+  |
+4 |     let st = [&#34;a&#34;, &#34;b&#34;, &#34;c&#34;].join(&#34;/&#34;).as_str();
+  |              ^^^^^^^^^^^^^^^^^^^^^^^^^         - temporary value is freed at the end of this statement
+  |              |
+  |              creates a temporary which is freed while still in use
+5 |     println!(&#34;{}&#34;, st);
+  |                    -- borrow later used here
+  |
+  = note: consider using a `let` binding to create a longer lived value
+</code></pre></div><h2 id=anyhow-と-thiserror-の組み合わせが分からない>anyhow と thiserror の組み合わせが分からない</h2>
+<p>anyhow の Result を返す関数で、thiserror を使った enum でエラーを返そうとしたら、それは anyhow のエラー型ではありませんよと言われた。結局 <code>Err(anyhow!("message"))</code> としたが、thiserror でエラーメッセージとエラー型を一括管理できる恩恵を受けたいときに微妙になってしまう。ドキュメントを見てもよく分からなかったので、使われている例を探したい。</p>
+<h2 id=command-が便利>Command が便利</h2>
+<p>下のように、コマンドオプションがオンになっていたら、ディレクトリを <code>cargo</code> を流して作成し、workspace のところは直接ファイルを生成するようにした。個人的にわかりやすいコマンド体系で、変数を直接入れることは危険なため避けるが、こういう固定のコマンド発行のときは使っていくつもり。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-rust:main.rs data-lang=rust:main.rs><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>process</span>::<span class=n>Command</span><span class=p>;</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=k>if</span><span class=w> </span><span class=n>opt</span><span class=p>.</span><span class=n>atcoder</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>    </span><span class=c1>// cargo new a..f
+</span><span class=c1></span><span class=w>    </span><span class=k>for</span><span class=w> </span><span class=n>ch</span><span class=w> </span><span class=k>in</span><span class=w> </span><span class=sc>&#39;a&#39;</span><span class=o>..=</span><span class=sc>&#39;f&#39;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span><span class=w>        </span><span class=n>Command</span>::<span class=n>new</span><span class=p>(</span><span class=s>&#34;cargo&#34;</span><span class=p>)</span><span class=w>
+</span><span class=w>            </span><span class=p>.</span><span class=n>args</span><span class=p>(</span><span class=o>&amp;</span><span class=p>[</span><span class=s>&#34;new&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;--bin&#34;</span><span class=p>,</span><span class=w> </span><span class=n>ch</span><span class=p>.</span><span class=n>to_string</span><span class=p>().</span><span class=n>as_str</span><span class=p>()])</span><span class=w>
+</span><span class=w>            </span><span class=p>.</span><span class=n>current_dir</span><span class=p>(</span><span class=n>path</span><span class=p>).</span><span class=n>output</span><span class=p>()</span><span class=o>?</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=p>}</span><span class=w>
+</span><span class=w>    </span><span class=c1>// make Cargo.toml (workspace)
+</span><span class=c1></span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>file</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>fs</span>::<span class=n>File</span>::<span class=n>create</span><span class=p>([</span><span class=n>path</span><span class=p>,</span><span class=w> </span><span class=s>&#34;Cargo.toml&#34;</span><span class=p>].</span><span class=n>join</span><span class=p>(</span><span class=s>&#34;/&#34;</span><span class=p>))</span><span class=o>?</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>content</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>r###&#34;[workspace]
+</span><span class=s>members = [
+</span><span class=s>&#34;a&#34;,
+</span><span class=s>&#34;b&#34;,
+</span><span class=s>&#34;c&#34;,
+</span><span class=s>&#34;d&#34;,
+</span><span class=s>&#34;e&#34;,
+</span><span class=s>&#34;f&#34;,
+</span><span class=s>]&#34;###</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=fm>write!</span><span class=p>(</span><span class=n>file</span><span class=p>,</span><span class=w> </span><span class=s>&#34;{}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>content</span><span class=p>)</span><span class=o>?</span><span class=p>;</span><span class=w>
+</span><span class=w>    </span><span class=n>file</span><span class=p>.</span><span class=n>flush</span><span class=p>()</span><span class=o>?</span><span class=p>;</span><span class=w>
+</span><span class=w></span><span class=p>}</span><span class=w>
+</span></code></pre></div></article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>
