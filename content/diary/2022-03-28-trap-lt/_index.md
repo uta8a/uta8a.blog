@@ -8,7 +8,11 @@ changelog:
     date: 2022-03-28T13:13:00+09:00
   - summary: hugoにmigrate
     date: 2022-05-25T07:19:22+09:00
+  - summary: 文書の整形をした
+    date: 2022-05-26T14:09:11+09:00
 ---
+
+# [感想] traP LT 2022 これすき6選
 
 [traP LT 2022](https://connpass.com/event/242713/) が 2022/03/27 に開催されました。
 
