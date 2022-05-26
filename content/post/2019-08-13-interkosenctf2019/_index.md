@@ -8,7 +8,11 @@ changelog:
     date: 2019-08-13T07:12:48+09:00
   - summary: hugoにmigrate
     date: 2022-05-25T07:19:22+09:00
+  - summary: 文書の整形をした
+    date: 2022-05-26T14:22:31+09:00
 ---
+
+# InterKosenCTF 2019 Writeup
 
 InterKosenCTF2019 に mitsu さんと二人で、チーム StarrySky として参加しました。成績はチームで 13 位/91 人が正の得点、個人では 12 位でした。得点は、4332pts のうち 2944pts を入れました。
 
@@ -30,17 +34,22 @@ saferm と E-Sequel-Injection が通せたのは嬉しかったです
 
 ## Writeup
 
-- [Welcome](#welcome)
-- [Kurukuru Shuffle](#kurukuru-shuffle)
-- [uploader](#uploader)
-- [Temple of Time](#temple-of-time)
-- [lost world](#lost-world)
-- [fastbin tutorial](#fastbin-tutorial)
-- [pascal homomorphicity](#pascal-homomorphicity)
-- [saferm](#saferm)
-- [Survey](#survey)
-- [E-Sequel-Injection](#e-sequel-injection)
-- [basic_crackme](#basic_crackme)
+- [InterKosenCTF 2019 Writeup](#interkosenctf-2019-writeup)
+  - [Writeup](#writeup)
+    - [Welcome](#welcome)
+    - [Kurukuru Shuffle](#kurukuru-shuffle)
+    - [uploader](#uploader)
+    - [Temple of Time](#temple-of-time)
+    - [lost world](#lost-world)
+    - [fastbin tutorial](#fastbin-tutorial)
+    - [pascal homomorphicity](#pascal-homomorphicity)
+    - [saferm](#saferm)
+    - [Survey](#survey)
+    - [E-Sequel-Injection](#e-sequel-injection)
+- [最後に](#最後に)
+- [復習](#復習)
+  - [basic_crackme](#basic_crackme)
+  - [ref](#ref)
 
 ### Welcome
 
@@ -105,7 +114,7 @@ pcapng ファイルが与えられています。Network 問ですね！
 wireshark で開くと、パケットの量が多いのでとりあえず一つ`TCP follows`します
 すると、どうやら以下のような payload を送っていることが分かります。
 
-```
+```text
 /index.php?portal='OR(SELECT(IF(ORD(SUBSTR((SELECT+password+FROM+Users+WHERE+username='admin'),1,1))=57,SLEEP(1),'')))#
 ```
 
@@ -142,7 +151,7 @@ for i in range(40):
 
 出力
 
-```
+```text
 ...
 37 92
 37 93
@@ -193,7 +202,7 @@ MESSAGE=KosenCTF{u_c4n_r3s3t_r00t_p4ssw0rd_1n_VM}^
 [333pts, 20solved, hard, crypto]
 まずは手元で与えられたものを動かして感覚を掴みます。よくみると、`pow`のとり方が変なことに気づきます。
 
-```
+```text
 c = pow(1 + n, key, n * n)
 ```
 
@@ -295,13 +304,13 @@ unlink("a.txt")                                            = 0
 
 unlink(削除処理)の前になにかしているようです。どうなっているのか知るために、[radare2](https://github.com/radare/radare2)を用いて unlink 部分を`ff`で潰します。saferm を実行すると SEGV しますが、unlink 以降の流れは無視して良いので OK です。ltrace を見るに、8byte 区切りで何かが行われてそうなので、8 文字区切りでわかりやすくなるよう a.txt を作り、`$ ./saferm a.txt`します。
 
-```
+```text
 12345678876543219
 ```
 
 が、
 
-```
+```text
 ����7,)����2) 9
 ```
 
@@ -372,13 +381,13 @@ while( true ) {
 定数はランダムなので全探索を考えましたが、計算量は`256^8`と厳しいので、推測できないか考えます。
 いくつかの種類のファイルで zip を作り前の 8byte を見たところ、
 
-```
+```text
 50 4b 03 04 14 00 08 00
 ```
 
 となっていたので、これになるような定数を探すことにしました。前の 8byte だけ見ればよくて、定数`C`は
 
-```
+```text
 C = [46, 87, 173, 46, 255, 200, 194, 73]
 ```
 
@@ -422,14 +431,14 @@ Survey が時間によらないとアナウンスされていたので、ゆっ�
 の 2 つが思い浮かびました。
 次に、与えられたソースコードをよく眺めます。
 
-```
+```text
 $pattern = '/(\s|UNION|OR|=|TRUE|FALSE|>|<|IS|LIKE|BETWEEN|REGEXP|--|#|;|\/|\*|\|)/i';
 ```
 
 ここで禁止される単語がわかりますね。OR が潰されているので passw"or"d もダメです。というわけで、1.の方針はやばそうです。
 password だけでなんとかしてみます。[SQLi についての記事](https://medium.com/@gregIT/ringzer0team-ctf-sqli-challenges-part-1-6ceff556f4a8)を見ると、比較系は以下のようになっています
 
-```
+```text
 = (comparison), <=>, >=, >, <=, <, <>, !=, IS, LIKE, REGEXP, IN
 BETWEEN, CASE, WHEN, THEN, ELSE
 NOT
@@ -455,9 +464,7 @@ OR, ||
 もっともっと精進して、一つでも多くの flag を速く通せるようにがんばりたいです。悔しいです。
 作問者はすごい人々だなあと思いました。ツールゲーではなく、頭をひねるものが多くてとても楽しかったです。ありがとうございました。
 
-::: message notice
 以降は、2021/10/05 に追記しました。
-:::
 
 # 復習
 
@@ -504,9 +511,6 @@ for j in range(39):
 
 `KosenCTF{w3lc0m3_t0_y0-k0-s0_r3v3rs1ng}`
 
-##
-
 ## ref
 
 - 問題 link [theoremoon/InterKosenCTF2019-challenges-public](https://github.com/theoremoon/InterKosenCTF2019-challenges-public)
--
