@@ -15,7 +15,8 @@
 <p class=category>
 カテゴリー: <a href=/post>post</a>
 </p>
-<article class=suuri><p>InterKosenCTF2019 に mitsu さんと二人で、チーム StarrySky として参加しました。成績はチームで 13 位/91 人が正の得点、個人では 12 位でした。得点は、4332pts のうち 2944pts を入れました。</p>
+<article class=suuri><h1 id=interkosenctf-2019-writeup>InterKosenCTF 2019 Writeup</h1>
+<p>InterKosenCTF2019 に mitsu さんと二人で、チーム StarrySky として参加しました。成績はチームで 13 位/91 人が正の得点、個人では 12 位でした。得点は、4332pts のうち 2944pts を入れました。</p>
 <p><img src=p-1.png alt=p-1></p>
 <p>勝手にライバルだと思っている おたまこうせん, Wani Hackase, 生活習慣崩壊ズ, Contrail には完敗です。今回 Contrail 強かったですね&mldr;</p>
 <p><img src=p-2.png alt=p-2></p>
@@ -25,6 +26,10 @@
 <p><img src=p-4.png alt=p-4></p>
 <p>うごくペンギンさんかわいいです</p>
 <h2 id=writeup>Writeup</h2>
+<ul>
+<li><a href=#interkosenctf-2019-writeup>InterKosenCTF 2019 Writeup</a>
+<ul>
+<li><a href=#writeup>Writeup</a>
 <ul>
 <li><a href=#welcome>Welcome</a></li>
 <li><a href=#kurukuru-shuffle>Kurukuru Shuffle</a></li>
@@ -36,7 +41,17 @@
 <li><a href=#saferm>saferm</a></li>
 <li><a href=#survey>Survey</a></li>
 <li><a href=#e-sequel-injection>E-Sequel-Injection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href=#%E6%9C%80%E5%BE%8C%E3%81%AB>最後に</a></li>
+<li><a href=#%E5%BE%A9%E7%BF%92>復習</a>
+<ul>
 <li><a href=#basic_crackme>basic_crackme</a></li>
+<li><a href=#ref>ref</a></li>
+</ul>
+</li>
 </ul>
 <h3 id=welcome>Welcome</h3>
 <p>[200pts, 77solved, warmup, welcome]<br>
@@ -83,8 +98,8 @@ KosenCTF<span class=o>{</span>us4m1m1_m4sk_s3np41_1s_r34lly_cut3_38769915<span c
 pcapng ファイルが与えられています。Network 問ですね！<br>
 wireshark で開くと、パケットの量が多いのでとりあえず一つ<code>TCP follows</code>します<br>
 すると、どうやら以下のような payload を送っていることが分かります。</p>
-<pre tabindex=0><code>/index.php?portal='OR(SELECT(IF(ORD(SUBSTR((SELECT+password+FROM+Users+WHERE+username='admin'),1,1))=57,SLEEP(1),'')))#
-</code></pre><p>Blind SQL Injection ですね。パスワードを復元しましょう。<br>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>/index.php?portal=&#39;OR(SELECT(IF(ORD(SUBSTR((SELECT+password+FROM+Users+WHERE+username=&#39;admin&#39;),1,1))=57,SLEEP(1),&#39;&#39;)))#
+</code></pre></div><p>Blind SQL Injection ですね。パスワードを復元しましょう。<br>
 &mldr;wireshark の使い方が分からないので以下のように<code>string| grep</code>して text ファイルに出力し、それを python で処理しました。</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ strings 40142c592afd88a78682234e2d5cada9.pcapng <span class=p>|</span> grep GET &gt; text.txt
 </code></pre></div><p>python code</p>
@@ -108,7 +123,7 @@ wireshark で開くと、パケットの量が多いのでとりあえず一つ<
 <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>40</span><span class=p>):</span>
     <span class=nb>print</span><span class=p>(</span><span class=nb>chr</span><span class=p>(</span><span class=n>ans</span><span class=p>[</span><span class=n>i</span><span class=p>]),</span> <span class=n>end</span><span class=o>=</span><span class=s2>&#34;&#34;</span><span class=p>)</span>
 </code></pre></div><p>出力</p>
-<pre tabindex=0><code>...
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>...
 37 92
 37 93
 37 94
@@ -119,7 +134,7 @@ wireshark で開くと、パケットの量が多いのでとりあえず一つ<
 37 125
 37 126
 KosenCTF{t1m3_b4s3d_4tt4ck_v31ls_1t}
-</code></pre><p>flag が得られました。<br>
+</code></pre></div><p>flag が得られました。<br>
 <code>KosenCTF{t1m3_b4s3d_4tt4ck_v31ls_1t}</code></p>
 <h3 id=lost-world>lost world</h3>
 <p>[303pts, 23solved, easy, forensics]<br>
@@ -145,8 +160,8 @@ Aug <span class=m>11</span> 12:26:37 interkosenctf kernel: <span class=o>[</span
 <h3 id=pascal-homomorphicity>pascal homomorphicity</h3>
 <p>[333pts, 20solved, hard, crypto]<br>
 まずは手元で与えられたものを動かして感覚を掴みます。よくみると、<code>pow</code>のとり方が変なことに気づきます。</p>
-<pre tabindex=0><code>c = pow(1 + n, key, n * n)
-</code></pre><p>今知りたいのは key です。二項定理で展開すると、 $k=key$ として $c=(1+n)^k=1+nk\mod n^2$ となります。ここで、<code>c-1</code>は key を因数に持つこと、<code>n</code>はとても大きな 2 つの素数の積であることを考えると、<code>c</code>を問題サーバから 2 つとってきて、その gcd を求めてやればよいとわかります(<code>p</code>,<code>q</code>がかぶる可能性がゼロではないので、実際には 3 つとって 3 パターン試しました)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>c = pow(1 + n, key, n * n)
+</code></pre></div><p>今知りたいのは key です。二項定理で展開すると、 $k=key$ として $c=(1+n)^k=1+nk\mod n^2$ となります。ここで、<code>c-1</code>は key を因数に持つこと、<code>n</code>はとても大きな 2 つの素数の積であることを考えると、<code>c</code>を問題サーバから 2 つとってきて、その gcd を求めてやればよいとわかります(<code>p</code>,<code>q</code>がかぶる可能性がゼロではないので、実際には 3 つとって 3 パターン試しました)</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>enc</span> <span class=o>=</span> <span class=mi>1117592785756945002738587405183374707997236278832876752382077257896599451757365415136677068649202271625728711821443802541774251719291043243174615118338499367764139108608978912484729674259016683702441635510210410592886340310951498663601956453368016849654044425358486660239829076023396143385365334100325762893863056704023424484236267267163330075803211115662510582831949315847282719696491488496688402066546770670414750388491616</span> <span class=c1># とってきた値</span>
 <span class=n>enc2</span> <span class=o>=</span> <span class=mi>1426474518666386316952373644886367601067639538435511328875578111313507804333236413595323851672437342906978654624082015584969147016118358685644525710591604212444576378649957985369742169965571282944581336873961524078849506868840212988217246723168750947170868834263585239768592166304488082428998836788690037084234273668740247284858651061564029780768978530663053893783468283981333638372026457086457504452676555823252793501250656</span> <span class=c1># とってきた値</span>
 <span class=k>def</span> <span class=nf>gcd</span><span class=p>(</span><span class=n>a</span><span class=p>,</span> <span class=n>b</span><span class=p>):</span>
@@ -221,10 +236,10 @@ fclose<span class=o>(</span>0x5653ddbd4260<span class=o>)</span>                
 unlink<span class=o>(</span><span class=s2>&#34;a.txt&#34;</span><span class=o>)</span>                                            <span class=o>=</span> <span class=m>0</span>
 +++ exited <span class=o>(</span>status 0<span class=o>)</span> +++
 </code></pre></div><p>unlink(削除処理)の前になにかしているようです。どうなっているのか知るために、<a href=https://github.com/radare/radare2>radare2</a>を用いて unlink 部分を<code>ff</code>で潰します。saferm を実行すると SEGV しますが、unlink 以降の流れは無視して良いので OK です。ltrace を見るに、8byte 区切りで何かが行われてそうなので、8 文字区切りでわかりやすくなるよう a.txt を作り、<code>$ ./saferm a.txt</code>します。</p>
-<pre tabindex=0><code>12345678876543219
-</code></pre><p>が、</p>
-<pre tabindex=0><code>����7,)����2) 9
-</code></pre><p>のように変化しました。<br>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>12345678876543219
+</code></pre></div><p>が、</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>����7,)����2) 9
+</code></pre></div><p>のように変化しました。<br>
 Ghidra で見てやると、以下のような関数<code>saferm</code>を発見します。</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=err>​</span>
 <span class=kt>void</span> <span class=n>saferm</span><span class=p>(</span><span class=n>EVP_PKEY_CTX</span> <span class=o>*</span><span class=n>pEParm1</span><span class=p>)</span>
@@ -282,10 +297,10 @@ Ghidra で見てやると、以下のような関数<code>saferm</code>を発見
 この定数がわかれば、<code>X xor C xor C = X</code>より、元の zip が復元できそうです。<br>
 定数はランダムなので全探索を考えましたが、計算量は<code>256^8</code>と厳しいので、推測できないか考えます。<br>
 いくつかの種類のファイルで zip を作り前の 8byte を見たところ、</p>
-<pre tabindex=0><code>50 4b 03 04 14 00 08 00
-</code></pre><p>となっていたので、これになるような定数を探すことにしました。前の 8byte だけ見ればよくて、定数<code>C</code>は</p>
-<pre tabindex=0><code>C = [46, 87, 173, 46, 255, 200, 194, 73]
-</code></pre><p>となります。これを用いて 8byte ずつ読み込んで XOR して新しいファイルに書き込むスクリプトを書きましたが、それでもうまくいきません。<code>hexdump -C edit.zip</code>とみてやると、<code>locument</code>などの文字が見えたのでこれが<code>document</code>となるように<code>C</code>を修正しました。(以下のスクリプトの<code>xor_vec</code>にあたります)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>50 4b 03 04 14 00 08 00
+</code></pre></div><p>となっていたので、これになるような定数を探すことにしました。前の 8byte だけ見ればよくて、定数<code>C</code>は</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>C = [46, 87, 173, 46, 255, 200, 194, 73]
+</code></pre></div><p>となります。これを用いて 8byte ずつ読み込んで XOR して新しいファイルに書き込むスクリプトを書きましたが、それでもうまくいきません。<code>hexdump -C edit.zip</code>とみてやると、<code>locument</code>などの文字が見えたのでこれが<code>document</code>となるように<code>C</code>を修正しました。(以下のスクリプトの<code>xor_vec</code>にあたります)</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>xor_vec</span> <span class=o>=</span> <span class=p>[</span><span class=mi>46</span><span class=p>,</span> <span class=mi>87</span><span class=p>,</span> <span class=mi>173</span><span class=p>,</span> <span class=mi>46</span><span class=p>,</span> <span class=mi>255</span><span class=p>,</span> <span class=mi>200</span><span class=p>,</span> <span class=mi>202</span><span class=p>,</span> <span class=mi>73</span><span class=p>]</span>
 <span class=kn>import</span> <span class=nn>struct</span>
 <span class=n>f</span> <span class=o>=</span> <span class=nb>open</span><span class=p>(</span><span class=s2>&#34;document.zip&#34;</span><span class=p>,</span> <span class=s2>&#34;rb&#34;</span><span class=p>)</span>
@@ -316,17 +331,17 @@ Survey が時間によらないとアナウンスされていたので、ゆっ�
 2.admin として、後ろでなんとかする<br>
 の 2 つが思い浮かびました。<br>
 次に、与えられたソースコードをよく眺めます。</p>
-<pre tabindex=0><code>$pattern = '/(\s|UNION|OR|=|TRUE|FALSE|&gt;|&lt;|IS|LIKE|BETWEEN|REGEXP|--|#|;|\/|\*|\|)/i';
-</code></pre><p>ここで禁止される単語がわかりますね。OR が潰されているので passw"or"d もダメです。というわけで、1.の方針はやばそうです。<br>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>$pattern = &#39;/(\s|UNION|OR|=|TRUE|FALSE|&gt;|&lt;|IS|LIKE|BETWEEN|REGEXP|--|#|;|\/|\*|\|)/i&#39;;
+</code></pre></div><p>ここで禁止される単語がわかりますね。OR が潰されているので passw"or"d もダメです。というわけで、1.の方針はやばそうです。<br>
 password だけでなんとかしてみます。<a href=https://medium.com/@gregIT/ringzer0team-ctf-sqli-challenges-part-1-6ceff556f4a8>SQLi についての記事</a>を見ると、比較系は以下のようになっています</p>
-<pre tabindex=0><code>= (comparison), &lt;=&gt;, &gt;=, &gt;, &lt;=, &lt;, &lt;&gt;, !=, IS, LIKE, REGEXP, IN
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>= (comparison), &lt;=&gt;, &gt;=, &gt;, &lt;=, &lt;, &lt;&gt;, !=, IS, LIKE, REGEXP, IN
 BETWEEN, CASE, WHEN, THEN, ELSE
 NOT
 AND, &amp;&amp;
 XOR
 OR, ||
 = (assignment), :=
-</code></pre><p><code>IN</code>, <code>NOT</code>あたりが使えそうですね。<br>
+</code></pre></div><p><code>IN</code>, <code>NOT</code>あたりが使えそうですね。<br>
 実際にいろいろ打ち込んでいきます。</p>
 <p><code>' or 1=1 #</code> 定番。スペースとシャープとイコールと OR で引っかかります。<br>
 <code>'or(1=1)#</code> スペースなしで出来ました<br>
@@ -338,9 +353,7 @@ OR, ||
 <h1 id=最後に>最後に</h1>
 <p>もっともっと精進して、一つでも多くの flag を速く通せるようにがんばりたいです。悔しいです。<br>
 作問者はすごい人々だなあと思いました。ツールゲーではなく、頭をひねるものが多くてとても楽しかったです。ありがとうございました。</p>
-<p>::: message notice<br>
-以降は、2021/10/05 に追記しました。<br>
-:::</p>
+<p>以降は、2021/10/05 に追記しました。</p>
 <h1 id=復習>復習</h1>
 <p>復習をします。</p>
 <h2 id=basic_crackme>basic_crackme</h2>
@@ -370,11 +383,9 @@ Yes. This is the your flag :<span class=o>)</span>
             <span class=k>break</span>
 <span class=c1># KosenCTF{w3lc0m3_t0_y0-k0-s0_r3v3rs1ng}</span>
 </code></pre></div><p><code>KosenCTF{w3lc0m3_t0_y0-k0-s0_r3v3rs1ng}</code></p>
-<h2 id=heading></h2>
 <h2 id=ref>ref</h2>
 <ul>
 <li>問題 link <a href=https://github.com/theoremoon/InterKosenCTF2019-challenges-public>theoremoon/InterKosenCTF2019-challenges-public</a></li>
-<li></li>
 </ul>
 </article>
 <footer>
