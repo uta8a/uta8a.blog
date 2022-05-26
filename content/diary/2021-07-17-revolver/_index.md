@@ -8,6 +8,8 @@ changelog:
     date: 2021-07-17T22:58:25+09:00
   - summary: hugoにmigrate
     date: 2022-05-25T07:19:22+09:00
+  - summary: 文書の整形をした
+    date: 2022-05-26T13:44:12+09:00
 ---
 
 # HoneyComeBearのRevolverについての考察
