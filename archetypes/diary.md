@@ -1,7 +1,7 @@
 ---
 layout: diary
-title:
-description:
+title: 
+description: 
 draft: true
 changelog:
   - summary: 見出し作成
