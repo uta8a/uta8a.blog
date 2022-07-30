@@ -1,0 +1,93 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<link rel=stylesheet href=/sass/main.min.1e6313427b6aca7a7b8a243e45fb955d99cad3ab0ffd4851aee551953705b8ad.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><h1 id=elmドリル---jinjorelm-drill---に取り組んでみた>Elmドリル - jinjor/elm-drill - に取り組んでみた</h1>
+<h2 id=概要>概要</h2>
+<p><a href=https://github.com/jinjor/elm-drill>Elmドリル</a> はRustにおける <a href=https://github.com/rust-lang/rustlings>rustlings</a> みたいな感じでサッと試せてテスト付きで確認できて回答もついてて詰まったら見ればいいから最高の学習教材だと感じた。</p>
+<p>Elm Architectureとかは学べないので、アプリを作る前に文法確認のためにさっくりやっておくものという立ち位置だと思う。</p>
+<h2 id=詳細>詳細</h2>
+<h3 id=elmのdevcontainerを用意した>elmのdevcontainerを用意した</h3>
+<p>devcontainerを使いたいと考えて、elm用のコンテナを用意した。</p>
+<p>まず <a href=https://qiita.com/kojiohta/items/378f7a9310c411fa41fb>GitHub Codespaces で自前イメージを使う</a> を読んで自前で作ろうとしていたが、 <a href=https://zenn.dev/bells17/articles/zenn-devcontainer>zennの執筆環境向けdevcontainerを作成した話</a> を読んで <a href=https://github.com/microsoft/vscode-dev-containers/tree/main/containers/elm>Elm (Community)</a> の存在を知ってこれをそのまま使うことにした。</p>
+<h3 id=進め方>進め方</h3>
+<p><a href=https://github.com/jinjor/elm-drill#%E9%80%B2%E3%82%81%E6%96%B9>Elmドリル / 進め方</a> に書いてある。</p>
+<p>基本的には、 <code>only</code> を付け替えてQ1から順にQ10まで進む。一つのQ当たりの問題数も多くて10くらいなので意外とサクサク終わる。僕は全部で4時間くらいかかった。(詰まったら答えを見てた)</p>
+<h3 id=学んだこと>学んだこと</h3>
+<ul>
+<li>関数の書き方が独特。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-elm data-lang=elm><span class=nv>swap</span> <span class=nf>:</span> <span class=p>(</span> <span class=nv>a</span><span class=p>,</span> <span class=nv>b</span> <span class=p>)</span> <span class=nf>-&gt;</span> <span class=p>(</span> <span class=nv>b</span><span class=p>,</span> <span class=nv>a</span> <span class=p>)</span>
+<span class=nv>swap</span> <span class=p>(</span> <span class=nv>a</span><span class=p>,</span> <span class=nv>b</span> <span class=p>)</span> <span class=nf>=</span>
+    <span class=p>(</span><span class=nv>b</span><span class=p>,</span> <span class=nv>a</span><span class=p>)</span>
+</code></pre></div><ul>
+<li><code>|></code> 演算子で関数型言語でよくみるchainができる</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-elm data-lang=elm><span class=nv>trimAndToUpperAndReverseLeftToRight</span> <span class=nf>:</span> <span class=kt>String</span> <span class=nf>-&gt;</span> <span class=kt>String</span>
+<span class=nv>trimAndToUpperAndReverseLeftToRight</span> <span class=nv>s</span> <span class=nf>=</span>
+    <span class=nv>s</span>
+        <span class=nf>|&gt;</span> <span class=kt>String</span><span class=nf>.</span><span class=nv>trim</span>
+        <span class=nf>|&gt;</span> <span class=kt>String</span><span class=nf>.</span><span class=nv>toUpper</span>
+        <span class=nf>|&gt;</span> <span class=kt>String</span><span class=nf>.</span><span class=nv>reverse</span>
+</code></pre></div><ul>
+<li>Elmは2019/10にv0.19.1をリリースしてから2022/7現在までリリースが出ていない <a href=https://github.com/elm/compiler/releases>ref. github Releases</a> これはElmのコミュニティの独特さに起因していて、元々Elmは教育用言語として言語仕様を小さく保つために作られていて、機能追加に対するモチベーションがない。また、作者の独裁体制の元Elmは作られているので今後も機能追加される可能性は薄い。 <a href=https://izumisy.work/entry/2021/11/13/181404>参考: なぜElmは0.19のままか、変化すること／しないこと</a></li>
+</ul>
+<h2 id=メモ>メモ</h2>
+<ul>
+<li><a href=https://github.com/microsoft/vscode-dev-containers/tree/main/containers>devcontainer一覧</a> が便利。本当に色々なdevcontainer例が載っている。</li>
+<li>elmのCommunity devcontainerはコンテナ内からgitが使えなかったので修正チャンスかも。(.gitconfigのコピーとSSHキーのコピーが必要？普通はどうやっているんだろう)</li>
+<li>devcontainerでデフォルトのVS Code拡張は弱い？ので別の拡張を入れた。</li>
+<li>elmの態度から、学習用途に使ってstdに近いライブラリだけを使うのが良さそうだと感じた。Elm Architectureの精神を学んでそれを他の本番環境、TypeScriptなどで活かすのが良さそう。</li>
+<li>以下のようなミスをすると一生再帰してそうでelm-testの結果が返ってこなくなる。elm-testの結果が返ってこない時は待たずに中断すること。</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-elm data-lang=elm><span class=nv>length</span> <span class=nf>:</span> <span class=kt>String</span> <span class=nf>-&gt;</span> <span class=kt>Int</span>
+<span class=nv>length</span> <span class=nv>s</span> <span class=nf>=</span>
+    <span class=nv>length</span> <span class=nv>s</span> <span class=c1>-- ここは本当は String.length s</span>
+</code></pre></div><ul>
+<li>最初testを動かそうとするとこんなエラーが出た</li>
+</ul>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text>This file:
+
+/workspaces/elm-drill-answer/elm-drill/tests/Tests.elm
+
+…matches more than one source directory:
+
+/workspaces/elm-drill-answer/elm-drill/tests
+/workspaces/elm-drill-answer/elm-drill/tests
+
+Edit &#34;source-directories&#34; in your elm.json and try to make it so no source directory contains another source directory!
+
+Note: The tests/ folder counts as a source directory too (even if it isn&#39;t listed in your elm.json)!
+</code></pre></div><p>これは以下のように elm.json を変更するとよい( <code>tests</code> を除く)</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=s2>&#34;source-directories&#34;</span><span class=err>:</span> <span class=p>[</span><span class=s2>&#34;src&#34;</span><span class=p>,</span> <span class=s2>&#34;answers&#34;</span><span class=p>]</span><span class=err>,</span>
+</code></pre></div><ul>
+<li>他にもコメントのtypoや型がQuestionとAnswerで異なることがあったので、本家にPRを出した <a href=https://github.com/jinjor/elm-drill/pull/9>Fix: typo修正とanswer/questionで型が異なっているのを修正 #9</a></li>
+</ul>
+<h2 id=まとめ>まとめ</h2>
+<p><a href=https://github.com/jinjor/elm-drill>Elmドリル</a> はさっくりできて公式ドキュメントを読みながら演習を進められるのでおすすめ。Elmでアプリを作る前段階としてやっておくといいかも！</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>
