@@ -5,6 +5,7 @@
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
   />
+  <title>{{ .Title }}</title>
 
   <!-- css -->
   {{ $style := resources.Get "sass/main.scss" | toCSS | minify | fingerprint }}
