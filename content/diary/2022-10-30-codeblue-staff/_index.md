@@ -6,6 +6,8 @@ draft: false
 changelog:
   - summary: 見出し作成
     date: 2022-10-30T14:01:16+09:00
+  - summary: 書いた
+    date: 2022-10-30T15:31:00+09:00
 ---
 
 # codeblue 2022 の学生スタッフの感想
