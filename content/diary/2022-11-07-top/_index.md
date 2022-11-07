@@ -6,6 +6,8 @@ draft: false
 changelog:
   - summary: 見出し作成
     date: 2022-11-07T12:10:01+09:00
+  - summary: 完成
+    date: 2022-11-07T12:23:54+09:00
 ---
 
 # よく人生の目標を見失って疲れてしまう
