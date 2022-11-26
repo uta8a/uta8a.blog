@@ -1,0 +1,85 @@
+<!doctype html><html lang=ja><head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1">
+<title>既存言語のミニ版ぽいものまとめた</title>
+<link rel=stylesheet href=/sass/main.min.1e6313427b6aca7a7b8a243e45fb955d99cad3ab0ffd4851aee551953705b8ad.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css integrity=sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB crossorigin=anonymous>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js integrity=sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p crossorigin=anonymous></script>
+<script defer src=https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js integrity=sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR crossorigin=anonymous onload=renderMathInElement(document.body)></script>
+<script defer>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script>
+<script defer src=/js/prism.min.js></script>
+<link rel=stylesheet href=/css/prism.min.css>
+</head>
+<body>
+<main id=content>
+<p class=category>
+カテゴリー: <a href=/post>post</a>
+</p>
+<article class=suuri><h1 id=既存言語のミニ版ぽいものまとめた>既存言語のミニ版ぽいものまとめた</h1>
+<p>東大のCPU実験の記事を読んでいたらお馴染みの <a href=https://esumii.github.io/min-caml/>MinCaml</a> の他にもいくつか既存言語のミニ版があり、探してみました。<br>
+他にもおすすめのミニ言語あれば <a href=https://twitter.com/kaito_tateyama>Twitter: @kaito_tateyama</a> 宛、もしくは <a href=https://github.com/uta8a/discussion/discussions/1>discussionにコメント</a> で教えてください。</p>
+<h2 id=概要>概要</h2>
+<p>一般の言語処理系を意識した言語のミニ版っぽいものを挙げます。大学の講義で使用された/教育目的/自作目的など色々です。</p>
+<ul>
+<li>ML: MinCaml</li>
+<li>C: chibicc</li>
+<li>Ruby: minruby</li>
+<li>Swift: MinSwift</li>
+<li>Go: babygo</li>
+<li>Scala: pscala</li>
+</ul>
+<h2 id=詳細>詳細</h2>
+<h3 id=ml-mincaml>ML: MinCaml</h3>
+<p>リポジトリ: <a href=https://github.com/esumii/min-caml>esumii/min-caml</a></p>
+<p>東大のCPU実験の記事でお馴染みのMinCaml。これをFPGAの上で動かしてレイトレーシングを行うらしい。<br>
+型周りも実装されている教育目的の実装。だけどshift/resetがMinCamlに実装されたりとか、研究目的でも使われていた気がする。</p>
+<p>参考資料</p>
+<ul>
+<li><a href=https://esumii.github.io/min-caml/>速攻MinCamlコンパイラ概説</a> MLのサブセット実装という説明がされている。</li>
+<li><a href=https://zenn.dev/mod_poppo/scraps/a01e08d7d98b9e>だめぽさんによるMinCaml写経日記</a></li>
+<li><a href=https://satos.hatenablog.jp/entry/2018/12/24/235951>satosさんによるセルフホストに向けた展望</a></li>
+<li><a href=http://pllab.is.ocha.ac.jp/~asai/jpapers/ppl/masuko09.pdf>pdf: お茶大のshift/reset実装</a></li>
+</ul>
+<h3 id=c-chibicc>C: chibicc</h3>
+<p>リポジトリ: <a href=https://github.com/rui314/chibicc>rui314/chibicc</a></p>
+<p>Rui UeyamaさんによるCコンパイラの再実装。<br>
+8cc, 9ccからさらに洗練された実装になっていて、さらにSQLiteなどの現実世界で使われるCのソースコードもコンパイルできる。めちゃすごい。</p>
+<p><a href=https://www.sigbus.info/compilerbook>低レイヤを知りたい人のためのCコンパイラ作成入門</a> も良くて、少しずつ機能を増やしていくという挫折しにくい・どのステップでも面白い構成になっています。</p>
+<h3 id=ruby-minruby>Ruby: minruby</h3>
+<p>リポジトリ: <a href=https://github.com/mame/minruby>mame/minruby</a></p>
+<p>Rubyで学ぶRubyという、<a href=https://ascii.jp/serialarticles/1230449/>ASCIIの連載</a> やそれをまとめた <a href=https://www.lambdanote.com/products/ruby-ruby>Lambda Noteで売られている書籍</a> の中で作っていくRubyのミニ実装。</p>
+<p>これはRubyの内部を知るというより、極限まで簡素化してインタプリタのブートストラップという概念を学べるようにした実装になっていて、一番入門に向いていると思います。逆にlexer,parser,codegeneratorみたいな一連の流れを知っている人にはものたりないところもあるかも。</p>
+<h3 id=swift-minswift>Swift: MinSwift</h3>
+<p>リポジトリ: <a href=https://github.com/giginet/MinSwift-workshop>giginet/MinSwift-workshop</a></p>
+<p>giginetさんによる2019年に行われたCookpad Spring 1day Internshipで使用された教材。 <a href=https://techlife.cookpad.com/entry/2019/04/05/110000>参考: 1日でSwiftコンパイラを作る！Swiftコンパイラインターンを開催しました</a></p>
+<p>LLVMとコンパイラの動作理解に焦点を当てている教育目的の実装。</p>
+<h3 id=go-babygo>Go: babygo</h3>
+<p>リポジトリ: <a href=https://github.com/DQNEO/babygo>DQNEO/babygo</a></p>
+<p>DQNEOさんによるgoのコンパイラの再実装。<br>
+DQNEOさんは2019年にminigoというGoコンパイラをスクラッチで書いてセルフホストを達成している。 <a href=https://qiita.com/DQNEO/items/2efaec18772a1ae3c198>参考: Goコンパイラをゼロから作って147日でセルフホストを達成した - qiita</a><br>
+minigoの経験を活かして書かれているのがbabygo.</p>
+<h3 id=scala-pscala>Scala: pscala</h3>
+<p>フランス パリにある École normale supérieure (ENS) という学校で2015年に行われた講義で使われたらしい Scala の教育目的のミニ実装 Petit Scala。元ページが消えていて、講義を受けたと思われる生徒のリポジトリから推測するしかなさそう。</p>
+<p>言語の仕様や説明は <a href=https://github.com/xuedong/mini-scala/blob/master/docs/sujet1.pdf>xuedong/mini-scalaのpdf</a> から分かる。Typerがあるので型つきASTとか吐き出してそう？</p>
+<p>実装は今のところ <a href=https://github.com/fondation451/Scala-compiler>fondation451/Scala-compiler</a> や <a href=https://github.com/tobast/compil-petitscala>tobast/compil-petitscala</a> が良さそうに見える。</p>
+<h2 id=メモ-ミニ実装はどういうものが良いか>メモ: ミニ実装はどういうものが良いか？</h2>
+<p>言語のミニ実装と言った時、参考実装として一般的に使われる言語処理系が存在する。(Cならgccとか、Scala3ならDottyとか)<br>
+どこまで真似るか？どこまで既存でよく使われている実装に寄せるか？という悩みがあり、それで既存のMin-言語実装を眺めてきた。</p>
+<p>結論としては、「処理系を作ることで何を学びたいかによって、どこまで忠実にやるかが決定される」と思う。</p>
+<p>例えばminrubyは処理系に気軽に触り始められるという利点があり、MinCamlはバックエンドのカスタマイズによってFPGAの上に構成した自作アーキテクチャ上で動かせるというロマンがある。</p>
+<p>例えばScala3のミニ実装をしたい！とした時に中間表現のTASTyを吐き出さなければいけないとかそういうことはなくて、学びたいものが何かをよく決めて、それに応じて簡単な構文をさらうだけの実装でも良いし、もうちょい実際に寄る方針にしてもいいし、自由なんだろうなあと思った</p>
+<p>それはそう、という結論なのですが自分が囚われていたのでメモ。</p>
+</article>
+<footer>
+<p class=license>
+This document is licensed under
+<a href=https://creativecommons.org/licenses/by/4.0/ target=_blank rel="noopener noreferrer">CC-BY-4.0</a>
+</p>
+<p class=repository>
+<a href=https://github.com/uta8a/discussion/discussions/1 target=_blank rel="noopener noreferrer">discussion</a>にコメントする
+</p>
+</footer>
+</main>
+</body>
+</html>
