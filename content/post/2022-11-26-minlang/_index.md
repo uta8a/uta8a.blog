@@ -6,6 +6,8 @@ draft: false
 changelog:
   - summary: 見出し作成
     date: 2022-11-26T11:53:47+09:00
+  - summary: 追記
+    date: 2022-11-28T11:18:17+09:00
 ---
 
 # 既存言語のミニ版ぽいものまとめた
@@ -23,6 +25,7 @@ changelog:
 - Swift: MinSwift
 - Go: babygo
 - Scala: pscala
+- 追記: mal, quickjs
 
 ## 詳細
 
@@ -79,6 +82,10 @@ minigoの経験を活かして書かれているのがbabygo.
 言語の仕様や説明は [xuedong/mini-scalaのpdf](https://github.com/xuedong/mini-scala/blob/master/docs/sujet1.pdf) から分かる。Typerがあるので型つきASTとか吐き出してそう？
 
 実装は今のところ [fondation451/Scala-compiler](https://github.com/fondation451/Scala-compiler) や [tobast/compil-petitscala](https://github.com/tobast/compil-petitscala) が良さそうに見える。
+
+### 追記: mal, quickjs
+
+様々な言語によるLisp実装を集めたリポジトリ [kanaka/mal](https://github.com/kanaka/mal) や、JavaScript Engineの [quickjs](https://bellard.org/quickjs/) もこのあたりの話題が好きな人には良さそうです。(Twitterで教えていただきました。ありがとうございます。)
 
 ## メモ: ミニ実装はどういうものが良いか？
 
