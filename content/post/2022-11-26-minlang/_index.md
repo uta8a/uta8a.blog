@@ -8,6 +8,8 @@ changelog:
     date: 2022-11-26T11:53:47+09:00
   - summary: 追記
     date: 2022-11-28T11:18:17+09:00
+  - summary: Zoo追記
+    date: 2022-11-30T22:20:16+09:00
 ---
 
 # 既存言語のミニ版ぽいものまとめた
@@ -83,9 +85,13 @@ minigoの経験を活かして書かれているのがbabygo.
 
 実装は今のところ [fondation451/Scala-compiler](https://github.com/fondation451/Scala-compiler) や [tobast/compil-petitscala](https://github.com/tobast/compil-petitscala) が良さそうに見える。
 
-### 追記: mal, quickjs
+### 追記: mal, quickjs, The Programming Languages Zoo
 
-様々な言語によるLisp実装を集めたリポジトリ [kanaka/mal](https://github.com/kanaka/mal) や、JavaScript Engineの [quickjs](https://bellard.org/quickjs/) もこのあたりの話題が好きな人には良さそうです。(Twitterで教えていただきました。ありがとうございます。)
+このあたりの話題が好きな人には良さそうな情報です。(Twitterで教えていただきました。ありがとうございます。)
+
+- 様々な言語によるLisp実装を集めたリポジトリ [kanaka/mal](https://github.com/kanaka/mal)
+- JavaScript Engineの [quickjs](https://bellard.org/quickjs/)
+- 抽象機械や関数型言語が持ってそうな性質をミニチュア実装で学べる言語集 [The Programming Languages Zoo](https://plzoo.andrej.com/)
 
 ## メモ: ミニ実装はどういうものが良いか？
 
