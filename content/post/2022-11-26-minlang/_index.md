@@ -10,6 +10,8 @@ changelog:
     date: 2022-11-28T11:18:17+09:00
   - summary: Zoo追記
     date: 2022-11-30T22:20:16+09:00
+  - summary: 関数型言語の実装のチュートリアルを追記
+    date: 2022-12-02T10:43:20+09:00
 ---
 
 # 既存言語のミニ版ぽいものまとめた
@@ -92,6 +94,16 @@ minigoの経験を活かして書かれているのがbabygo.
 - 様々な言語によるLisp実装を集めたリポジトリ [kanaka/mal](https://github.com/kanaka/mal)
 - JavaScript Engineの [quickjs](https://bellard.org/quickjs/)
 - 抽象機械や関数型言語が持ってそうな性質をミニチュア実装で学べる言語集 [The Programming Languages Zoo](https://plzoo.andrej.com/)
+
+### 追記: 関数型言語の実装のチュートリアル
+
+[プログラミング言語処理系が好きな人の集まり](https://prog-lang-sys-ja-slack.github.io/wiki/) がまとめてくれているチュートリアルへのリンク集がとても良くて、これ見れば関数型ミニ言語実装に関しては完璧なのでは...
+
+[関数型言語の実装のチュートリアル](https://scrapbox.io/prog-lang-sys-ja/%E9%96%A2%E6%95%B0%E5%9E%8B%E8%A8%80%E8%AA%9E%E3%81%AE%E5%AE%9F%E8%A3%85%E3%81%AE%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB)
+
+- 京都大のOCamlサブセットMiniMLを作る講義資料
+- SchemeのサブセットインタプリタをHaskellで作成するチュートリアル
+- RacketでRacketサブセットコンパイラ作成
 
 ## メモ: ミニ実装はどういうものが良いか？
 
