@@ -2,10 +2,13 @@
 layout: diary
 title: 2022年の振り返り
 description: 2022年もお世話になりました。
+og_image: ogp-1.jpg
 draft: false
 changelog:
   - summary: 見出し作成
     date: 2022-12-31T14:45:32+09:00
+  - summary: 完成
+    date: 2022-12-31T15:21:00+09:00
 ---
 
 # 2022年の振り返り

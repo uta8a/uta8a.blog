@@ -7,6 +7,18 @@
   />
   <title>{{ .Title }}</title>
 
+  <!-- OGP -->
+  {{ if (isset .Params "og_image") }}
+  <meta property="og:title" content="{{ .Params.title }}" />
+  <meta property="og:site_name" content="diaryです" />
+  <meta property="og:image" content="{{ .Permalink }}/{{ .Params.og_image }}" />
+  <meta property="og:url" content="{{ .Permalink }}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:description" content="{{ .Params.description }}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@uta8a" />
+  {{ end }}
+  
   <!-- css -->
   {{ $style := resources.Get "sass/main.scss" | toCSS | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $style.RelPermalink }}" />
